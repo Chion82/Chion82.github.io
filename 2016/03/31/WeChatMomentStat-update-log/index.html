@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>WeChatMomentStat：微信朋友圈导出工具开发记录 | ChionLab  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="GitHub repohttps://github.com/Chion82/WeChatMomentStat-Android
+关于WeChatMomentStat-Android博主之前开发过WeChatMomentExport，借助Xposed实现了导出微信朋友圈数据。该项目在GitHub上获得了不少Star，被应用平台收录之后也有几千的下载量，可见这个需求是存在的。但是，对于WeChatMom">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WeChatMomentStat：微信朋友圈导出工具开发记录">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="GitHub repohttps://github.com/Chion82/WeChatMomentStat-Android
+关于WeChatMomentStat-Android博主之前开发过WeChatMomentExport，借助Xposed实现了导出微信朋友圈数据。该项目在GitHub上获得了不少Star，被应用平台收录之后也有几千的下载量，可见这个需求是存在的。但是，对于WeChatMom">
+<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WeChatMomentStat：微信朋友圈导出工具开发记录">
+<meta name="twitter:description" content="GitHub repohttps://github.com/Chion82/WeChatMomentStat-Android
+关于WeChatMomentStat-Android博主之前开发过WeChatMomentExport，借助Xposed实现了导出微信朋友圈数据。该项目在GitHub上获得了不少Star，被应用平台收录之后也有几千的下载量，可见这个需求是存在的。但是，对于WeChatMom">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-WeChatMomentStat-update-log" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/31/WeChatMomentStat-update-log/" class="article-date">
+  <time datetime="2016-03-31T02:32:52.000Z" itemprop="datePublished">2016-03-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/安卓/">安卓</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      WeChatMomentStat：微信朋友圈导出工具开发记录
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="GitHub-repo"><a href="#GitHub-repo" class="headerlink" title="GitHub repo"></a>GitHub repo</h2><p><a href="https://github.com/Chion82/WeChatMomentStat-Android" target="_blank" rel="external">https://github.com/Chion82/WeChatMomentStat-Android</a></p>
+<h2 id="关于WeChatMomentStat-Android"><a href="#关于WeChatMomentStat-Android" class="headerlink" title="关于WeChatMomentStat-Android"></a>关于WeChatMomentStat-Android</h2><p>博主之前开发过<a href="https://github.com/Chion82/WeChatMomentExport" target="_blank" rel="external">WeChatMomentExport</a>，借助Xposed实现了导出微信朋友圈数据。该项目在GitHub上获得了不少Star，被应用平台收录之后也有几千的下载量，可见这个需求是存在的。但是，对于WeChatMomentExport，还存在以下问题：  </p>
+<ul>
+<li>作为Xposed模块，必需依赖Xposed才能运行  </li>
+<li>因为数据抓取方式为hook，故用户需要在微信朋友圈页面手动下滑加载</li>
+<li>微信版本每更新一次会导致源码被重新混淆，相应的本项目也需要更新钩子逻辑</li>
+<li>项目的定位是将导出数据作为开发者二次开发所需的数据源，但从酷安网的用户评论看，普通用户不能理解需求</li>
+</ul>
+<p>对于上述问题，博主考虑了以下相应对策：</p>
+<ul>
+<li>从<a href="https://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/">上次的逆向分析结果</a>看，只要想办法调用到这几个类（以下称为parser），就可以解析微信SQLite缓存中的blob数据，这样就不需要借助Xposed的hook了，也能实现一键导出</li>
+<li>考虑到blob格式不会经常变更，因此可在项目中整合parser，这样本项目就无需经常更新</li>
+<li>博主在开发WeChatMomentExport之后随手写的<a href="https://github.com/Chion82/WeChatMomentStat" target="_blank" rel="external">朋友圈数据统计脚本</a>也获得了少量star，因此认为，对于普通用户，生成这样的简易统计数据更有吸引性</li>
+</ul>
+<p>于是，决定整合WeChatMomentExport和统计脚本，做一个功能稍完善的工具。</p>
+<h2 id="几个技术难点"><a href="#几个技术难点" class="headerlink" title="几个技术难点"></a>几个技术难点</h2><p>要做这样的一个独立的APP，而不是一个Xposed模块，需要解决以下问题：</p>
+<ol>
+<li>如何在APP中整合parser？parser的逻辑代码被混淆在微信的dex中，直接分析其算法难度太大。</li>
+<li>如何越权获得微信的SQLite缓存数据？</li>
+<li>如何确保从SQLite缓存中取得的朋友圈数据足够齐全？</li>
+</ol>
+<p>经过查阅各种文档和亲自实验，还是找到了解决方案。</p>
+<h2 id="使用DexClassLoader直接加载微信apk中的parser"><a href="#使用DexClassLoader直接加载微信apk中的parser" class="headerlink" title="使用DexClassLoader直接加载微信apk中的parser"></a>使用DexClassLoader直接加载微信apk中的parser</h2><p>DexClassLoader可直接解析apk中的classes.dex，并从中取得所需类，通过java反射，可以获得所需的parser方法。因此，无需再分析parser算法，而是直接调用就可以了。<br>通过DexClassLoader取得parser方法的关键代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">DexClassLoader cl = <span class="keyword">new</span> DexClassLoader(</div><div class="line">                    apkFile.getAbsolutePath(),  <span class="comment">//apkFile为微信apk文件</span></div><div class="line">                    context.getDir(<span class="string">"outdex"</span>, <span class="number">0</span>).getAbsolutePath(),</div><div class="line">                    <span class="keyword">null</span>,</div><div class="line">                    ClassLoader.getSystemClassLoader());</div><div class="line"></div><div class="line">Class SnsDetailParser = cl.loadClass(<span class="string">"com.tencent.mm.plugin.sns.f.i"</span>);</div><div class="line">Class SnsDetail = cl.loadClass(<span class="string">"com.tencent.mm.protocal.b.atp"</span>);</div><div class="line">Class SnsObject = cl.loadClass(<span class="string">"com.tencent.mm.protocal.b.aqi"</span>);</div><div class="line"><span class="comment">//之后只需使用java反射即可取得所需方法</span></div></pre></td></tr></table></figure></p>
+<p>还需要提供一个微信的apk文件。因此将微信apk放在assets中，首次运行本工具的时候释放到外部存储中。</p>
+<h2 id="通过su调用，拷贝微信的SQLite数据库文件"><a href="#通过su调用，拷贝微信的SQLite数据库文件" class="headerlink" title="通过su调用，拷贝微信的SQLite数据库文件"></a>通过su调用，拷贝微信的SQLite数据库文件</h2><p>需要越权操作的话，获取root权限是很难避免的。通过调用su，可以复制出微信的SQLite数据库文件到本工具可读写的目录下。<br>微信朋友圈的SQLite文件在<code>/data/data/com.tencent.mm/MicroMsg/XXXXXXXXXXXXX/SnsMicroMsg.db</code>。其中，<code>XXXXXXXXXXXXX</code>是微信生成的hash值，每台设备上都可能不一样。由于在Android的shell中没有<code>find</code>或类似的命令，需要复制出这个<code>SnsMicroMsg.db</code>还得费一点功夫。最终，博主采用<code>ls</code>列目录并循环尝试<code>cp</code>的方法强行取得<code>SnsMicroMsg.db</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">copySnsDB</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">    String dataDir = Environment.getDataDirectory().getAbsolutePath();</div><div class="line">    String destDir = Config.EXT_DIR;</div><div class="line">    Process su = Runtime.getRuntime().exec(<span class="string">"su"</span>);</div><div class="line">    DataOutputStream outputStream = <span class="keyword">new</span> DataOutputStream(su.getOutputStream());</div><div class="line">    outputStream.writeBytes(<span class="string">"mount -o remount,rw "</span> + dataDir + <span class="string">"\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"cd "</span> + dataDir + <span class="string">"/data/"</span> + Config.WECHAT_PACKAGE + <span class="string">"/MicroMsg\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"ls | while read line; do cp $&#123;line&#125;/SnsMicroMsg.db "</span> + destDir + <span class="string">"/ ; done \n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"sleep 1\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"chmod 777 "</span> + destDir + <span class="string">"/SnsMicroMsg.db\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"exit\n"</span>);</div><div class="line">    outputStream.flush();</div><div class="line">    outputStream.close();</div><div class="line">    Thread.sleep(<span class="number">1000</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其中，还需要修改db文件的权限为<code>777</code>，否则工具无权读取数据库。另外，<code>sleep</code>是为了避免稍后偶然性出现的读取数据库失败的情况（可能文件复制不完整或未被去锁？）。</p>
+<h2 id="关于SQLite中数据完整性的问题"><a href="#关于SQLite中数据完整性的问题" class="headerlink" title="关于SQLite中数据完整性的问题"></a>关于SQLite中数据完整性的问题</h2><p>经过测试，微信的SQLite数据库中缓存了几乎所有加载过的朋友圈，理论上应当不会漏数据。</p>
+<h2 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h2><p>本来这个app计划于2月中旬就写出来的，由于博主不是安卓开发者，没有系统地学过安卓开发，当时还不知道有<code>DexClassLoader</code>，写的第一个demo用的依然是Xposed，但是不同于WeChatMomentExport，这里用Xposed仅仅是为了取得那几个parser的类而已。2月底开学后，通过各种渠道了解到了<code>DexClassLoader</code>，才有现在的这个思路。<br>博主现在读大二，这学期开学后课程比较紧张，再者在工作室外包项目的压力下（团队管理问题，还有涉及的利益问题出现冲突的时候，处理起来非常棘手），一时失去了搞开源轮子的动力，甚至连续一个月都没有更新博客，于是才导致了这个项目拖到现在才基本完成。<br>看到了GitHub上的项目star和follower每隔几天就多一个，本站也陆续有网友来评论，每日UV也保持在100以上，就重拾了动力去继续折腾。<br>非常感谢前来光临本站和GitHub profile的各位！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="cisvylbqz0003qycm2dnypx6r" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/06/163-music-unlock-update-log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          网易云音乐反向代理163-music-unlock更新记录
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/03/react-server-side-rendering/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">自译：如何使用服务端渲染加速React APP首屏加载</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  var disqus_url = 'http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

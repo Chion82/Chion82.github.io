@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ChionLab | 归宅开发部活动纪录 </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ChionLab">
+<meta property="og:url" content="http://blog.chionlab.moe/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ChionLab">
+<meta name="twitter:description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-mixins-considered-harmful-2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/28/mixins-considered-harmful-2/" class="article-date">
+  <time datetime="2016-08-28T08:32:22.000Z" itemprop="datePublished">2016-08-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/前端/">前端</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="/2016/07/23/mixins-considered-harmful/">上篇</a></p>
+<p>原文：<a href="https://facebook.github.io/react/blog/2016/07/13/mixins-considered-harmful.html" target="_blank" rel="external">Facebook React: Mixins Considered Harmful</a></p>
+<blockquote>
+<p>Migrating from Mixins<br>Let’s make it clear that mixins are not technically deprecated. If you use React.createClass(), you may keep using them. We only say that they didn’t work well for us, and so we won’t recommend using them in the future.<br>Every section below corresponds to a mixin usage pattern that we found in the Facebook codebase. For each of them, we describe the problem and a solution that we think works better than mixins. The examples are written in ES5 but once you don’t need mixins, you can switch to ES6 classes if you’d like.<br>We hope that you find this list helpful. Please let us know if we missed important use cases so we can either amend the list or be proven wrong!</p>
+</blockquote>
+<h2 id="从Mixins迁移"><a href="#从Mixins迁移" class="headerlink" title="从Mixins迁移"></a>从Mixins迁移</h2><p>有一点需要说明的是，从技术上来讲，mixins不是被弃用的。如果你在使用<code>React.createClass()</code>，你可以继续使用它们。我们只是说它们对我们而言不能很好地运用，并且我们不推荐在未来中继续使用它们。下面的每一章节对应了我们在Facebook代码库中发现的mixin的使用场景。对于每种情况，我们会说明问题所在，并展示我们认为比使用mixins更好的解决方案。示例都使用ES5编写，但当你不再需要mixins时，你可以随心所欲地切换到ES6 classes。<br>我们希望你能从这个列表中得到帮助。如果我们缺漏了一些比较重要的应用场景，请告知我们，因此我们能拓展这个列表，或者证明其中的部分是错误的。</p>
+<blockquote>
+<p>Performance Optimizations<br>One of the most commonly used mixins is PureRenderMixin. You might be using it in some components to prevent unnecessary re-renders when the props and state are shallowly equal to the previous props and state:</p>
+</blockquote>
+<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><p>使用率最高的mixins之一是 <a href="https://facebook.github.io/react/docs/pure-render-mixin.html" target="_blank" rel="external">PureRenderMixin</a> 。你可能正在一些组件中使用它，当props和state跟上次的值是浅层相等时，可<a href="https://facebook.github.io/react/docs/advanced-performance.html#shouldcomponentupdate-in-action" target="_blank" rel="external">避免不必要的重渲染</a>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> PureRenderMixin = <span class="built_in">require</span>(<span class="string">'react-addons-pure-render-mixin'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> Button = React.createClass(&#123;</div><div class="line">  mixins: [PureRenderMixin],</div><div class="line"></div><div class="line">  <span class="comment">// ...</span></div><div class="line"></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><blockquote>
+<p>To express the same without mixins, you can use the shallowCompare function directly instead:</p>
+</blockquote>
+<p>为了达到相同的效果而不使用mixins，你可以直接使用<a href="https://facebook.github.io/react/docs/shallow-compare.html" target="_blank" rel="external">shallowCompare</a>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> shallowCompare = <span class="built_in">require</span>(<span class="string">'react-addons-shallow-compare'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> Button = React.createClass(&#123;</div><div class="line">  shouldComponentUpdate: <span class="function"><span class="keyword">function</span>(<span class="params">nextProps, nextState</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> shallowCompare(<span class="keyword">this</span>, nextProps, nextState);</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  <span class="comment">// ...</span></div><div class="line"></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>If you use a custom mixin implementing a shouldComponentUpdate function with different algorithm, we suggest exporting just that single function from a module and calling it directly from your components.</p>
+<p>We understand that more typing can be annoying. For the most common case, we plan to introduce a new base class called React.PureComponent in the next minor release. It uses the same shallow comparison as PureRenderMixin does today.</p>
+</blockquote>
+<p>如果你使用一个自定义的mixin，以不同的算法实现 <code>shouldComponentUpdate</code> 方法，我们建议从模块中导出该单一的方法，并在你的组件中直接调用它。<br>我们理解频繁的编码是令人不快的。对于更普遍的情况，我们计划在下一个小版本发布中引入一个新的基类<code>React.PureComponent</code>。它将使用浅层对比算法，正如今天的<code>PureRenderMixin</code>。</p>
+<blockquote>
+<p>Subscriptions and Side Effects<br>The second most common type of mixins that we encountered are mixins that subscribe a React component to a third-party data source. Whether this data source is a Flux Store, an Rx Observable, or something else, the pattern is very similar: the subscription is created in componentDidMount, destroyed in componentWillUnmount, and the change handler calls this.setState().</p>
+</blockquote>
+<h2 id="订阅和副作用"><a href="#订阅和副作用" class="headerlink" title="订阅和副作用"></a>订阅和副作用</h2><p>我们遇到的第二种最常见的mixins类型是那些用来订阅React组件到第三方数据源的mixins。无论这些数据源是一个Flux Store，还是一个Rx Observable，抑或是其他的，该模式都是相似的：订阅在<code>componentDidMount</code>中产生，在<code>componentWillUnmount</code>中被销毁，而变更处理函数将调用 <code>this.setState()</code>。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> SubscriptionMixin = &#123;</div><div class="line">  getInitialState: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> &#123;</div><div class="line">      comments: DataSource.getComments()</div><div class="line">    &#125;;</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  componentDidMount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    DataSource.addChangeListener(<span class="keyword">this</span>.handleChange);</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  componentWillUnmount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    DataSource.removeChangeListener(<span class="keyword">this</span>.handleChange);</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  handleChange: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.setState(&#123;</div><div class="line">      comments: DataSource.getComments()</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> CommentList = React.createClass(&#123;</div><div class="line">  mixins: [SubscriptionMixin],</div><div class="line"></div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="comment">// Reading comments from state managed by mixin.</span></div><div class="line">    <span class="keyword">var</span> comments = <span class="keyword">this</span>.state.comments;</div><div class="line">    <span class="keyword">return</span> (</div><div class="line">      &lt;div&gt;</div><div class="line">        &#123;comments.map(function(comment) &#123;</div><div class="line">          return &lt;Comment comment=&#123;comment&#125; key=&#123;comment.id&#125; /&gt;</div><div class="line">        &#125;)&#125;</div><div class="line">      &lt;/div&gt;</div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">module.exports = CommentList;</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Solution</p>
+<p>If there is just one component subscribed to this data source, it is fine to embed the subscription logic right into the component. Avoid premature abstractions.</p>
+<p>If several components used this mixin to subscribe to a data source, a nice way to avoid repetition is to use a pattern called “higher-order components”. It can sound intimidating so we will take a closer look at how this pattern naturally emerges from the component model.</p>
+</blockquote>
+<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><p>如果只有一个组件被订阅到这个数据源，直接将订阅逻辑内嵌到该组件中不失为一个良策。避免草率的抽象。</p>
+<p>如果多个组件都使用这个mixin来订阅到一个数据源，一个好的避免重复冗余的方法是使用一种被称为“<a href="https://medium.com/@dan_abramov/mixins-are-dead-long-live-higher-order-components-94a0d2f9e750" target="_blank" rel="external">高阶组件(higher-order components，又称HOC)</a>”的模式。这听起来让人生畏，所以我们将仔细分析这个模式如何自然地套用到组件模型上。</p>
+<blockquote>
+<p>Higher-Order Components Explained<br>Let’s forget about React for a second. Consider these two functions that add and multiply numbers, logging the results as they do that:</p>
+</blockquote>
+<h3 id="高阶组件的解释"><a href="#高阶组件的解释" class="headerlink" title="高阶组件的解释"></a>高阶组件的解释</h3><p>让我们暂时忘记React。想想这两个实现相加和相乘的函数，通过这样来实现记录计算结果：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">addAndLog</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> result = x + y;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'result:'</span>, result);</div><div class="line">  <span class="keyword">return</span> result;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">multiplyAndLog</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> result = x * y;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'result:'</span>, result);</div><div class="line">  <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>These two functions are not very useful but they help us demonstrate a pattern that we can later apply to components.</p>
+<p>Let’s say that we want to extract the logging logic out of these functions without changing their signatures. How can we do this? An elegant solution is to write a higher-order function, that is, a function that takes a function as an argument and returns a function.</p>
+<p>Again, it sounds more intimidating than it really is:</p>
+</blockquote>
+<p>这两个函数并不是十分有用，但它们可以帮助我们描述一个典型的模式，这个模式我们之后将把它应用到组件上。</p>
+<p>假设我们想从这些函数中抽离记录逻辑而不修改它们的签名。如何做到这点？一个优雅的方案是，写一个更高阶的函数，这个更高阶的函数实际上是一个将函数作为其参数，并返回一个新函数的函数。</p>
+<p>又一次，它听起来让人生畏，但实际上它是更简单的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">withLogging</span>(<span class="params">wrappedFunction</span>) </span>&#123;</div><div class="line">  <span class="comment">// Return a function with the same API...</span></div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="comment">// ... that calls the original function</span></div><div class="line">    <span class="keyword">var</span> result = wrappedFunction(x, y);</div><div class="line">    <span class="comment">// ... but also logs its result!</span></div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'result:'</span>, result);</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">  &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>The withLogging higher-order function lets us write add and multiply without the logging statements, and later wrap them to get addAndLog and multiplyAndLog with exactly the same signatures as before:</p>
+</blockquote>
+<p>这个 <code>withLogging</code> 高阶函数让我们在实现相加和相乘逻辑时不需考虑记录逻辑，在这之后我们通过嵌套的方式来得到与之前签名一致的 <code>addAndLog</code> 和 <code>multiplyAndLog</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">add</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> x + y;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">multiply</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> x * y;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">withLogging</span>(<span class="params">wrappedFunction</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> result = wrappedFunction(x, y);</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'result:'</span>, result);</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">  &#125;;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Equivalent to writing addAndLog by hand:</span></div><div class="line"><span class="keyword">var</span> addAndLog = withLogging(add);</div><div class="line"></div><div class="line"><span class="comment">// Equivalent to writing multiplyAndLog by hand:</span></div><div class="line"><span class="keyword">var</span> multiplyAndLog = withLogging(multiply);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Higher-order components are a very similar pattern, but applied to components in React. We will apply this transformation from mixins in two steps.</p>
+<p>As a first step, we will split our CommentList component in two, a child and a parent. The child will be only concerned with rendering the comments. The parent will set up the subscription and pass the up-to-date data to the child via props.</p>
+</blockquote>
+<p>高阶组件是一种非常相似的模式，只不过它是应用在React组件上的而已。我们将这种转换应用到mixins上，只需要两步即可。</p>
+<p>第一步，我们将<code>CommentList</code>组件分为子和父两部分。子组件只关心渲染评论，而父组件将设置订阅，并将最新的数据通过props传递到子组件上。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// This is a child component.</span></div><div class="line"><span class="comment">// It only renders the comments it receives as props.</span></div><div class="line"><span class="keyword">var</span> CommentList = React.createClass(&#123;</div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="comment">// Note: now reading from props rather than state.</span></div><div class="line">    <span class="keyword">var</span> comments = <span class="keyword">this</span>.props.comments;</div><div class="line">    <span class="keyword">return</span> (</div><div class="line">      &lt;div&gt;</div><div class="line">        &#123;comments.map(function(comment) &#123;</div><div class="line">          return &lt;Comment comment=&#123;comment&#125; key=&#123;comment.id&#125; /&gt;</div><div class="line">        &#125;)&#125;</div><div class="line">      &lt;/div&gt;</div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// This is a parent component.</div><div class="line">// It subscribes to the data source and renders &lt;CommentList /&gt;.</div><div class="line">var CommentListWithSubscription = React.createClass(&#123;</div><div class="line">  getInitialState: function() &#123;</div><div class="line">    return &#123;</div><div class="line">      comments: DataSource.getComments()</div><div class="line">    &#125;;</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  componentDidMount: function() &#123;</div><div class="line">    DataSource.addChangeListener(this.handleChange);</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  componentWillUnmount: function() &#123;</div><div class="line">    DataSource.removeChangeListener(this.handleChange);</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  handleChange: function() &#123;</div><div class="line">    this.setState(&#123;</div><div class="line">      comments: DataSource.getComments()</div><div class="line">    &#125;);</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  render: function() &#123;</div><div class="line">    // We pass the current state as props to CommentList.</div><div class="line">    return &lt;CommentList comments=&#123;this.state.comments&#125; /&gt;;</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">module.exports = CommentListWithSubscription;</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>There is just one final step left to do.</p>
+<p>Remember how we made withLogging() take a function and return another function wrapping it? We can apply a similar pattern to React components.</p>
+<p>We will write a new function called withSubscription(WrappedComponent). Its argument could be any React component. We will pass CommentList as WrappedComponent, but we could also apply withSubscription() to any other component in our codebase.</p>
+<p>This function would return another component. The returned component would manage the subscription and render <wrappedcomponent> with the current data.</wrappedcomponent></p>
+<p>We call this pattern a “higher-order component”.</p>
+<p>The composition happens at React rendering level rather than with a direct function call. This is why it doesn’t matter whether the wrapped component is defined with createClass(), as an ES6 class or a function. If WrappedComponent is a React component, the component created by withSubscription() can render it.</p>
+</blockquote>
+<p>只剩下最后一步了。</p>
+<p>还记得我们如何使得<code>withLogging()</code>传入一个函数并返回另一个嵌套它的函数吗？我们可以将相似的模式应用到React组件上来。</p>
+<p>我们将编写一个新的函数，叫做<code>withSubscription(WrappedComponent)</code>。它的参数可以是任意的React组件。我们将传递<code>CommentList</code>作为<code>WrappedComponent</code>，但我们也可以在我们的代码基中将<code>withSubscription()</code>应用到任意其他的组件上。</p>
+<p>这个函数会返回另一个组件。返回的组件将会管理好订阅，并渲染包含数据的<code>&lt;WrappedComponent /&gt;</code>。</p>
+<p>我们把这种模式称为一个“高阶组件”。</p>
+<p>这种合成发生在React的渲染层，而不是通过一个直接的函数调用。这就是为什么无论内嵌的组件是由<code>createClass()</code>创建的，还是由ES6 class生成的，抑或是一个函数，都无关紧要了。如果<code>WrappedComponent</code>是一个React组件，通过<code>withSubscription()</code>创建的组件都能渲染它。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// This function takes a component...</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">withSubscription</span>(<span class="params">WrappedComponent</span>) </span>&#123;</div><div class="line">  <span class="comment">// ...and returns another component...</span></div><div class="line">  <span class="keyword">return</span> React.createClass(&#123;</div><div class="line">    getInitialState: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="keyword">return</span> &#123;</div><div class="line">        comments: DataSource.getComments()</div><div class="line">      &#125;;</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    componentDidMount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="comment">// ... that takes care of the subscription...</span></div><div class="line">      DataSource.addChangeListener(<span class="keyword">this</span>.handleChange);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    componentWillUnmount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      DataSource.removeChangeListener(<span class="keyword">this</span>.handleChange);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    handleChange: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="keyword">this</span>.setState(&#123;</div><div class="line">        comments: DataSource.getComments()</div><div class="line">      &#125;);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="comment">// ... and renders the wrapped component with the fresh data!</span></div><div class="line">      <span class="keyword">return</span> &lt;WrappedComponent comments=&#123;this.state.comments&#125; /&gt;;</div><div class="line">    &#125;</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Now we can declare CommentListWithSubscription by applying withSubscription to CommentList:</p>
+</blockquote>
+<p>现在我们可以通过应用<code>withSubscription</code>到<code>CommentList</code>上来声明<code>CommentListWithSubscription</code>了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> CommentList = React.createClass(&#123;</div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> comments = <span class="keyword">this</span>.props.comments;</div><div class="line">    <span class="keyword">return</span> (</div><div class="line">      &lt;div&gt;</div><div class="line">        &#123;comments.map(function(comment) &#123;</div><div class="line">          return &lt;Comment comment=&#123;comment&#125; key=&#123;comment.id&#125; /&gt;</div><div class="line">        &#125;)&#125;</div><div class="line">      &lt;/div&gt;</div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// withSubscription() returns a new component that</div><div class="line">// is subscribed to the data source and renders</div><div class="line">// &lt;CommentList /&gt; with up-to-date data.</div><div class="line">var CommentListWithSubscription = withSubscription(CommentList);</div><div class="line"></div><div class="line">// The rest of the app is interested in the subscribed component</div><div class="line">// so we export it instead of the original unwrapped CommentList.</div><div class="line">module.exports = CommentListWithSubscription;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Solution, Revisited<br>Now that we understand higher-order components better, let’s take another look at the complete solution that doesn’t involve mixins. There are a few minor changes that are annotated with inline comments:</p>
+</blockquote>
+<h3 id="解决方案，重现"><a href="#解决方案，重现" class="headerlink" title="解决方案，重现"></a>解决方案，重现</h3><p>现在我们能更好的理解高阶组件了，让我们来再看一次完整的、无需涉及mixins的解决方案。内联的注释有少量修改。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">withSubscription</span>(<span class="params">WrappedComponent</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> React.createClass(&#123;</div><div class="line">    getInitialState: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="keyword">return</span> &#123;</div><div class="line">        comments: DataSource.getComments()</div><div class="line">      &#125;;</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    componentDidMount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      DataSource.addChangeListener(<span class="keyword">this</span>.handleChange);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    componentWillUnmount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      DataSource.removeChangeListener(<span class="keyword">this</span>.handleChange);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    handleChange: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="keyword">this</span>.setState(&#123;</div><div class="line">        comments: DataSource.getComments()</div><div class="line">      &#125;);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="comment">// Use JSX spread syntax to pass all props and state down automatically.</span></div><div class="line">      <span class="keyword">return</span> &lt;WrappedComponent &#123;...this.props&#125; &#123;...this.state&#125; /&gt;;</div><div class="line">    &#125;</div><div class="line">  &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Optional change: convert CommentList to a functional component</div><div class="line">// because it doesn't use lifecycle hooks or state.</div><div class="line">function CommentList(props) &#123;</div><div class="line">  var comments = props.comments;</div><div class="line">  return (</div><div class="line">    &lt;div&gt;</div><div class="line">      &#123;comments.map(function(comment) &#123;</div><div class="line">        return &lt;Comment comment=&#123;comment&#125; key=&#123;comment.id&#125; /&gt;</div><div class="line">      &#125;)&#125;</div><div class="line">    &lt;/div&gt;</div><div class="line">  )</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Instead of declaring CommentListWithSubscription,</div><div class="line">// we export the wrapped component right away.</div><div class="line">module.exports = withSubscription(CommentList);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Higher-order components are a powerful pattern. You can pass additional arguments to them if you want to further customize their behavior. After all, they are not even a feature of React. They are just functions that receive components and return components that wrap them.</p>
+<p>Like any solution, higher-order components have their own pitfalls. For example, if you heavily use refs, you might notice that wrapping something into a higher-order component changes the ref to point to the wrapping component. In practice we discourage using refs for component communication so we don’t think it’s a big issue. In the future, we might consider adding ref forwarding to React to solve this annoyance.</p>
+</blockquote>
+<p>高阶组件是一个强大的模式。你可以给它们传递更多的参数，如果你想要进一步高度定制它们的行为。毕境，它们甚至不是React的特性之一。它们只是接受传入组件，并返回嵌套了传入组件的新组件的函数而已。</p>
+<p>就像其它解决方案，高阶函数同样有他们的潜在风险。比如，如果你大量地使用refs（组件引用），你可能会发现，将任意组件嵌套进高阶组件里面时，内层组件的ref会被改变。在实践中我们不建议使用refs来实现组件间通信，所以我们不认为这是个大问题。在未来，我们将考虑引入ref重定向到React中来解决这个问题。</p>
+<blockquote>
+<p>Rendering Logic<br>The next most common use case for mixins that we discovered in our codebase is sharing rendering logic between components.</p>
+<p>Here is a typical example of this pattern:</p>
+</blockquote>
+<h2 id="渲染逻辑"><a href="#渲染逻辑" class="headerlink" title="渲染逻辑"></a>渲染逻辑</h2><p>在我们的代码库中，我们发现的下一个常见的mixins用例是组件间渲染逻辑的共享。</p>
+<p>以下是这个模式的典型例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> RowMixin = &#123;</div><div class="line">  <span class="comment">// Called by components from render()</span></div><div class="line">  renderHeader: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> (</div><div class="line">      &lt;div className='row-header'&gt;</div><div class="line">        &lt;h1&gt;</div><div class="line">          &#123;this.getHeaderText() /* Defined by components */&#125;</div><div class="line">        &lt;/h1&gt;</div><div class="line">      &lt;/div&gt;</div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> UserRow = React.createClass(&#123;</div><div class="line">  mixins: [RowMixin],</div><div class="line"></div><div class="line">  <span class="comment">// Called by RowMixin.renderHeader()</span></div><div class="line">  getHeaderText: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.props.user.fullName;</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> (</div><div class="line">      &lt;div&gt;</div><div class="line">        &#123;this.renderHeader() /* Defined by RowMixin */&#125;</div><div class="line">        &lt;h2&gt;&#123;this.props.user.biography&#125;&lt;/h2&gt;</div><div class="line">      &lt;/div&gt;</div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Multiple components may be sharing RowMixin to render the header, and each of them would need to define getHeaderText().</p>
+</blockquote>
+<p>多个组件可能共享了<code>RowMixin</code>来渲染行头，而每个这些组件都需要定义一个<code>getHeaderText()</code>方法。</p>
+<blockquote>
+<p>Solution</p>
+<p>If you see rendering logic inside a mixin, it’s time to extract a component!</p>
+<p>Instead of RowMixin, we will define a <row> component. We will also replace the convention of defining a getHeaderText() method with the standard mechanism of top-data flow in React: passing props.</row></p>
+<p>Finally, since neither of those components currently need lifecycle hooks or state, we can declare them as simple functions:</p>
+</blockquote>
+<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><p>如果你看见了一个mixin里面含有渲染逻辑，那么是时候把它们抽离到组件中了！</p>
+<p>我们将定义一个<code>&lt;Row&gt;</code>组件来取代<code>RowMixin</code>。我们也将会把借由定义一个<code>getHeaderText()</code>方法来实现转换的方式替换成React中标准的自顶向下数据流机制：传递props。</p>
+<p>最后，因为这些组件现在都不再需要生命周期钩子和状态了，我们会把他们定义为简单的函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">RowHeader</span>(<span class="params">props</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> (</div><div class="line">    &lt;div className='row-header'&gt;</div><div class="line">      &lt;h1&gt;&#123;props.text&#125;&lt;/h1&gt;</div><div class="line">    &lt;/div&gt;</div><div class="line">  );</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">UserRow</span>(<span class="params">props</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> (</div><div class="line">    &lt;div&gt;</div><div class="line">      &lt;RowHeader text=&#123;props.user.fullName&#125; /&gt;</div><div class="line">      &lt;h2&gt;&#123;props.user.biography&#125;&lt;/h2&gt;</div><div class="line">    &lt;/div&gt;</div><div class="line">  );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Props keep component dependencies explicit, easy to replace, and enforceable with tools like Flow and TypeScript.</p>
+</blockquote>
+<p>Props使得组件依赖保持显式、易于替换、对诸如Flow和TypeScript一类的工具更易执行。</p>
+<blockquote>
+<p>Note:</p>
+<p>Defining components as functions is not required. There is also nothing wrong with using lifecycle hooks and state—they are first-class React features. We use functional components in this example because they are easier to read and we didn’t need those extra features, but classes would work just as fine.</p>
+</blockquote>
+<p>备注：<br>将组件定义为函数不是必需的。使用React的头等特性：生命周期钩子和状态也是没有任何错误的。我们在这个示例中使用函数式组件，因为它们可以更易于阅读，并且我们不需要那些另外的特性，但使用classes也是一样的效果。</p>
+<blockquote>
+<p>Context<br>Another group of mixins we discovered were helpers for providing and consuming React context. Context is an experimental unstable feature, has certain issues, and will likely change its API in the future. We don’t recommend using it unless you’re confident there is no other way of solving your problem.</p>
+<p>Nevertheless, if you already use context today, you might have been hiding its usage with mixins like this:</p>
+</blockquote>
+<h2 id="上下文（Context）"><a href="#上下文（Context）" class="headerlink" title="上下文（Context）"></a>上下文（Context）</h2><p>我们发现的另外一系列mixins是提供和消费React Context的辅助器。Context是一个实验性的不稳定特性，存在确定的缺陷，而且它的API在未来可能会被改变。我们不推荐使用它，除非你十分确定没有其他方法来解决你的问题。</p>
+<p>尽管如此，如果你已经使用了context，你可能把它的使用隐藏在了mixins里，就像这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> RouterMixin = &#123;</div><div class="line">  contextTypes: &#123;</div><div class="line">    router: React.PropTypes.object.isRequired</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  <span class="comment">// The mixin provides a method so that components</span></div><div class="line">  <span class="comment">// don't have to use the context API directly.</span></div><div class="line">  push: <span class="function"><span class="keyword">function</span>(<span class="params">path</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.context.router.push(path)</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> Link = React.createClass(&#123;</div><div class="line">  mixins: [RouterMixin],</div><div class="line"></div><div class="line">  handleClick: <span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</div><div class="line">    e.stopPropagation();</div><div class="line"></div><div class="line">    <span class="comment">// This method is defined in RouterMixin.</span></div><div class="line">    <span class="keyword">this</span>.push(<span class="keyword">this</span>.props.to);</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> (</div><div class="line">      &lt;a onClick=&#123;this.handleClick&#125;&gt;</div><div class="line">        &#123;this.props.children&#125;</div><div class="line">      &lt;/a&gt;</div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="built_in">module</span>.exports = Link;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Solution<br>We agree that hiding context usage from consuming components is a good idea until the context API stabilizes. However, we recommend using higher-order components instead of mixins for this.</p>
+<p>Let the wrapping component grab something from the context, and pass it down with props to the wrapped component:</p>
+</blockquote>
+<h3 id="解决方案-3"><a href="#解决方案-3" class="headerlink" title="解决方案"></a>解决方案</h3><p>在context的API稳定之前，我们认为，将context的调用在组件中隐藏起来是个好主意。不过，我们推荐使用高阶组件来取代mixins来实现这点。</p>
+<p>让外层组件从context中获取数据，并通过props传递到内层组件中：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">withRouter</span>(<span class="params">WrappedComponent</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> React.createClass(&#123;</div><div class="line">    contextTypes: &#123;</div><div class="line">      router: React.PropTypes.object.isRequired</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="comment">// The wrapper component reads something from the context</span></div><div class="line">      <span class="comment">// and passes it down as a prop to the wrapped component.</span></div><div class="line">      <span class="keyword">var</span> router = <span class="keyword">this</span>.context.router;</div><div class="line">      <span class="keyword">return</span> &lt;WrappedComponent &#123;...this.props&#125; router=&#123;router&#125; /&gt;;</div><div class="line">    &#125;</div><div class="line">  &#125;);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">var Link = React.createClass(&#123;</div><div class="line">  handleClick: function(e) &#123;</div><div class="line">    e.stopPropagation();</div><div class="line"></div><div class="line">    // The wrapped component uses props instead of context.</div><div class="line">    this.props.router.push(this.props.to);</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  render: function() &#123;</div><div class="line">    return (</div><div class="line">      &lt;a onClick=&#123;this.handleClick&#125;&gt;</div><div class="line">        &#123;this.props.children&#125;</div><div class="line">      &lt;/a&gt;</div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// Don't forget to wrap the component!</div><div class="line">module.exports = withRouter(Link);</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>If you’re using a third party library that only provides a mixin, we encourage you to file an issue with them linking to this post so that they can provide a higher-order component instead. In the meantime, you can create a higher-order component around it yourself in exactly the same way.</p>
+</blockquote>
+<p>如果你在使用一个只提供mixin的第三方库，我们建议你去提交一个issue，引用本文链接，让他们去做成高阶组件。在这期间，通过完全一样的方式，你可以自己动手围绕它做一个高阶组件。</p>
+<blockquote>
+<p>Utility Methods<br>Sometimes, mixins are used solely to share utility functions between components:</p>
+</blockquote>
+<h2 id="通用方法"><a href="#通用方法" class="headerlink" title="通用方法"></a>通用方法</h2><p>有时候，mixins仅仅是用作在组件间共享的通用工具函数。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> ColorMixin = &#123;</div><div class="line">  getLuminance(color) &#123;</div><div class="line">    <span class="keyword">var</span> c = <span class="built_in">parseInt</span>(color, <span class="number">16</span>);</div><div class="line">    <span class="keyword">var</span> r = (c &amp; <span class="number">0xFF0000</span>) &gt;&gt; <span class="number">16</span>;</div><div class="line">    <span class="keyword">var</span> g = (c &amp; <span class="number">0x00FF00</span>) &gt;&gt; <span class="number">8</span>;</div><div class="line">    <span class="keyword">var</span> b = (c &amp; <span class="number">0x0000FF</span>);</div><div class="line">    <span class="keyword">return</span> (<span class="number">0.299</span> * r + <span class="number">0.587</span> * g + <span class="number">0.114</span> * b);</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> Button = React.createClass(&#123;</div><div class="line">  mixins: [ColorMixin],</div><div class="line"></div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> theme = <span class="keyword">this</span>.getLuminance(<span class="keyword">this</span>.props.color) &gt; <span class="number">160</span> ? <span class="string">'dark'</span> : <span class="string">'light'</span>;</div><div class="line">    <span class="keyword">return</span> (</div><div class="line">      &lt;div className=&#123;theme&#125;&gt;</div><div class="line">        &#123;this.props.children&#125;</div><div class="line">      &lt;/div&gt;</div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Solution<br>Put utility functions into regular JavaScript modules and import them. This also makes it easier to test them or use them outside of your components:</p>
+</blockquote>
+<h3 id="解决方案-4"><a href="#解决方案-4" class="headerlink" title="解决方案"></a>解决方案</h3><p>将通用的工具方法放入常规的JavaScript模块中，并引入它们。这同样使得测试和组件外调用变得简单：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> getLuminance = <span class="built_in">require</span>(<span class="string">'../utils/getLuminance'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> Button = React.createClass(&#123;</div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> theme = getLuminance(<span class="keyword">this</span>.props.color) &gt; <span class="number">160</span> ? <span class="string">'dark'</span> : <span class="string">'light'</span>;</div><div class="line">    <span class="keyword">return</span> (</div><div class="line">      &lt;div className=&#123;theme&#125;&gt;</div><div class="line">        &#123;this.props.children&#125;</div><div class="line">      &lt;/div&gt;</div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Other Use Cases<br>Sometimes people use mixins to selectively add logging to lifecycle hooks in some components. In the future, we intend to provide an official DevTools API that would let you implement something similar without touching the components. However it’s still very much a work in progress. If you heavily depend on logging mixins for debugging, you might want to keep using those mixins for a little longer.</p>
+<p>If you can’t accomplish something with a component, a higher-order component, or a utility module, it could be mean that React should provide this out of the box. File an issue to tell us about your use case for mixins, and we’ll help you consider alternatives or perhaps implement your feature request.</p>
+<p>Mixins are not deprecated in the traditional sense. You can keep using them with React.createClass(), as we won’t be changing it further. Eventually, as ES6 classes gain more adoption and their usability problems in React are solved, we might split React.createClass() into a separate package because most people wouldn’t need it. Even in that case, your old mixins would keep working.</p>
+<p>We believe that the alternatives above are better for the vast majority of cases, and we invite you to try writing React apps without using mixins.</p>
+</blockquote>
+<h2 id="其他用例"><a href="#其他用例" class="headerlink" title="其他用例"></a>其他用例</h2><p>有时候，人们使用mixins来向一些组件添加选择性的生命周期钩子日志记录。在未来，我们计划提供一个官方的开发工具API来实现相似功能，而无需触碰组件代码。虽然这仍有大量正在进度中的工作需要完成。如果你十分依赖日志记录mixins来调试，你可能还要继续保持使用它们一段时间。</p>
+<p>如果你借助一个组件、一个高阶组件、或者一个通用模块，仍然不能完成一些事情，这意味着React应该是难以完成这样的事情的。向我们提交一个issue，告诉我们你的mixins使用场景，我们会帮助你考虑可选的方案，或者是在未来实现你的新特性请求。</p>
+<p>Mixins在传统感官中不是完全抛弃的。你可以通过<code>React.createClass()</code>继续使用它们，因为我们不会在未来修改它。最终，当ES6 classes得到更广泛的采用，并且它们在React中使用上的问题得到解决时，我们也许会将<code>React.createClass()</code>分离到独立的包之中，因为大多数人不再需要它。即使是在那样的情况下，你的老mixins仍然能够继续工作。</p>
+<p>我们相信，以上所提到的可选方案对于绝大多数的场景是更好的选择，我们邀请你来尝试在不使用mixins的情况下编写React应用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cisvylbsf000pqycmp0ye4888" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/front-end/">front-end</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-mixins-considered-harmful" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/23/mixins-considered-harmful/" class="article-date">
+  <time datetime="2016-07-23T12:12:22.000Z" itemprop="datePublished">2016-07-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/前端/">前端</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文：<a href="https://facebook.github.io/react/blog/2016/07/13/mixins-considered-harmful.html" target="_blank" rel="external">Facebook React: Mixins Considered Harmful</a></p>
+<blockquote>
+<p>“How do I share the code between several components?” is one of the first questions that people ask when they learn React. Our answer has always been to use component composition for code reuse. You can define a component and use it in several other components.</p>
+</blockquote>
+<p>“我如何在多个组件（components）之间共享代码？”，这是React初学者的问题之一。我们的答案一直都是，通过组件组合的方法来实现代码复用。你可以定义一个组件，并在其它的组件中使用它。</p>
+<blockquote>
+<p>It is not always obvious how a certain pattern can be solved with composition. React is influenced by functional programming but it came into the field that was dominated by object-oriented libraries. It was hard for engineers both inside and outside of Facebook to give up on the patterns they were used to.</p>
+</blockquote>
+<p>通过组件组合的方式来解决某一种情况不总是显而易见的。React受函数式编程影响，但结果它成为了由面向对象库组成的存在。无伦是Facebook内部员工，还是非Facebook的程序员，抛弃以往的开发方式都是困难的。</p>
+<blockquote>
+<p>To ease the initial adoption and learning, we included certain escape hatches into React. The mixin system was one of those escape hatches, and its goal was to give you a way to reuse code between components when you aren’t sure how to solve the same problem with composition.</p>
+</blockquote>
+<p>为了让入门学习变得简单，我们引入了一些解决方案（原文“escape hatches”即逃生舱，此处语义为解决问题的一些trick）。Mixin系统是其中的一个方法，它的目的是，当你不知道如何通过组件组合来解决问题时，来给你一个方法来实现组件间的代码复用。</p>
+<blockquote>
+<p>Three years passed since React was released. The landscape has changed. Multiple view libraries now adopt a component model similar to React. Using composition over inheritance to build declarative user interfaces is no longer a novelty. We are also more confident in the React component model, and we have seen many creative uses of it both internally and in the community.<br>In this post, we will consider the problems commonly caused by mixins. Then we will suggest several alternative patterns for the same use cases. We have found those patterns to scale better with the complexity of the codebase than mixins.</p>
+</blockquote>
+<p>React发布后三年过去了，大环境发生了改变。大多数视图库现在都采用类似React的组件模型。通过多个组件在继承关系之上的组合来构建用户界面不再是一个新奇的方式。我们也对React的组件模型更加自信，并且在内部和社区中，都看到了许多具有创新性的使用方式。<br>在这篇文章中，我们会讨论由mixins造成的普遍问题。然后我们会提出一些同等情况下的可选替代方案。这些新的方案，在同等的代码复杂度下，比用mixins的可扩展性更好。</p>
+<h2 id="为什么说Mixins不好？"><a href="#为什么说Mixins不好？" class="headerlink" title="为什么说Mixins不好？"></a>为什么说Mixins不好？</h2><blockquote>
+<p>At Facebook, React usage has grown from a few components to thousands of them. This gives us a window into how people use React. Thanks to declarative rendering and top-down data flow, many teams were able to fix a bunch of bugs while shipping new features as they adopted React.</p>
+</blockquote>
+<p>在Facebook，React的使用从少量的组件演变成上千的组件数量。这给我们看见了人们是如何使用React的。多亏于声明性的渲染和自上而下的数据流，很多团队能够在迁移项目到React的时候修复一些bug。</p>
+<blockquote>
+<p>However it’s inevitable that some of our code using React gradually became incomprehensible. Occasionally, the React team would see groups of components in different projects that people were afraid to touch. These components were too easy to break accidentally, were confusing to new developers, and eventually became just as confusing to the people who wrote them in the first place. Much of this confusion was caused by mixins. At the time, I wasn’t working at Facebook but I came to the same conclusions after writing my fair share of terrible mixins.</p>
+</blockquote>
+<p>但是，一个很难避免的情况是，一些代码在使用了React了之后逐渐降低了可读性。有时，使用React的开发团队中会出现一些人们不太愿意去触碰的组件，而这些组件在不同的项目中被使用了。这些组件太容易意外损坏，这不但困扰了新加入的开发者，最终也困扰了一开始编写这些组件的人。这些麻烦的问题大多是由mixins造成的。在那时，我还未在Facebook工作，但在使用了一系列糟糕的mixins之后，我也能得出跟现在一样的结论。</p>
+<blockquote>
+<p>This doesn’t mean that mixins themselves are bad. People successfully employ them in different languages and paradigms, including some functional languages. At Facebook, we extensively use traits in Hack which are fairly similar to mixins. Nevertheless, we think that mixins are unnecessary and problematic in React codebases. Here’s why.</p>
+</blockquote>
+<p>这并不代表mixins都是不好的。人们成功地在不同的语言和范例中应用了mixins，其中包括了一些函数式语言。在Facebook，我们大量使用了类似mixins的一些比较hack的实现方式。我们认为mixins在React中是不再必要的，而且是非常容易出问题的。接下来讨论这是为什么。</p>
+<h2 id="Mixins引入了隐性的依赖"><a href="#Mixins引入了隐性的依赖" class="headerlink" title="Mixins引入了隐性的依赖"></a>Mixins引入了隐性的依赖</h2><blockquote>
+<p>Sometimes a component relies on a certain method defined in the mixin, such as getClassName(). Sometimes it’s the other way around, and mixin calls a method like renderHeader() on the component. JavaScript is a dynamic language so it’s hard to enforce or document these dependencies.<br>Mixins break the common and usually safe assumption that you can rename a state key or a method by searching for its occurrences in the component file. You might write a stateful component and then your coworker might add a mixin that reads this state. In a few months, you might want to move that state up to the parent component so it can be shared with a sibling. Will you remember to update the mixin to read a prop instead? What if, by now, other components also use this mixin?</p>
+</blockquote>
+<p>有时候一个组件依赖一个在mixin中定义的确定的方法，比如<code>getClassName()</code>。有时候在另一个场景下，mixin在组件上调用了一个方法，比如<code>renderHeader()</code>。JavaScript是一种动态语言，所以去强制定义或者记录这些依赖是很困难的。<br>Mixins打破了一个通用的、通常是安全的假设：你可以通过在组件源码文件中搜索的方式来重命名一个方法或者一个状态的key。你写了一个具有状态的组件，然后你的组员加入了一个mixin来读取它的状态。过了一两个月，你想把这个状态挪到父组件上，来实现跟相邻组件共享。你会记得同时更新这个mixin的代码，把它改为读取prop吗？再如果，现在还有其它组件也使用了这个mixin？</p>
+<blockquote>
+<p>These implicit dependencies make it hard for new team members to contribute to a codebase. A component’s render() method might reference some method that isn’t defined on the class. Is it safe to remove? Perhaps it’s defined in one of the mixins. But which one of them? You need to scroll up to the mixin list, open each of those files, and look for this method. Worse, mixins can specify their own mixins, so the search can be deep.<br>Often, mixins come to depend on other mixins, and removing one of them breaks the other. In these situations it is very tricky to tell how the data flows in and out of mixins, and what their dependency graph looks like. Unlike components, mixins don’t form a hierarchy: they are flattened and operate in the same namespace.</p>
+</blockquote>
+<p>这些隐形的依赖使得新成员在现有代码基础上继续开发变得困难。一个组件的<code>render()</code>方法也许引用了一些不在本类中定义的方法，删除它们是否安全？也许它们定义在mixins中，但是在哪个里面呢？你需要滚动到mixin列表，打开每个mixin的源码，来找这些方法。更坏的是，mixins可以定义它们自己的mixins，所以这次查找是一次深度查找。<br>经常地，mixins还依赖其它的mixins，如果你删除其中之一，可能会波及到另外的。在这种情况下，说明数据如何在mixins流入流出就变得很棘手了，更别说画出它们之间的依赖关系图。不像组件，mixins不会构成继承链：它们是扁平化的，并在同一个命名空间中起作用。</p>
+<h2 id="Mixins造成命名冲突"><a href="#Mixins造成命名冲突" class="headerlink" title="Mixins造成命名冲突"></a>Mixins造成命名冲突</h2><blockquote>
+<p>There is no guarantee that two particular mixins can be used together. For example, if FluxListenerMixin defines handleChange() and WindowSizeMixin defines handleChange(), you can’t use them together. You also can’t define a method with this name on your own component.<br>It’s not a big deal if you control the mixin code. When you have a conflict, you can rename that method on one of the mixins. However it’s tricky because some components or other mixins may already be calling this method directly, and you need to find and fix those calls as well.</p>
+</blockquote>
+<p>从没有保证说任意两个mixins可以在一起使用。比如，如果<code>FluxListenerMixin</code>定义了<code>handleChange()</code>，<code>WindowSizeMixin</code>也定义了<code>handleChange()</code>，你就不能把它们拿在一块用。你也不能在你的组件中用这个名字来命名方法。<br>如果你能控制mixin的代码，那问题是不大的。当你遇到了命名冲突，你可以在其中的mixin中修改那个方法的名字。但是，如果有另外的mixins或是组件已经直接调用了这个方法，这就变得很棘手了，你需要同时找到和修复这些调用。</p>
+<blockquote>
+<p>If you have a name conflict with a mixin from a third party package, you can’t just rename a method on it. Instead, you have to use awkward method names on your component to avoid clashes.<br>The situation is no better for mixin authors. Even adding a new method to a mixin is always a potentially breaking change because a method with the same name might already exist on some of the components using it, either directly or through another mixin. Once written, mixins are hard to remove or change. Bad ideas don’t get refactored away because refactoring is too risky.</p>
+</blockquote>
+<p>如果你在使用一个第三方包的mixin时遇到了命名冲突，你就不能改它的方法名了。取而代之，你需要在你的组件中使用很蹩脚的方法名来避免冲突。<br>这样的情况对于mixin作者来说并没有好多少。加入一个新方法到mixin中总是一个潜在的风险，因为在已经使用了这个mixin的组件中，可能早就存在同名的方法了，无伦是直接调用还是通过其它mixin来调用。一旦mixins写好，就很困难去修改或者移除其中的东西。一些欠佳的实现方式得不到重构，因为重构的风险太大。</p>
+<h2 id="Mixins造成滚雪球式的复杂性"><a href="#Mixins造成滚雪球式的复杂性" class="headerlink" title="Mixins造成滚雪球式的复杂性"></a>Mixins造成滚雪球式的复杂性</h2><blockquote>
+<p>Even when mixins start out simple, they tend to become complex over time. The example below is based on a real scenario I’ve seen play out in a codebase.<br>A component needs some state to track mouse hover. To keep this logic reusable, you might extract handleMouseEnter(), handleMouseLeave() and isHovering() into a HoverMixin. Next, somebody needs to implement a tooltip. They don’t want to duplicate the logic in HoverMixin so they create a TooltipMixin that uses HoverMixin. TooltipMixin reads isHovering() provided by HoverMixin in its componentDidUpdate() and either shows or hides the tooltip.</p>
+</blockquote>
+<p>虽然mixins是从简单开始的，但它们会随着时间变得越来越复杂。下面的例子是基于一个真实的情况。<br>一个组件需要一些状态来跟踪鼠标的悬浮（hover）。为了使这个逻辑可复用，你抽取了<code>handleMouseEnter()</code>、<code>handleMouseLeave()</code>、<code>isHovering()</code>方法到一个<code>HoverMixin</code>里。接下来，有人需要实现一个悬浮提示框（tooltip）。他们不想拷贝<code>HoverMixin</code>里的逻辑代码，因此创建了一个<code>TooltipMixin</code>，这个<code>TooltipMixin</code>引用了<code>HoverMixin</code>，<code>TooltipMixin</code>在它的<code>componentDidUpdate()</code>中读取由<code>HoverMixin</code>提供的<code>isHovering()</code>来显示或者隐藏提示框。</p>
+<blockquote>
+<p>A few months later, somebody wants to make the tooltip direction configurable. In an effort to avoid code duplication, they add support for a new optional method called getTooltipOptions() to TooltipMixin. By this time, components that show popovers also use HoverMixin. However popovers need a different hover delay. To solve this, somebody adds support for an optional getHoverOptions() method and implements it in TooltipMixin. Those mixins are now tightly coupled.<br>This is fine while there are no new requirements. However this solution doesn’t scale well. What if you want to support displaying multiple tooltips in a single component? You can’t define the same mixin twice in a component. What if the tooltips need to be displayed automatically in a guided tour instead of on hover? Good luck decoupling TooltipMixin from HoverMixin. What if you need to support the case where the hover area and the tooltip anchor are located in different components? You can’t easily hoist the state used by mixin up into the parent component. Unlike components, mixins don’t lend themselves naturally to such changes.</p>
+</blockquote>
+<p>几个月后，有人想让这个提示框的弹出方向变得可配置。为了避免代码重复，他们添加了一个新的配置方法<code>getTooltipOptions()</code>到<code>TooltipMixin</code>。在这时，需要弹出浮层的组件也使用了<code>HoverMixin</code>。但是浮层需要不同的鼠标悬浮延时。为了解决这个问题，有人添加并实现了一个配置方法<code>getHoverOptions()</code>到<code>TooltipMixin</code>中。这两个mixins现在紧紧耦合在一起了。<br>如果没有新的需求，这样是没有问题的。但是这个方法的可扩展性并不强。如果你想在同一个组件里面支持显示多个提示框呢？你不能在一个组件里面定义两次同一个mixin。如果提示框需要在用户引导里自动弹出，而不是在鼠标悬浮时弹出呢？你想解耦<code>TooltipMixin</code>和<code>HoverMixin</code>？祝你好运。如果你想让鼠标悬浮点和提示框锚点在不同的组件中呢？你不能轻易地将mixin使用的状态抬升到父组件中。不像组件，mixins在遇到这些改变时并不能很自然地交付。</p>
+<blockquote>
+<p>Every new requirement makes the mixins harder to understand. Components using the same mixin become increasingly coupled with time. Any new capability gets added to all of the components using that mixin. There is no way to split a “simpler” part of the mixin without either duplicating the code or introducing more dependencies and indirection between mixins. Gradually, the encapsulation boundaries erode, and since it’s hard to change or remove the existing mixins, they keep getting more abstract until nobody understands how they work.<br>These are the same problems we faced building apps before React. We found that they are solved by declarative rendering, top-down data flow, and encapsulated components. At Facebook, we have been migrating our code to use alternative patterns to mixins, and we are generally happy with the results. You can read about those patterns below.</p>
+</blockquote>
+<p>每个新需求让mixins变得越来越难以理解。随着时间，使用同一个mixin的组件之间的耦合度变得越来越高。任何新的功能都会同时被附加到所有使用了这个mixin的组件。没有方法去分离这个mixin的“更简单”的部分，除非去拷贝其中的代码，或者在mixins之间引入更多的依赖和奇技淫巧。逐渐地，原来的封装会瓦解，并且因为更改或者移除已经存在的mixins是困难的，它们会变得更抽象，直到没人理解它们是怎么工作的。<br>这些问题跟我们在React出来之前构建应用程序时遇到的问题是一样的。我们认为这些问题可以通过声明性的渲染、自上而下的数据流和组件封装来解决。在Facebook，我们已经将代码的实现方式从mixins迁移到了取而代之的模式，并且我们对结果很乐观。你可以继续阅读来了解我们的新模式。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cisvylbsc000mqycml9ea6n2t" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/front-end/">front-end</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-openwrt-multiwan-configuration" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/13/openwrt-multiwan-configuration/" class="article-date">
+  <time datetime="2016-07-13T14:24:37.000Z" itemprop="datePublished">2016-07-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>晚上好。博主前段时间因沉迷CGSS和PS4游戏，长时间未更新博客，实在不好。现在正值暑假，博主在公司实习，今晚趁未加班，写一篇早就想写的openwrt路由器干货。</p>
+<p>本文讲述如何在openwrt家用智能路由器上配置双WAN带宽叠加。</p>
+<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><ul>
+<li>两条或更多的宽带，或者是支持单线多拨的宽带。</li>
+<li>已经安装MWAN3及luci图形化配置界面（Pandorabox固件默认已安装）。</li>
+</ul>
+<h2 id="VLAN配置"><a href="#VLAN配置" class="headerlink" title="VLAN配置"></a>VLAN配置</h2><blockquote>
+<p>什么是VLAN？VLAN是在同一物理局域网内用于划分若干个不同广播域（子网）的技术，子网内的主机可以互相通信，不同子网的主机之间不可互相通信。<br>什么是VLAN ID？用于标识每个VLAN子网的ID。<br>为什么要划分VLAN？在OpenWRT下，接口是根据VLAN划分的，每个逻辑接口（interface）可对应一个VLAN ID作为物理接口，这将在后面的步骤中体现出来。</p>
+</blockquote>
+<p>在openwrt的web配置页面上，进入 网络-&gt;交换机 (Network-&gt;Switch)。<br>默认情况下，已经分配的VLAN应该有1个或者2个。<br>通过插拔网线的方法，将配置页上的端口和路由器的物理RJ45接口对应上来。<br>在小米路由器mini上，默认分配如下两个vlan：<br><img src="/images/openwrt-switch-1.png" alt=""><br>其中，VLAN1用作LAN，连接了除端口4以外的所有物理端口；VLAN2是默认的WAN，只连接端口4。（此处端口4即为小米路由器mini上的蓝色WAN RJ45物理端口）<br>注意，端口状态“不关联”(untagged)，即该端口作为本VLAN成员，进行二层交换；若选择“关联”(tagged)，端口之间通信无二层交换，而是冲突广播（hub方式）。</p>
+<p>选择一个端口作为第二个WAN口的端口，在现有的VLAN配置中将其设置为“关”，然后新建一个VLAN，将该端口设置为“不关联”，其他端口设置为“关”，CPU设置为“关联”。注意，小米路由器mini有一个特殊的端口7，按照原有的两个VLAN，将其设置为“关联”即可。<br>如图，博主选择端口1来作为第二个WAN端口，在VLAN1中将其设置为“关”，并在新建的VLAN3中设置其为“不关联”。<br><img src="/images/openwrt-switch-2.png" alt=""><br>保存即可。</p>
+<h2 id="新建WAN接口"><a href="#新建WAN接口" class="headerlink" title="新建WAN接口"></a>新建WAN接口</h2><p>进入 网络-&gt;接口，将当前<code>WAN</code>接口更名为<code>WAN1</code>，并添加一个新接口，命名为<code>WAN2</code>。<br>在<code>WAN2</code>的配置中，设置第二条宽带的拨号方式，在“物理设置”中选择刚才添加的VLAN3（<code>eth0.3</code>）。<br><img src="/images/openwrt-interface-1.png" alt=""></p>
+<p><strong>重要</strong><br>进入<code>WAN1</code>的编辑页，在“高级设置”中，勾选“使用默认网关”，填写“使用网关跃点”为40；<br>进入<code>WAN2</code>的编辑页，在“高级设置”中，勾选“使用默认网关”，填写“使用网关跃点”为41；</p>
+<p>若有更多的WAN需要添加，方法类似，需要注意每个WAN接口的网关跃点必须不一样。</p>
+<p>设置完成后，在接口总览中应该能看到两个WAN都成功获取到IP，如果是PPPoE方式，应该都已经拨号成功。<br><img src="/images/openwrt-interface-2.png" alt=""></p>
+<h2 id="MWAN3配置"><a href="#MWAN3配置" class="headerlink" title="MWAN3配置"></a>MWAN3配置</h2><p>接下来需要通过MWAN3实现多WAN负载均衡。</p>
+<p>进入 网络-&gt;负载均衡。</p>
+<ul>
+<li><p>接口配置<br>进入 配置-&gt;接口。<br>删除所有已有的默认接口。<br>添加两个接口，分别为<code>WAN1</code>，<code>WAN2</code>。<br>在接口详情的“跟踪的IP地址”中，可添加几个国内的主机IP作为检测接口是否上线的ping地址。当ping该IP多次超时后，即该接口视作下线。<br>博主的固件版本下，这个跟踪功能并不好使，经常误判断接口下线，因此我清空了跟踪的IP地址，并视作接口始终上线。<br><img src="/images/openwrt-mwan-1.png" alt=""></p>
+</li>
+<li><p>成员配置<br>进入 配置-&gt;成员，删除所有已有的默认成员，添加两个成员，分别命名为<code>wan_1</code>, <code>wan_2</code>。<br>成员<code>wan_1</code>设置接口为<code>WAN1</code>，跃点数1，接口比重1；<br>成员<code>wan_2</code>设置接口为<code>WAN2</code>，跃点数1，接口比重1；</p>
+</li>
+<li><p>策略配置<br>进入 配置-&gt;策略，添加一个策略<code>balanced</code>（或者编辑已有的<code>balanced</code>策略），使用的成员为<code>wan_1</code>, <code>wan_2</code>。</p>
+</li>
+<li><p>规则配置<br>进入 配置-&gt;规则，保留已有的<code>https</code>规则。如果没有<code>default_rule</code>规则，则添加一条<code>default_rule</code>规则，目标地址设置为<code>0.0.0.0/0</code>，协议选择<code>all</code>，使用的策略为<code>balanced</code>，其他留空。</p>
+</li>
+<li><p>保存并应用全部设置，此时应该能够实现双线负载均衡了。</p>
+</li>
+</ul>
+<p>至此，openwrt路由器上的双WAN配置实现带宽叠加已经完成了，可以测速看看了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cisvylbsn000vqycmhkq0f8az" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-cron-job-locale-issues" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/29/cron-job-locale-issues/" class="article-date">
+  <time datetime="2016-04-29T13:15:58.000Z" itemprop="datePublished">2016-04-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/linux/">linux</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文：<a href="http://www.mk-mode.com/octopress/2013/11/26/linux-cron-locale-behavior/" target="_blank" rel="external">Linux - cron での locale の挙動！ - mk-mode BLOG</a></p>
+<blockquote>
+<p>こんばんは。<br>Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。<br>以下、それについての備忘録です。</p>
+</blockquote>
+<p>晚上好。<br>在Linux下，自己编写的（shell）脚本，在终端下手动运行是一切正常的。但是，由于字符编码的关系，当cron在试图以定时任务来执行该脚本时，日语文字却不能被正常输出。<br>以下是解决这一问题的备忘录。</p>
+<blockquote>
+<p>0. 前提条件<br>CentOS 6.4 (32bit) での作業を想定。<br>cron は crontab -e ではなく、 /etc/cron.d/ ディレクトリ配下にファイルを設置する方法。<br>文字化けが起こるスクリプトは “UTF-8” でエンコードされていて、日本語出力を伴うことを想定。<br>（当然、日本語出力を伴わないのならロケールの心配もない）</p>
+</blockquote>
+<h2 id="0-条件"><a href="#0-条件" class="headerlink" title="0. 条件"></a>0. 条件</h2><ul>
+<li>假定操作系统是CentOS 6.4 (32bit) （译者注：6.X, 64位同样适用）</li>
+<li>不使用cron的<code>crontab -e</code>，而是在<code>/etc/cron.d/</code>目录下建立配置文件来设置cron任务（译者注：同样适用于通过<code>crontab -e</code>设置的任务）</li>
+<li>脚本使用UTF-8编码，并假定脚本的执行将伴随有日语文字输出，且（由cron执行时）出现了乱码。<br>（当然，如果日语输出不受locale影响，则无需担心。）</li>
+</ul>
+<blockquote>
+<p>1. cron 外（コンソール）でのロケール<br>普通にコンソールで locale コマンドでロケールを確認してみる。</p>
+</blockquote>
+<h2 id="1-在cron外部（用户终端）的locale"><a href="#1-在cron外部（用户终端）的locale" class="headerlink" title="1. 在cron外部（用户终端）的locale"></a>1. 在cron外部（用户终端）的locale</h2><p>在一般的用户终端（console）中，尝试通过<code>locale</code>命令来确认当前环境的locale。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># locale</span></div><div class="line">LANG=ja_JP.UTF<span class="number">-8</span></div><div class="line">LC_CTYPE=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_NUMERIC=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_TIME=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_COLLATE=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_MONETARY=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_MESSAGES=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_PAPER=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_NAME=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_ADDRESS=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_TELEPHONE=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_MEASUREMENT=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_IDENTIFICATION=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_ALL=</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>2. cron 内でのロケール<br>次に cron 内で locale コマンドを実行させてみる。<br>例えば、以下のようなファイル /etc/cron.d/locale_test を作成してみる。</p>
+</blockquote>
+<h2 id="2-cron内的locale"><a href="#2-cron内的locale" class="headerlink" title="2. cron内的locale"></a>2. cron内的locale</h2><p>接下来，我们尝试在cron内执行<code>locale</code>命令。（译者注：其实就是在cron job中运行<code>locale</code>命令）<br>如下例，尝试创建一个文件<code>/home/hoge/work/locale.log</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * * root locale &gt; /home/hoge/work/locale.log</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>毎分 “/home/hoge/work/” ディレクトリ内に “locale.log” というファイルが作成されるので、内容を確認してみる。</p>
+</blockquote>
+<p>每分钟，<code>/home/hoge/work/</code>下的<code>locale.log</code>文件都会被写入新数据，我们来尝试确认该文件内容。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">LANG=</div><div class="line">LC_CTYPE=<span class="string">"POSIX"</span></div><div class="line">LC_NUMERIC=<span class="string">"POSIX"</span></div><div class="line">LC_TIME=<span class="string">"POSIX"</span></div><div class="line">LC_COLLATE=<span class="string">"POSIX"</span></div><div class="line">LC_MONETARY=<span class="string">"POSIX"</span></div><div class="line">LC_MESSAGES=<span class="string">"POSIX"</span></div><div class="line">LC_PAPER=<span class="string">"POSIX"</span></div><div class="line">LC_NAME=<span class="string">"POSIX"</span></div><div class="line">LC_ADDRESS=<span class="string">"POSIX"</span></div><div class="line">LC_TELEPHONE=<span class="string">"POSIX"</span></div><div class="line">LC_MEASUREMENT=<span class="string">"POSIX"</span></div><div class="line">LC_IDENTIFICATION=<span class="string">"POSIX"</span></div><div class="line">LC_ALL=</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>“ja_JP.UTF-8” でなく “POSIX” となっている。<br>これでは、UTF-8 でエンコードされているスクリプトは日本語表示で不具合を起こすでしょう。</p>
+</blockquote>
+<p><code>ja_JP.UTF-8</code>并不在<code>POSIX</code>集合内。<br>因此，使用UTF-8编码的脚本在遇到日语输出时会出错。</p>
+<blockquote>
+<p>3. 対処方法<br>cron 内で UTF-8 でデンコードされたスクリプトを実行させる場合は、以下のように LC_CTYPE, LANG を設定してやる。</p>
+</blockquote>
+<h2 id="3-解决方法"><a href="#3-解决方法" class="headerlink" title="3. 解决方法"></a>3. 解决方法</h2><p>要在cron中运行通过UTF-8编码的脚本，需要设定<code>LC_CTYPE</code>和<code>LANG</code>。如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">LC_CTYPE=<span class="string">"ja_JP.utf8"</span></div><div class="line">LANG=<span class="string">"ja_JP.utf8"</span></div><div class="line"></div><div class="line">* * * * * root locale &gt; /home/hoge/work/locale.log</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>再度 “/home/hoge/work/” ディレクトリ内の “locale.log” の内容を確認してみる。</p>
+</blockquote>
+<p>再次确认<code>/home/hoge/work/</code>目录下的<code>locale.log</code>文件的内容。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">LANG=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_CTYPE=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_NUMERIC=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_TIME=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_COLLATE=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_MONETARY=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_MESSAGES=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_PAPER=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_NAME=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_ADDRESS=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_TELEPHONE=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_MEASUREMENT=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_IDENTIFICATION=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_ALL=</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>“ja_JP.utf8” になりました。（UTF-8 と utf8 の違いはあるが問題ない）<br>これで、日本語出力で文字化けすることがなくなります。</p>
+</blockquote>
+<p>现在是<code>ja_JP.utf8</code>了。（UTF-8和utf8的区别并不是个问题）<br>现在，（cron job任务的）的日语输出不会再乱码了。</p>
+<blockquote>
+<p>4. 参考<br>上記では任意のスクリプトについて話したが、UTF-8 エンコードの Ruby スクリプト（日本語出力を伴うもの）を cron 起動させるには以下のように -Ku オプションで文字コードを指定することでも対処可能である。</p>
+</blockquote>
+<h2 id="4-参考"><a href="#4-参考" class="headerlink" title="4. 参考"></a>4. 参考</h2><p>上面的记录是针对任意的脚本。若需通过cron运行含有日语输出的Ruby脚本，可以通过<code>-Ku</code>选项指定字符编码。如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * * root /usr/local/bin/ruby -Ku test_script.rb</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>5. 後始末<br>当然、テストで作成した cron スクリプトは不要なので削除しておく。</p>
+<p>以上。</p>
+</blockquote>
+<h2 id="5-后续清理"><a href="#5-后续清理" class="headerlink" title="5. 后续清理"></a>5. 后续清理</h2><p>当然，在刚才的测试中添加的cron任务脚本（locale命令）是不再需要的，请删除它。</p>
+<h2 id="译者注"><a href="#译者注" class="headerlink" title="译者注"></a>译者注</h2><p>本文locale问题的解决方案对于简体中文也是同样适用的，只需将本文中的<code>ja_JP</code>替换成<code>zh_CN</code>即可。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cisvylbrs000eqycmt1kp2ek4" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-163-music-unlock-update-log" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/06/163-music-unlock-update-log/" class="article-date">
+  <time datetime="2016-04-06T15:40:45.000Z" itemprop="datePublished">2016-04-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/Python/">Python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这几天，博主去年开发的<a href="https://github.com/Chion82/163-music-unlock" target="_blank" rel="external">163-music-unlock</a>（<a href="https://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/">开发笔记</a>）用户数急剧增加，GitHub repo获得了160多个star（甚至上了GitHub的Trending列表，作者还是有点小激动的），服务器每日请求数达到10万、600IP。随着用户增多，项目也收到了不少Issue反馈，总结如下：</p>
+<ul>
+<li>歌曲加载速度慢（特别是版权歌曲）</li>
+<li>无法下载付费歌曲</li>
+<li>无法加载其他用户的个人资料和歌单信息</li>
+<li>部分付费歌曲无法播放</li>
+</ul>
+<h2 id="提高反代性能"><a href="#提高反代性能" class="headerlink" title="提高反代性能"></a>提高反代性能</h2><p>检查nginx access log，发现其中有多个请求状态为499。499为nginx特有的状态码，含义是客户端未等待服务器回应而主动关闭连接。<br>经过测试，发现网易云音乐客户端调用API接口时都有超时重试机制，并且超时时间比较短，大概在3～5秒左右，若服务器未在该时间内响应，客户端会直接关闭连接而重试，导致服务器上有大量499请求记录。<br>首要目标是提高服务器反代性能。其实在这之前，反代服务器基本上只有博主在使用，性能问题不明显，歌曲很快就可以加载出来了，而最近用户数量上升后，明显感觉到歌曲加载速度非常慢。<br>由于反代服务器架设在SLHK节点的VPS上，经过测试，发现瓶颈在SLHK到<code>music.163.com</code>的链路上。由于nginx的优化，nginx直接到网易的反代性能还能接受。但是python脚本调用网易云音乐API时速度很慢，甚至很多时候会直接导致gunicorn主动关闭超时请求。<br>python脚本主要处理歌曲播放地址API和歌曲下载地址API这两种请求，其他请求都直接由nginx直接反代到网易了。<br>由于网易云音乐主服务器在国内，使用国内云服务器当然是最佳的。博主测试发现，反代python脚本运行在腾讯云或阿里云上时，调用网易云音乐API速度非常快。<br>但是如果直接将反代服务器架设在腾讯云或阿里云上，有个问题：客户端是使用<code>music.163.com</code>这个域名访问80端口web服务的，而国内云平台会拦截未备案域名的web请求。但是，直接通过IP访问web服务（即HTTP头中，Host的值为服务器IP）时，不会被拦截。<br>SLHK VPS到腾讯云或阿里云的链路情况也很好。因此，我将python脚本放在腾讯云上运行，而反代服务器依然使用SLHK VPS，只不过在SLHK VPS上，将歌曲播放地址API和歌曲下载地址API的URL反代到腾讯云上（直接使用腾讯云的IP），其他URL请求维持原样。<br>将python脚本部署在腾讯云上，并在SLHK VPS上修改nginx配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">upstream balanced_backend &#123;</div><div class="line">        server music.163.com;</div><div class="line">&#125;</div><div class="line"></div><div class="line">server &#123;</div><div class="line">        listen 80;</div><div class="line">        server_name music.163.com;</div><div class="line">        resolver 114.114.114.114;</div><div class="line"></div><div class="line">        #一般请求直接反代到music.163.com</div><div class="line">        location / &#123;</div><div class="line">               proxy_pass http://balanced_backend;</div><div class="line">               proxy_next_upstream     error timeout invalid_header http_500;</div><div class="line">               proxy_connect_timeout   6s;</div><div class="line">               proxy_send_timeout       6s;</div><div class="line">               proxy_read_timeout       6s;</div><div class="line">               proxy_set_header Host $host;</div><div class="line">               proxy_set_header X-Real-IP $remote_addr;</div><div class="line">               proxy_set_header Accept-Encoding &quot;&quot;;</div><div class="line">               subs_filter_types *;</div><div class="line">               subs_filter &apos;&quot;st&quot;:-.+?,&apos; &apos;&quot;st&quot;:0,&apos; ir;</div><div class="line">               subs_filter &apos;&quot;pl&quot;:0&apos; &apos;&quot;pl&quot;:320000&apos;;</div><div class="line">               subs_filter &apos;&quot;dl&quot;:0&apos; &apos;&quot;dl&quot;:320000&apos;;</div><div class="line">               subs_filter &apos;&quot;sp&quot;:0&apos; &apos;&quot;sp&quot;:7&apos;;</div><div class="line">               subs_filter &apos;&quot;cp&quot;:0&apos; &apos;&quot;cp&quot;:1&apos;;</div><div class="line">               subs_filter &apos;&quot;subp&quot;:0&apos; &apos;&quot;subp&quot;:1&apos;;</div><div class="line">               subs_filter &apos;&quot;fl&quot;:0&apos; &apos;&quot;fl&quot;:320000&apos;;</div><div class="line">               subs_filter &apos;&quot;fee&quot;:.+?,&apos; &apos;&quot;fee&quot;:0,&apos; ir;</div><div class="line">      	       subs_filter &apos;&quot;abroad&quot;:1,&apos; &apos;&apos;;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        #歌曲播放地址API</div><div class="line">        location /eapi/song/enhance/player/url &#123;</div><div class="line">               proxy_pass http://&lt;腾讯云IP&gt;:5001;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        #歌曲下载地址API</div><div class="line">        location /eapi/song/enhance/download/url &#123;</div><div class="line">               proxy_pass http://&lt;腾讯云IP&gt;:5001;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>为了进一步提高python反代脚本的性能，增加gunicorn的进程数到16。当某个请求使得某个服务进程（或者说是worker）调用网易API而发生io阻塞时，整个进程都会被阻塞而无法接手下一个请求，因此理论上，这种网络io瓶颈型的服务，进程数越多越好。但是单个gunicorn进程内存占用大，经测试，在博主的1G内存腾讯云上，开50个gunicorn进程已接近极限，而性能甚至不如16个进程。<br>通过gunicorn运行反代服务的启动脚本如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line">cd /root/163-music-unlock/server    #替换为本项目下的server目录</div><div class="line">/usr/local/bin/gunicorn -w 16 runapi:app -b 0.0.0.0:5001 --access-logfile /var/log/gunicorn.access.log --error-logfile /var/log/gunicorn.error.log --log-file /var/log/gunicorn.log</div></pre></td></tr></table></figure></p>
+<h2 id="增加下载地址API反代"><a href="#增加下载地址API反代" class="headerlink" title="增加下载地址API反代"></a>增加下载地址API反代</h2><p>之前的版本中，python脚本只处理歌曲在线播放地址的API，所以下架歌曲或付费歌曲只能试听，无法下载。经过抓包发现，在线播放API和下载地址API只有细微的差异：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//在线播放API，服务器返回格式：</span></div><div class="line">&#123;</div><div class="line">  <span class="string">"code"</span> : <span class="number">200</span>,</div><div class="line">  <span class="string">"data"</span> : [</div><div class="line">    &#123;</div><div class="line">      <span class="string">"id"</span> : <span class="number">123456</span>,</div><div class="line">      <span class="string">"url"</span>: <span class="string">"http://m1.music.net/music.mp3"</span>,</div><div class="line">      <span class="string">"br"</span> : <span class="number">64000</span>,</div><div class="line">      <span class="string">"size"</span>: <span class="number">12345</span>,</div><div class="line">      <span class="string">"md5"</span> : <span class="string">"11111111111111111111111111111111"</span>,</div><div class="line">      <span class="string">"code"</span>: <span class="number">200</span>,</div><div class="line">      <span class="string">"expi"</span>: <span class="number">1200</span>,</div><div class="line">      <span class="string">"type"</span>: <span class="string">"mp3"</span>,</div><div class="line">      <span class="string">"gain"</span>: <span class="number">0</span>,</div><div class="line">      <span class="string">"fee"</span>: <span class="number">0</span>,</div><div class="line">      <span class="string">"canExtend"</span>: False</div><div class="line">    &#125;</div><div class="line">  ]</div><div class="line">&#125;</div><div class="line"><span class="comment">//下载地址API，服务器返回格式：</span></div><div class="line">&#123;</div><div class="line">  <span class="string">"code"</span> : <span class="number">200</span>,</div><div class="line">  <span class="string">"data"</span> : &#123;</div><div class="line">    <span class="string">"id"</span> : <span class="number">123456</span>,</div><div class="line">    <span class="string">"url"</span>: <span class="string">"http://m1.music.net/music.mp3"</span>,</div><div class="line">    <span class="string">"br"</span> : <span class="number">64000</span>,</div><div class="line">    <span class="string">"size"</span>: <span class="number">12345</span>,</div><div class="line">    <span class="string">"md5"</span> : <span class="string">"11111111111111111111111111111111"</span>,</div><div class="line">    <span class="string">"code"</span>: <span class="number">200</span>,</div><div class="line">    <span class="string">"expi"</span>: <span class="number">1200</span>,</div><div class="line">    <span class="string">"type"</span>: <span class="string">"mp3"</span>,</div><div class="line">    <span class="string">"gain"</span>: <span class="number">0</span>,</div><div class="line">    <span class="string">"fee"</span>: <span class="number">0</span>,</div><div class="line">    <span class="string">"canExtend"</span>: False</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>python脚本只需要做稍微的调整就可以同时兼容下载地址API了。<br>经过测试，IOS和OSX客户端都可以下载付费音乐了。但是，安卓客户端在下载付费音乐时，虽然有下载速度，但是最后会报网络错误下载失败，怀疑是因为安卓客户端会校验下载文件的md5，而python反代脚本获取到的付费音乐信息不含文件md5（python脚本所调用的网易云音乐API不返回文件md5信息），直接给客户端返回<code>&quot;md5&quot;:null</code>所致。</p>
+<h2 id="解决https反代的问题"><a href="#解决https反代的问题" class="headerlink" title="解决https反代的问题"></a>解决https反代的问题</h2><p>Issue中反映的无法查看其他用户资料和歌单的问题，经过抓包发现，是因为这部分API是https的，而服务器上只有http反代。博主尝试使用自签证书在nginx上实现https反代，但是IOS客户端不接受自签证书。虽然客户端可以通过PAC配置文件或者iptables，实现只将http请求转发到反代服务器，而https请求直接到网易云音乐服务器，但是在IOS或安卓上，这样的配置对于用户而言是十分繁琐的，因此还是在服务器上实现https反代。<br>通过在TCP层的转发，是可以实现免SSL证书反代https请求的。因此，在反代服务器上通过iptables实现443端口转发：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#先在/etc/sysctl.conf中设置net.ipv4.ip_forward=1</div><div class="line">iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 223.252.199.7:443</div><div class="line">iptables -t nat -A POSTROUTING -j MASQUERADE</div></pre></td></tr></table></figure></p>
+<p>其中，<code>223.252.199.7</code>即<code>music.163.com</code>指向的网易云音乐服务器IP。<br>另外，据github网友 <a href="https://github.com/Max-Sum" target="_blank" rel="external">Max-Sum</a> 在 <a href="https://github.com/Chion82/163-music-unlock/issues/11" target="_blank" rel="external">issue#11</a> 中提到，使用<code>SNI Proxy</code>可实现根据域名转发，即可在反代服务器443端口上架设多个https服务。<br>若使用SNI Proxy，配置文件如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">user daemon</div><div class="line">pidfile /var/run/sniproxy.pid</div><div class="line"></div><div class="line">error_log &#123;</div><div class="line">    syslog daemon</div><div class="line">    priority notice</div><div class="line">&#125;</div><div class="line"></div><div class="line">listen &lt;YOUR_SERVER_IP&gt;:443 &#123;</div><div class="line">    proto tls</div><div class="line">    table https_hosts</div><div class="line"></div><div class="line">    access_log &#123;</div><div class="line">        filename /var/log/sniproxy/https_access.log</div><div class="line">        priority notice</div><div class="line">    &#125;</div><div class="line">    fallback 127.0.0.1:443</div><div class="line">&#125;</div><div class="line"></div><div class="line">table https_hosts &#123;</div><div class="line">    music.163.com 223.252.199.7:443</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="部分付费歌曲无法播放"><a href="#部分付费歌曲无法播放" class="headerlink" title="部分付费歌曲无法播放"></a>部分付费歌曲无法播放</h2><p>免费午餐不会永久。前段时间，网易已经封了一部分付费歌曲，python脚本目前使用的API<code>http://music.163.com/api/song/detail/</code>，一部分付费歌曲已经不返回文件信息了。博主发现，部分付费专辑／付费歌曲（无论是否包月会员都需要付费的音乐）已经无法获取到音乐文件信息，而大部分包月付费包中的音乐还可以获取到最低音质的音乐文件信息。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="cisvylbre0008qycmc1t9bk3w" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-WeChatMomentStat-update-log" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/31/WeChatMomentStat-update-log/" class="article-date">
+  <time datetime="2016-03-31T02:32:52.000Z" itemprop="datePublished">2016-03-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/安卓/">安卓</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/31/WeChatMomentStat-update-log/">WeChatMomentStat：微信朋友圈导出工具开发记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="GitHub-repo"><a href="#GitHub-repo" class="headerlink" title="GitHub repo"></a>GitHub repo</h2><p><a href="https://github.com/Chion82/WeChatMomentStat-Android" target="_blank" rel="external">https://github.com/Chion82/WeChatMomentStat-Android</a></p>
+<h2 id="关于WeChatMomentStat-Android"><a href="#关于WeChatMomentStat-Android" class="headerlink" title="关于WeChatMomentStat-Android"></a>关于WeChatMomentStat-Android</h2><p>博主之前开发过<a href="https://github.com/Chion82/WeChatMomentExport" target="_blank" rel="external">WeChatMomentExport</a>，借助Xposed实现了导出微信朋友圈数据。该项目在GitHub上获得了不少Star，被应用平台收录之后也有几千的下载量，可见这个需求是存在的。但是，对于WeChatMomentExport，还存在以下问题：  </p>
+<ul>
+<li>作为Xposed模块，必需依赖Xposed才能运行  </li>
+<li>因为数据抓取方式为hook，故用户需要在微信朋友圈页面手动下滑加载</li>
+<li>微信版本每更新一次会导致源码被重新混淆，相应的本项目也需要更新钩子逻辑</li>
+<li>项目的定位是将导出数据作为开发者二次开发所需的数据源，但从酷安网的用户评论看，普通用户不能理解需求</li>
+</ul>
+<p>对于上述问题，博主考虑了以下相应对策：</p>
+<ul>
+<li>从<a href="https://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/">上次的逆向分析结果</a>看，只要想办法调用到这几个类（以下称为parser），就可以解析微信SQLite缓存中的blob数据，这样就不需要借助Xposed的hook了，也能实现一键导出</li>
+<li>考虑到blob格式不会经常变更，因此可在项目中整合parser，这样本项目就无需经常更新</li>
+<li>博主在开发WeChatMomentExport之后随手写的<a href="https://github.com/Chion82/WeChatMomentStat" target="_blank" rel="external">朋友圈数据统计脚本</a>也获得了少量star，因此认为，对于普通用户，生成这样的简易统计数据更有吸引性</li>
+</ul>
+<p>于是，决定整合WeChatMomentExport和统计脚本，做一个功能稍完善的工具。</p>
+<h2 id="几个技术难点"><a href="#几个技术难点" class="headerlink" title="几个技术难点"></a>几个技术难点</h2><p>要做这样的一个独立的APP，而不是一个Xposed模块，需要解决以下问题：</p>
+<ol>
+<li>如何在APP中整合parser？parser的逻辑代码被混淆在微信的dex中，直接分析其算法难度太大。</li>
+<li>如何越权获得微信的SQLite缓存数据？</li>
+<li>如何确保从SQLite缓存中取得的朋友圈数据足够齐全？</li>
+</ol>
+<p>经过查阅各种文档和亲自实验，还是找到了解决方案。</p>
+<h2 id="使用DexClassLoader直接加载微信apk中的parser"><a href="#使用DexClassLoader直接加载微信apk中的parser" class="headerlink" title="使用DexClassLoader直接加载微信apk中的parser"></a>使用DexClassLoader直接加载微信apk中的parser</h2><p>DexClassLoader可直接解析apk中的classes.dex，并从中取得所需类，通过java反射，可以获得所需的parser方法。因此，无需再分析parser算法，而是直接调用就可以了。<br>通过DexClassLoader取得parser方法的关键代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">DexClassLoader cl = <span class="keyword">new</span> DexClassLoader(</div><div class="line">                    apkFile.getAbsolutePath(),  <span class="comment">//apkFile为微信apk文件</span></div><div class="line">                    context.getDir(<span class="string">"outdex"</span>, <span class="number">0</span>).getAbsolutePath(),</div><div class="line">                    <span class="keyword">null</span>,</div><div class="line">                    ClassLoader.getSystemClassLoader());</div><div class="line"></div><div class="line">Class SnsDetailParser = cl.loadClass(<span class="string">"com.tencent.mm.plugin.sns.f.i"</span>);</div><div class="line">Class SnsDetail = cl.loadClass(<span class="string">"com.tencent.mm.protocal.b.atp"</span>);</div><div class="line">Class SnsObject = cl.loadClass(<span class="string">"com.tencent.mm.protocal.b.aqi"</span>);</div><div class="line"><span class="comment">//之后只需使用java反射即可取得所需方法</span></div></pre></td></tr></table></figure></p>
+<p>还需要提供一个微信的apk文件。因此将微信apk放在assets中，首次运行本工具的时候释放到外部存储中。</p>
+<h2 id="通过su调用，拷贝微信的SQLite数据库文件"><a href="#通过su调用，拷贝微信的SQLite数据库文件" class="headerlink" title="通过su调用，拷贝微信的SQLite数据库文件"></a>通过su调用，拷贝微信的SQLite数据库文件</h2><p>需要越权操作的话，获取root权限是很难避免的。通过调用su，可以复制出微信的SQLite数据库文件到本工具可读写的目录下。<br>微信朋友圈的SQLite文件在<code>/data/data/com.tencent.mm/MicroMsg/XXXXXXXXXXXXX/SnsMicroMsg.db</code>。其中，<code>XXXXXXXXXXXXX</code>是微信生成的hash值，每台设备上都可能不一样。由于在Android的shell中没有<code>find</code>或类似的命令，需要复制出这个<code>SnsMicroMsg.db</code>还得费一点功夫。最终，博主采用<code>ls</code>列目录并循环尝试<code>cp</code>的方法强行取得<code>SnsMicroMsg.db</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">copySnsDB</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">    String dataDir = Environment.getDataDirectory().getAbsolutePath();</div><div class="line">    String destDir = Config.EXT_DIR;</div><div class="line">    Process su = Runtime.getRuntime().exec(<span class="string">"su"</span>);</div><div class="line">    DataOutputStream outputStream = <span class="keyword">new</span> DataOutputStream(su.getOutputStream());</div><div class="line">    outputStream.writeBytes(<span class="string">"mount -o remount,rw "</span> + dataDir + <span class="string">"\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"cd "</span> + dataDir + <span class="string">"/data/"</span> + Config.WECHAT_PACKAGE + <span class="string">"/MicroMsg\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"ls | while read line; do cp $&#123;line&#125;/SnsMicroMsg.db "</span> + destDir + <span class="string">"/ ; done \n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"sleep 1\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"chmod 777 "</span> + destDir + <span class="string">"/SnsMicroMsg.db\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"exit\n"</span>);</div><div class="line">    outputStream.flush();</div><div class="line">    outputStream.close();</div><div class="line">    Thread.sleep(<span class="number">1000</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其中，还需要修改db文件的权限为<code>777</code>，否则工具无权读取数据库。另外，<code>sleep</code>是为了避免稍后偶然性出现的读取数据库失败的情况（可能文件复制不完整或未被去锁？）。</p>
+<h2 id="关于SQLite中数据完整性的问题"><a href="#关于SQLite中数据完整性的问题" class="headerlink" title="关于SQLite中数据完整性的问题"></a>关于SQLite中数据完整性的问题</h2><p>经过测试，微信的SQLite数据库中缓存了几乎所有加载过的朋友圈，理论上应当不会漏数据。</p>
+<h2 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h2><p>本来这个app计划于2月中旬就写出来的，由于博主不是安卓开发者，没有系统地学过安卓开发，当时还不知道有<code>DexClassLoader</code>，写的第一个demo用的依然是Xposed，但是不同于WeChatMomentExport，这里用Xposed仅仅是为了取得那几个parser的类而已。2月底开学后，通过各种渠道了解到了<code>DexClassLoader</code>，才有现在的这个思路。<br>博主现在读大二，这学期开学后课程比较紧张，再者在工作室外包项目的压力下（团队管理问题，还有涉及的利益问题出现冲突的时候，处理起来非常棘手），一时失去了搞开源轮子的动力，甚至连续一个月都没有更新博客，于是才导致了这个项目拖到现在才基本完成。<br>看到了GitHub上的项目star和follower每隔几天就多一个，本站也陆续有网友来评论，每日UV也保持在100以上，就重拾了动力去继续折腾。<br>非常感谢前来光临本站和GitHub profile的各位！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="cisvylbqz0003qycm2dnypx6r" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-react-server-side-rendering" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/03/react-server-side-rendering/" class="article-date">
+  <time datetime="2016-03-03T12:11:17.000Z" itemprop="datePublished">2016-03-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/前端/">前端</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/03/react-server-side-rendering/">自译：如何使用服务端渲染加速React APP首屏加载</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文：<a href="https://www.terlici.com/2015/03/18/fast-react-loading-server-rendering.html" target="_blank" rel="external">How to build React apps that load quickly using server side rendering (by Stefan Fidanov)</a></p>
+<p>使用客户端框架（译者注：此处指大多数在浏览器端运行的前端MV*框架）可快速开发用户交互丰富、性能高效的web app，前端开发者都非常喜欢使用该类框架。<br>不幸的是，客户端框架也有缺点，其中最主要的问题是首屏加载速度。<br>客户端首先从服务器接收少量的HTML代码，但是之后却需要接收大量的JavaScript代码。<br>然后，它们（指前端框架）需要向服务器请求数据，等待收到数据，进行必要的数据处理，并最终渲染到用户的浏览器上。<br>相比之下，传统的web做法是，全部数据由服务端进行渲染，当服务端向用户首次递交HTML时，用户端浏览器就收到了渲染完成的页面了。<br>再者，大多数情况下，web服务器的渲染速度要快于客户端的渲染。所以，（传统web）的首屏渲染是非常快速的。</p>
+<h2 id="React的解决方案"><a href="#React的解决方案" class="headerlink" title="React的解决方案"></a>React的解决方案</h2><p>很自然的，你会想同时拥有上述两者（分别指：使用了MV*框架的web app、传统的web站点）的全部优点。快速的首屏加载、高度的交互性和快速的响应。React可以帮助你同时做到这几点。<br>React是这样做到的：首先，它可以在服务端渲染任意的组件（Component），包括这些组件的数据，这样渲染得到的结果是一些HTML代码，这些HTML代码在这之后可以直接发送到浏览器。<br>当这些HTML在用户浏览器上被显示出来时，React会在本地（这里的本地指用户浏览器）进行计算。它的智能算法将进行判断并得出：React即将要在浏览器端动态渲染出来的结果，跟当前已经被显示出来的页面一样。<br>在这之后，除了添加必要的事件处理，React不会对页面做任何的修改。<br>那么为什么这样会更快呢？我们不是在做几乎跟客户端一样的事情吗？<br>是的。但仅仅是“几乎”而已。<br>首先，当服务器响应浏览器请求时，用户马上就能看到整个页面了。所以页面响应速度更快了。<br>其次，因为React能够判断出无需再对DOM做修改，它就不会再去碰DOM。修改DOM是前端渲染中最慢的部分。<br>再者，这样可以节省请求次数。因为所有数据已经被渲染所以React不需要再向服务器请求。</p>
+<p><strong>那么有没有可能：当页面加载时，页面已经显示出来但是用户不能对其进行交互，因为这时事件处理尚未被添加？</strong><br>理论上这种情况是有可能发生的。但是因为用了服务端渲染，我们就避免了所有的高开销操作，而且这样不但加速了页面响应速度，添加事件处理的速度也会变得很快。<br>所以，你的应用将总是可交互的，并且用户不会察觉到有什么问题。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>光说无用，我们来看看如何在代码中实现。我们的第一个示例是非常简单的。我们要显示一个”hello”消息，并且点击后会有提示。<br>我们的示例将使用NodeJS作为服务端部分，不过这里的一切都可以应用在其他平台，比如PHP, Ruby, Python, Java或者.NET。</p>
+<p>我们需要以下Node模块：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install babel react react-dom express jade</div></pre></td></tr></table></figure></p>
+<p>我们将使用<code>express</code>和<code>jade</code>来做一个示例服务器。<br><code>react</code>和<code>react-dom</code>包可提供React组件的服务端渲染。<br><code>babel</code>包允许我们通过node直接加载JSX模块，比如<code>require(&#39;some-component.jsx&#39;)</code>或者<code>require(&#39;some-component.js&#39;)</code>。<br><code>babel</code>实际上更加强大。现在你可以用ES6支持。<br>我们的应用只有3个文件，文件结构如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public/components.js</div><div class="line">views/index.jade</div><div class="line">app.js</div></pre></td></tr></table></figure></p>
+<p><code>components.js</code>包含了我们的React组件；<code>index.jade</code>是网站的基本模板文件，将会加载全部JavaScript；<code>app.js</code>是node服务器。<br>让我们来看看<code>index.jade</code>里面有什么内容：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">doctype</div><div class="line">html</div><div class="line">  head</div><div class="line">    title React Server Side Rendering Example</div><div class="line">  body</div><div class="line">    div(id='react-root')!= react</div><div class="line"></div><div class="line">    script(src='https://fb.me/react-0.14.0.js')</div><div class="line">    script(src='https://fb.me/react-dom-0.14.0.js')</div><div class="line">    script(src='https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js')</div><div class="line"></div><div class="line">    script(src='/components.js', type='text/babel')</div></pre></td></tr></table></figure></p>
+<p><code>div(id=&#39;react-root&#39;)!= react</code>是最关键的部分。它的作用是作为React根组件的容器。另外，<code>react</code>变量的值是服务端渲染React组件后得到的HTML。<br>前两个引用进来的JavaScript文件是React本身，如果你想要在组件里面使用JSX，还需要引用一个Babel。<br>最后一个引用的文件是具体的组件。我们要把type设成<code>text/babel</code>好让Babel来处理这个文件。<br>这将提供一个基本的HTML结构，并加载全部的JavaScript和你需要的React组件。<br>来看看这个简单的服务器：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)</div><div class="line">  , app = express()</div><div class="line">  , React = <span class="built_in">require</span>(<span class="string">'react'</span>)</div><div class="line">  , ReactDOM = <span class="built_in">require</span>(<span class="string">'react-dom/server'</span>)</div><div class="line">  , components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div><div class="line"></div><div class="line"></div><div class="line">app.engine(<span class="string">'jade'</span>, <span class="built_in">require</span>(<span class="string">'jade'</span>).__express)</div><div class="line">app.set(<span class="string">'view engine'</span>, <span class="string">'jade'</span>)</div><div class="line"></div><div class="line">app.use(express.static(__dirname + <span class="string">'/public'</span>))</div><div class="line"></div><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    react: ReactDOM.renderToString(HelloMessage(&#123;name: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'Listening on port 3000...'</span>)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这部分代码中，大部分和一个普通的express应用程序没有多大区别。但是其中有些行需要注意。<br>第一行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div></pre></td></tr></table></figure></p>
+<p>加载Babel到你的依赖。这么做，你可以直接导入(<code>require()</code>)由JSX组成的React组件，它们会被自动翻译为JavaScript，就像后面的两行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div></pre></td></tr></table></figure></p>
+<p>在上面的代码中，第一行导入JSX编写的React组件。然后，由<code>React.createFactory</code>生成一个函数，该函数可以创建<code>HelloMessage</code>的组件。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    react: ReactDOM.renderToString(HelloMessage(&#123;name: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>上面这里就是渲染React组件的代码，并且渲染包含该组件的页面然后发送至浏览器。<br>首先，使用值为<code>John</code>的<code>name</code>属性创建一个新的<code>HelloMessage</code>组件，然后使用<code>React.renderToString</code>将这个组件渲染为HTML。<br>这里需要注意的是，组件仅仅被渲染(rendered)，而没有被挂载(mounted)，所以 <strong>所有关于挂载的方法都不会被调用</strong> 。<br>在创建组件之后，将组件的HTML传递到index模版。<br>我们的组件看起来是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isNode = <span class="keyword">typeof</span> <span class="built_in">module</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">module</span>.exports</div><div class="line">  , React = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.React</div><div class="line">  , ReactDOM = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.ReactDOM</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createClass(&#123;</div><div class="line">  handleClick: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    alert(<span class="string">'You clicked!'</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onClick</span>=<span class="string">&#123;this.handleClick&#125;</span>&gt;</span>Hello &#123;this.props.name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div><div class="line">  &#125;</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="keyword">if</span> (isNode) &#123;</div><div class="line">  exports.HelloMessage = HelloMessage</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  ReactDOM.render(<span class="xml"><span class="tag">&lt;<span class="name">HelloMessage</span> <span class="attr">name</span>=<span class="string">"John"</span> /&gt;</span>, document.getElementById('react-root'))</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>你可以看见，这跟一般的由JSX编写的React组件没有什么不同，除了开头和结尾。这里就是你要让组件能同时在浏览器和Node端运行所需要注意的地方。</p>
+<h2 id="高级示例：加载服务端数据"><a href="#高级示例：加载服务端数据" class="headerlink" title="高级示例：加载服务端数据"></a>高级示例：加载服务端数据</h2><p>真正的Web app做的事情通常远不止你看见的这些。它们经常需要跟服务器交互并从服务器加载数据。<br>但是，我们不希望这在服务端渲染时发生。<br>我们来对这个示例程序做一些小修改。首先，模版文件需要引用jQuery，在这里它的唯一作用是从服务端请求数据。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">doctype</div><div class="line">html</div><div class="line">  head</div><div class="line">    title React Server Side Rendering Example</div><div class="line">  body</div><div class="line">    div(id='react-root')!= react</div><div class="line"></div><div class="line">    script(src='https://fb.me/react-0.14.0.js')</div><div class="line">    script(src='https://fb.me/react-dom-0.14.0.js')</div><div class="line">    script(src='https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js')</div><div class="line">    script(src='http://code.jquery.com/jquery-2.1.3.js')</div><div class="line"></div><div class="line">    script(src='/components.js', type='text/babel')</div></pre></td></tr></table></figure></p>
+<p>我们的服务器现在需要增加一个请求路由。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)</div><div class="line">  , app = express()</div><div class="line">  , React = <span class="built_in">require</span>(<span class="string">'react'</span>)</div><div class="line">  , ReactDOM = <span class="built_in">require</span>(<span class="string">'react-dom/server'</span>)</div><div class="line">  , components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div><div class="line"></div><div class="line"></div><div class="line">app.engine(<span class="string">'jade'</span>, <span class="built_in">require</span>(<span class="string">'jade'</span>).__express)</div><div class="line">app.set(<span class="string">'view engine'</span>, <span class="string">'jade'</span>)</div><div class="line"></div><div class="line">app.use(express.static(__dirname + <span class="string">'/public'</span>))</div><div class="line"></div><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    react: React.renderToString(HelloMessage(&#123;name: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.send(<span class="string">"Paul, "</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().toString())</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'Listening on port 3000...'</span>)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这里跟之前的例子唯一的不同之处在于这三行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">app.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.send(<span class="string">"Paul, "</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().toString())</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这三行代码的作用是，当<code>/name</code>被请求时，返回名字<code>Paul</code>和当前时间。<br>来看看这整个应用最有趣和最重要的部分，即React组件：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isNode = <span class="keyword">typeof</span> <span class="built_in">module</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">module</span>.exports</div><div class="line">  , React = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.React</div><div class="line">  , ReactDOM = isNode ? <span class="built_in">require</span>(<span class="string">'react-dom'</span>) : <span class="built_in">window</span>.ReactDOM</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createClass(&#123;</div><div class="line">  getInitialState: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> &#123;&#125;</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  loadServerData: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    $.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.isMounted()) &#123;</div><div class="line">        <span class="keyword">this</span>.setState(&#123;name: result&#125;)</div><div class="line">      &#125;</div><div class="line">    &#125;.bind(<span class="keyword">this</span>))</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  componentDidMount: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.intervalID = setInterval(<span class="keyword">this</span>.loadServerData, <span class="number">3000</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  componentWillUnmount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    clearInterval(<span class="keyword">this</span>.intervalID)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  handleClick: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    alert(<span class="string">'You clicked!'</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> name = <span class="keyword">this</span>.state.name ? <span class="keyword">this</span>.state.name : <span class="keyword">this</span>.props.name</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onClick</span>=<span class="string">&#123;this.handleClick&#125;</span>&gt;</span>Hello &#123;name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div><div class="line">  &#125;</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="keyword">if</span> (isNode) &#123;</div><div class="line">  exports.HelloMessage = HelloMessage</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  ReactDOM.render(<span class="xml"><span class="tag">&lt;<span class="name">HelloMessage</span> <span class="attr">name</span>=<span class="string">"John"</span> /&gt;</span>, document.getElementById('react-root'))</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们只添加了这4个方法，其他和之前的例子相同：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">getInitialState: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> &#123;&#125;</div><div class="line">&#125;,</div><div class="line"></div><div class="line">loadServerData: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  $.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isMounted()) &#123;</div><div class="line">      <span class="keyword">this</span>.setState(&#123;name: result&#125;)</div><div class="line">    &#125;</div><div class="line">  &#125;.bind(<span class="keyword">this</span>))</div><div class="line">&#125;,</div><div class="line"></div><div class="line">componentDidMount: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.intervalID = setInterval(<span class="keyword">this</span>.loadServerData, <span class="number">3000</span>)</div><div class="line">&#125;,</div><div class="line"></div><div class="line">componentWillUnmount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  clearInterval(<span class="keyword">this</span>.intervalID)</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>当组件被挂载后，每隔3秒它会向服务器请求数据<code>/name</code>并且显示出来。<br><code>componentDidMount</code>和<code>componentWillUnmount</code>在组件被渲染时是不会被调用的，它们只有在组件被挂载时才会被调用。<br>所以这两个方法在服务端渲染时不会被调用，<code>loadServerData</code>方法也不会被调用。<br>这三个方法只有当组件被挂载时才会被执行，而这只会发生在浏览器端。<br>由此可见，想要从整体中分离出只在浏览器运行的那部分，并且保持代码的复用是很简单的。</p>
+<h2 id="在这之后？"><a href="#在这之后？" class="headerlink" title="在这之后？"></a>在这之后？</h2><p>你已经学会了如何借助服务端渲染创建一个能被快速加载的React应用程序。但是，我的这个示例只是针对NodeJS服务器。<br>如果你在使用其他技术（比如PHP, .NET, Ruby, Python或者Java），你一样可以利用React服务端渲染的优点，这将会是你下一步要研究的方向。<br>另外，我直接在浏览器端使用了JSX，这将多亏于Babel，但是这也会降低性能。在生产环境中，在将JSX提供给浏览器之前先将之转换为JavaScript会更快。<br>我相信你一定可以找到你最喜欢的开发语言和Web框架下的类似解决方案。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="cisvylbt30019qycm5pvdzzj7" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/front-end/">front-end</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-hello-old-driver" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/02/28/hello-old-driver/" class="article-date">
+  <time datetime="2016-02-28T05:14:53.000Z" itemprop="datePublished">2016-02-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/Python/">Python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/02/28/hello-old-driver/">你好，老司机：种子爬虫企划</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在老司机的安利之下，学会了从<a href="http://www.hacg.li" target="_blank" rel="external">琉璃神社</a>找各种神奇的资源。于是萌生了造这个轮子的欲望。国内这种福利站不知还能维持多久，所以将资源大量扒下来存档是有点卵用的。</p>
+<h2 id="GitHub-repo"><a href="#GitHub-repo" class="headerlink" title="GitHub repo"></a>GitHub repo</h2><p><a href="https://github.com/Chion82/hello-old-driver" target="_blank" rel="external">https://github.com/Chion82/hello-old-driver</a></p>
+<h2 id="开发笔记"><a href="#开发笔记" class="headerlink" title="开发笔记"></a>开发笔记</h2><p>为了兼容多个站点，我的爬虫脚本并没有针对某个特定的网站进行抓取逻辑定制，而是采取递归遍历网站全部页面+正则匹配磁力链hash的方式抓取整站的磁力链资源。磁力链的hash协议大多数时候是BTIH，hash值为40位的hex字符串，匹配的正则如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[^0-9a-fA-F]([0-9a-fA-F]&#123;40&#125;)[^0-9a-fA-F]</div></pre></td></tr></table></figure></p>
+<p>注意，为了保证hash串长度为40字节，在其前后应加上非hex的匹配，即<code>[^0-9a-fA-F]</code>。</p>
+<p>这样将可能导致一个问题，网站页面源码中可能还存在磁力链以外的SHA-1值，比如琉璃神社在每条用户评论后在一个标签属性内有40字节长的一段hash值，目前的解决方法是忽略HTML标签<code>&lt;&gt;</code>内的属性内容：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (ignore_html_label): <span class="comment">#为了增强扩展性，这类fix逻辑应该可控</span></div><div class="line">		result_text = re.sub(<span class="string">r'&lt;.*?&gt;'</span>, <span class="string">''</span>, result_text)</div></pre></td></tr></table></figure></p>
+<p>每个磁力链资源应当要有对应的标题以方便查找，这里以网页的标题作为资源标题，匹配正则如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;title&gt;(.+?)&lt;/title&gt;</div></pre></td></tr></table></figure></p>
+<p>经测试发现，每轮抓取结束后，抓取到的资源数量可能不一样，可能的原因是网站方对访问频次做了限制或者是本地网络质量问题，就算通过连接失败重试、服务器返回5XX后重试等方法也不能解决。于是决定：每次抓取不覆盖上次抓取的结果，而是保留上次的结果，并新增本次抓取到的、上次结果中没有的新磁力链资源。</p>
+<p>其他的一些必需属性：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cookie = <span class="string">''</span> <span class="comment">#每次请求需要带上的Cookie。由于琉璃神社目前不需要登录，暂为空串</span></div><div class="line">max_depth = <span class="number">40</span> <span class="comment">#递归最大深度，即从一个网页查找全部链接并依次往下递归访问，最大的深度为40</span></div><div class="line">viewed_urls = [] <span class="comment">#访问过的URL，避免重复访问</span></div><div class="line">found_magnets = [] <span class="comment">#查找出来的磁力链资源，避免重复抓取</span></div><div class="line">ignore_url_param = <span class="keyword">True</span> <span class="comment">#是否忽略URL中的参数，比如"index.html?xxx=11"将被替换为"index.html"</span></div><div class="line">ignore_html_label = <span class="keyword">True</span> <span class="comment">#是否忽略HTML标签内属性</span></div></pre></td></tr></table></figure></p>
+<p>需要定时执行抓取脚本以保证与原网站同步。写了一个shell脚本，<code>sync.sh</code>，作用如下：</p>
+<ul>
+<li>测试目标网站是否可访问</li>
+<li>复制上次的抓取结果<code>magnet_output</code>和<code>resource_list.json</code>到<code>archives</code>目录下存档，以当前时间重命名</li>
+<li>复制上次的抓取日志<code>lastsync.log</code>和<code>lasterror.log</code>到<code>log</code>目录下存档，以当前时间重命名</li>
+<li>运行Python抓取脚本，这将覆盖项目根目录下的上述抓取结果文件和抓取日志文件</li>
+<li>将本次的抓取结果梗概（是否成功、新增几条记录以及一些简单统计数据）添加到<code>README.md</code>中</li>
+<li>推送到GitHub</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="cisvylbs8000lqycmocojckod" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crawler/">crawler</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-wechat-sns-reflect-classes" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/02/20/wechat-sns-reflect-classes/" class="article-date">
+  <time datetime="2016-02-19T16:16:42.000Z" itemprop="datePublished">2016-02-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/逆向/">逆向</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/02/20/wechat-sns-reflect-classes/">逆向纪录：微信朋友圈相关的几个类</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本纪录针对微信安卓端版本<code>6.3.13</code>。本文纪录逆向微信过程中找到的几个朋友圈内容相关的数据结构类。</p>
+<ol>
+<li><p>朋友圈详细内容<br>类名: <code>com.tencent.mm.protocal.b.atp</code><br>[方法]添加属性（可作为hook的方法）: <code>protected final int a(int paramInt, object... objectArray)</code><br>[方法]从BLOB数据导入：<code>public a am(byte[])</code></p>
+</li>
+<li><p>可将<code>com.tencent.mm.protocal.b.atp</code>实例格式化为XML的类<br>类名: <code>com.tencent.mm.plugin.sns.f.i</code><br>[方法]输出朋友圈内容XML: <code>static public String a(com.tencent.mm.protocal.b.atp atpObject)</code></p>
+</li>
+<li><p>朋友圈评论和点赞数据<br>类名: <code>com.tencent.mm.protocal.b.aqi</code><br>[方法]添加属性（可作为hook的方法）: <code>protected final int a(int paramInt, object... objectArray)</code><br>[方法]从BLOB数据导入：<code>public a am(byte[])</code><br>[属性]用户ID：<code>String iYA</code><br>[属性]用户昵称：<code>String jyd</code><br>[属性]时间戳：<code>long fpL</code><br>[属性]评论列表：<code>LinkedList&lt;com.tencent.mm.protocal.b.apz&gt; jJX</code><br>[属性]点赞列表：<code>LinkedList&lt;com.tencent.mm.protocal.b.apz&gt; jJU</code></p>
+</li>
+<li><p>评论或点赞数据详情<br>类名: <code>com.tencent.mm.protocal.b.apz</code><br>[属性]用户ID： <code>String iYA</code><br>[属性]用户昵称：<code>String jyd</code><br>[属性]评论回复给谁(对方用户ID)：<code>String jJM</code><br>[属性]评论内容：<code>String fsI</code></p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="cisvylbtm001qqycml2ojmmj5" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-generate-thumbnails-with-nginx-image-filter" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/02/02/generate-thumbnails-with-nginx-image-filter/" class="article-date">
+  <time datetime="2016-02-01T17:05:24.000Z" itemprop="datePublished">2016-02-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/后端/">后端</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/02/02/generate-thumbnails-with-nginx-image-filter/">使用nginx image filter动态生成缩略图</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>nginx提供<code>ngx_http_image_filter_module</code>模块，可用来动态生成图片的缩略图。当然，最好的办法是在后端进行图片压缩。但是当不方便修改后端代码时，在牺牲些许性能的代价下，使用image filter生成缩略图还是很方便的。</p>
+<h2 id="编译安装nginx"><a href="#编译安装nginx" class="headerlink" title="编译安装nginx"></a>编译安装nginx</h2><p>大部分预编译的nginx默认不带<code>ngx_http_image_filter_module</code>模块，这时需要手动编译nginx。<br>在执行<code>configure</code>时带上参数<code>--with-http_image_filter_module</code>。<br>在水果上编译可参考<a href="/2016/02/02/compile-nginx-on-osx/">OSX上编译安装nginx</a></p>
+<h2 id="在配置文件中使用image-filter生成缩略图"><a href="#在配置文件中使用image-filter生成缩略图" class="headerlink" title="在配置文件中使用image_filter生成缩略图"></a>在配置文件中使用image_filter生成缩略图</h2><p>示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">location /images &#123;</div><div class="line">    image_filter resize 200 200;</div><div class="line">    image_filter_buffer 10M;</div><div class="line">    image_filter_jpeg_quality 90;</div><div class="line">    root /path/to/website;</div><div class="line">    index index.html;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其中：</p>
+<ul>
+<li><code>image_filter resize 200 200</code>表示按比例缩放图片，长和宽中较大者为200。比如，原图大小为1000x500，处理后为200x100。</li>
+<li><code>image_filter_buffer 10M</code>表示处理图片的缓冲区最大为10M。</li>
+<li><code>image_filter_jpeg_quality 90</code>设置jpeg压缩质量为90%。</li>
+</ul>
+<p>经过这样的配置后，访问<code>HOSTNAME/images/XXX.jpg|png|gif</code>即可得到经过压缩的缩略图。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="cisvylbs3000hqycmdra6gsat" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backend/">backend</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+  <nav id="page-nav">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

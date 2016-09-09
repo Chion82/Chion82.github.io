@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>OpenWRT自动科学上网的问题及优化 | ChionLab  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：
+
+ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）
+链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenWRT自动科学上网的问题及优化">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：
+
+ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）
+链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
+<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenWRT自动科学上网的问题及优化">
+<meta name="twitter:description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：
+
+ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）
+链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-optimize-shadowsocks-on-openwrt" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-date">
+  <time datetime="2016-01-26T17:45:48.000Z" itemprop="datePublished">2016-01-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      OpenWRT自动科学上网的问题及优化
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在<a href="/2016/01/23/openwrt-bypass-gfw-solution/">OpenWRT路由器配置ShadowSocks+ChinaDNS</a>虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：</p>
+<ul>
+<li>ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）</li>
+<li>链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在<code>SYN_SENT</code>，最终导致超时</li>
+<li>ChinaDNS长时间运行后可能出现的解析不正常的情况，表现为始终返回国外DNS结果，导致国内网站访问缓慢<br>针对以上问题，作者琢磨出一些优化方法。</li>
+</ul>
+<h2 id="优化UDP稳定性"><a href="#优化UDP稳定性" class="headerlink" title="优化UDP稳定性"></a>优化UDP稳定性</h2><p>由于ISP封杀境外UDP包，那么UDP只可以走境内。那么可以将一台境内服务器作为UDP跳板。TCP包直接发到境外的ss服务器，UDP包则经过境内的跳板服务器中转到ss服务器。跳板服务器可以选择阿里云、腾讯云等，带宽不需要太大，1M都完全够了，主要是用来中转DNS查询包。作者用的是腾讯云的1元／月的学生优惠。</p>
+<p>一、在UDP跳板服务器上进行以下配置以实现中转。</p>
+<ol>
+<li><p>开启内核的ip_forward</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/sysctl.conf</div></pre></td></tr></table></figure>
+<p>将<code>net.ipv4.ip_forward=0</code>修改为<code>net.ipv4.ip_forward=1</code>。如果文件为空，则添加一行<code>net.ipv4.ip_forward=1</code>即可。<br>运行这条命令即时生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># sysctl -p</div></pre></td></tr></table></figure>
+</li>
+<li><p>用iptables实现TCP+UDP中转</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># iptables -t nat -A PREROUTING -p tcp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A PREROUTING -p ucp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A POSTROUTING -j MASQUERADE</div><div class="line"># service iptables save #永久保存修改</div></pre></td></tr></table></figure>
+<p>其中，<code>X.X.X.X:X</code>为ss服务器IP和端口，<code>[PORT]</code>为跳板服务器上用于中转的监听端口（为了方便，可以和ss服务器的端口相同）。</p>
+</li>
+</ol>
+<p>二、修改OpenWRT上的配置</p>
+<ol>
+<li><p>ssh连接上路由器，建立一个跳板服务器的ss配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># cp /var/etc/shadowsocks.json /root/shadowsocks_udp.json #复制当前的ss配置文件</div><div class="line"># vim /root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
+<p>然后修改<code>/root/shadowsocks_udp.json</code>，将远程服务器IP改为跳板服务器的IP，远程端口改为跳板服务器的监听端口（即刚才的<code>[PORT]</code>）</p>
+</li>
+<li><p>然后需要修改shadowsocks的启动脚本，让ss隧道使用跳板服务器的配置文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/init.d/shadowsocks</div></pre></td></tr></table></figure>
+<p>在<code>CONFIG_FILE=/var/etc/shadowsocks.json</code>下增加一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UDP_CONFIG_FILE=/root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
+<p>找到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
+<p>将其修改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $UDP_CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
+<p>保存后重启shadowsocks</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># /etc/init.d/shadowsocks restart</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="优化TCP稳定性"><a href="#优化TCP稳定性" class="headerlink" title="优化TCP稳定性"></a>优化TCP稳定性</h2><ol>
+<li>最好的方法是选择链路质量好的服务器作为ss服务器，比如香港的vps，将不容易出现多并发TCP连接无法建立的情况。</li>
+<li>如果不能选择更换ss服务器，可在ss服务器上同时监听多个端口，同时在路由器上使用haproxy进行负载均衡，把ss服务器的多个端口加入到upstream列表中，由于haproxy超时自动更换upstream的特性，可大大降低连接失败的概率。详细操作方法作者将在下篇博文中介绍。</li>
+</ol>
+<h2 id="ChinaDNS偶然解析不正常的解决"><a href="#ChinaDNS偶然解析不正常的解决" class="headerlink" title="ChinaDNS偶然解析不正常的解决"></a>ChinaDNS偶然解析不正常的解决</h2><p>尚不明确为何ChinaDNS长时间运行后偶然地可能会始终返回国外DNS结果（重启ChinaDNS即恢复），作者之前尝试<a href="https://github.com/Chion82/ChinaDNS" target="_blank" rel="external">修改了一下ChinaDNS</a>，将判断某个IP是否为国内IP的逻辑修改为借助ipset来判断，但是作者没有测试过其稳定性。<br>本文介绍的解决方法很无脑，即定时重启ChinaDNS。使用cron，在每天的零时重启一次ChinaDNS。经作者测试，这招确实有效。<br>在路由器上运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># crontab -e</div></pre></td></tr></table></figure></p>
+<p>添加一行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 0 * * * /etc/init.d/chinadns restart</div></pre></td></tr></table></figure></p>
+<p>保存并重启路由器生效。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cisvylbso000yqycma98ey8u7" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/27/cc-defence-log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          运维纪录：遭遇CC攻击，防御与查水表
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/23/openwrt-bypass-gfw-solution/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">OpenWRT路由器上的ShadowSocks+ChinaDNS搭梯子方案</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  var disqus_url = 'http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ThunderHack开发笔记 | ChionLab  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="关于ThunderHackThunderHack是一个运行于服务端的Python脚本，模拟用户操作迅雷离线平台，同时运行web server，提供网页端UI和API。该工具由维护者提供大容量离线空间，用户只需直接提交源下载地址（magnet/ed2k/http/https/ftp等），可获取迅雷离线服务器的下载地址，实现免费高速下载。https://github.com/Chion82/Thund">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThunderHack开发笔记">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="关于ThunderHackThunderHack是一个运行于服务端的Python脚本，模拟用户操作迅雷离线平台，同时运行web server，提供网页端UI和API。该工具由维护者提供大容量离线空间，用户只需直接提交源下载地址（magnet/ed2k/http/https/ftp等），可获取迅雷离线服务器的下载地址，实现免费高速下载。https://github.com/Chion82/Thund">
+<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ThunderHack开发笔记">
+<meta name="twitter:description" content="关于ThunderHackThunderHack是一个运行于服务端的Python脚本，模拟用户操作迅雷离线平台，同时运行web server，提供网页端UI和API。该工具由维护者提供大容量离线空间，用户只需直接提交源下载地址（magnet/ed2k/http/https/ftp等），可获取迅雷离线服务器的下载地址，实现免费高速下载。https://github.com/Chion82/Thund">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-thunderhack-development-log" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/20/thunderhack-development-log/" class="article-date">
+  <time datetime="2016-01-20T12:32:38.000Z" itemprop="datePublished">2016-01-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/Python/">Python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ThunderHack开发笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="关于ThunderHack"><a href="#关于ThunderHack" class="headerlink" title="关于ThunderHack"></a>关于ThunderHack</h2><p>ThunderHack是一个运行于服务端的Python脚本，模拟用户操作迅雷离线平台，同时运行web server，提供网页端UI和API。该工具由维护者提供大容量离线空间，用户只需直接提交源下载地址（magnet/ed2k/http/https/ftp等），可获取迅雷离线服务器的下载地址，实现免费高速下载。<br><a href="https://github.com/Chion82/ThunderHack.git" target="_blank" rel="external">https://github.com/Chion82/ThunderHack.git</a></p>
+<h2 id="CLI版（推荐）"><a href="#CLI版（推荐）" class="headerlink" title="CLI版（推荐）"></a>CLI版（推荐）</h2><p>依赖：Python2.7/3.X, aria2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo pip install xunleishare</div><div class="line">$ xunleishare [-o OUTPUT_SHELL] DOWNLOAD_LINK</div><div class="line">$ ./xunlei_output</div></pre></td></tr></table></figure></p>
+<p><a href="https://github.com/Chion82/xunlei_share.git" target="_blank" rel="external">https://github.com/Chion82/xunlei_share.git</a></p>
+<h2 id="网页端"><a href="#网页端" class="headerlink" title="网页端"></a>网页端</h2><p><a href="http://syslab.ddns.us/thunder_hack" target="_blank" rel="external">http://syslab.ddns.us/thunder_hack</a></p>
+<h2 id="开发笔记"><a href="#开发笔记" class="headerlink" title="开发笔记"></a>开发笔记</h2><p>为什么会突然想造这个轮子？一次登陆迅雷离线网页端顺便F12抓的包，发现网页版的API参数无加密且不复杂，可通过程序模拟请求。</p>
+<h3 id="抓包"><a href="#抓包" class="headerlink" title="抓包"></a>抓包</h3><p>从迅雷离线网页端抓取的几个关键API如下：</p>
+<ol>
+<li><p>BT、magnet查询API</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">GET: http://dynamic.cloud.vip.xunlei.com/interface/url_query?callback=queryUrl&amp;u=magnet%3A%3Fxt%3Durn%3Abtih%3AMPGNCXWJJZ4XMDQRQB2D6XE4I3U7D74K%26dn%3D%255BMGRT%2526Mabors%2BSub%255DGekijouban%2BAno%2BHi%2BMita%2BHana%2Bno%2BNamae%2Bo%2BBokutachi%2Bwa%2BMada%2BShiranai.%2528BDrip%2B1920x1080%2Bx264%2BFLAC%2BAAC%2BGB%2526BIG5%2526JP%2529%26tr%3Dhttp%253A%252F%252F208.67.16.113%253A8000%252Fannounce%26tr%3Dudp%253A%252F%252F208.67.16.113%253A8000%252Fannounce%26tr%3Dhttp%253A%252F%252Ftracker.openbittorrent.com%253A80%252Fannounce%26tr%3Dhttp%253A%252F%252Ftracker.publicbt.com%253A80%252Fannounce%26tr%3Dhttp%253A%252F%252Ftracker.prq.to%252Fannounce%26tr%3Dhttp%253A%252F%252Ftracker.ktxp.com%253A7070%252Fannounce%26tr%3Dhttp%253A%252F%252Ftracker.ktxp.com%253A6868%252Fannounce%26tr%3Dhttp%253A%252F%252Fopen.nyaatorrents.info%253A6544%252Fannounce%26tr%3Dhttp%253A%252F%252Fbtfile.sdo.com%253A6961%252Fannounce%26tr%3Dhttp%253A%252F%252F121.14.98.151%253A9090%252Fannounce&amp;interfrom=task&amp;random=14394337045561054423.7983869016&amp;tcache=1439433717265</div><div class="line">=&gt;</div><div class="line">queryUrl(1,&apos;MPGNCXWJJZ4XMDQRQB2D6XE4I3U7D74K&apos;,&apos;6229928848&apos;,&apos;[MGRT&amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC GB&amp;BIG5&amp;JP)&apos;,&apos;0&apos;,new Array(&apos;Scans\\/Scan_00.png&apos;,&apos;Scans\\/Scan_01.png&apos;,&apos;Scans\\/Scan_02.png&apos;,&apos;Scans\\/Scan_03.png&apos;,&apos;Scans\\/Scan_04.png&apos;,&apos;Scans\\/Scan_05.png&apos;,&apos;Scans\\/Scan_06.png&apos;,&apos;Scans\\/Scan_07.png&apos;,&apos;Scans\\/Scan_08.png&apos;,&apos;Scans\\/Scan_09.png&apos;,&apos;Scans\\/Scan_10.png&apos;,&apos;Scans\\/Scan_11.png&apos;,&apos;Scans\\/Scan_12.png&apos;,&apos;Scans\\/Scan_13.png&apos;,&apos;Scans\\/Scan_14.png&apos;,&apos;Scans\\/Scan_15.png&apos;,&apos;Scans\\/Scan_16.png&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Audio 5.1.flac&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Menu 01(BDrip 1920x1080 x264 AAC).mkv&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Menu 02(BDrip 1920x1080 x264 AAC).mkv&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - NCOP(BDrip 1920x1080 x264 AAC).mkv&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - SP 01(BDrip 1920x1080 x264 AAC).mkv&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - SP 02(BDrip 1920x1080 x264 AAC).mkv&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).big5.ass&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).gb.ass&apos;,&apos;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).mkv&apos;,&apos;[MGRT][13.08.21] 劇場版「あの日見た花の名前を僕達はまだ知らない。」主題歌 - サークルゲーム【期間生産限定アニメ盤】 歌：Galileo Galilei (ALAC+cue+log+png+DVDISO).rar&apos;,&apos;[MGRT][13.08.28] 劇場版「あの日見た花の名前を僕達はまだ知らない。」オリジナル・サウンドトラック  音楽：REMEDIOS (2ALAC+cue+log+png).rar&apos;,&apos;COMPILATION MUSIC.rar&apos;,&apos;Fonts.rar&apos;),new Array(&apos;3.90M&apos;,&apos;4.32M&apos;,&apos;4.38M&apos;,&apos;3.63M&apos;,&apos;4.29M&apos;,&apos;2.82M&apos;,&apos;1.94M&apos;,&apos;3.70M&apos;,&apos;1.98M&apos;,&apos;3.17M&apos;,&apos;3.87M&apos;,&apos;3.99M&apos;,&apos;2.59M&apos;,&apos;2.41M&apos;,&apos;2.56M&apos;,&apos;1.63M&apos;,&apos;22.7M&apos;,&apos;2.20G&apos;,&apos;9.03M&apos;,&apos;2.68M&apos;,&apos;20.9M&apos;,&apos;139M&apos;,&apos;35.4M&apos;,&apos;142K&apos;,&apos;142K&apos;,&apos;2.30G&apos;,&apos;311M&apos;,&apos;416M&apos;,&apos;379M&apos;,&apos;17.7M&apos;),new Array(&apos;4090243&apos;,&apos;4536547&apos;,&apos;4598479&apos;,&apos;3810200&apos;,&apos;4500046&apos;,&apos;2964511&apos;,&apos;2039023&apos;,&apos;3882558&apos;,&apos;2077791&apos;,&apos;3329777&apos;,&apos;4067333&apos;,&apos;4189214&apos;,&apos;2723186&apos;,&apos;2529606&apos;,&apos;2693052&apos;,&apos;1711549&apos;,&apos;23876871&apos;,&apos;2363024548&apos;,&apos;9474807&apos;,&apos;2818296&apos;,&apos;22001218&apos;,&apos;146039473&apos;,&apos;37178662&apos;,&apos;146284&apos;,&apos;146266&apos;,&apos;2469742194&apos;,&apos;326404175&apos;,&apos;436642897&apos;,&apos;397730513&apos;,&apos;18579515&apos;),new Array(&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;,&apos;1&apos;),new Array(&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RMVB&apos;,&apos;RMVB&apos;,&apos;RMVB&apos;,&apos;RMVB&apos;,&apos;RMVB&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RMVB&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;,&apos;RAR&apos;),new Array(&apos;0&apos;,&apos;1&apos;,&apos;2&apos;,&apos;3&apos;,&apos;4&apos;,&apos;5&apos;,&apos;6&apos;,&apos;7&apos;,&apos;8&apos;,&apos;9&apos;,&apos;10&apos;,&apos;11&apos;,&apos;12&apos;,&apos;13&apos;,&apos;14&apos;,&apos;15&apos;,&apos;16&apos;,&apos;17&apos;,&apos;18&apos;,&apos;19&apos;,&apos;20&apos;,&apos;21&apos;,&apos;22&apos;,&apos;23&apos;,&apos;24&apos;,&apos;25&apos;,&apos;26&apos;,&apos;27&apos;,&apos;28&apos;,&apos;29&apos;),new Array(&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;,&apos;0&apos;),&apos;14394337045561054423.7983869016&apos;,&apos;0&apos;)</div></pre></td></tr></table></figure>
+</li>
+<li><p>提交BT、magnet任务到离线空间</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">POST: http://dynamic.cloud.vip.xunlei.com/interface/bt_task_commit?callback=jsonp1439433353636&amp;t=Thu%20Aug%2013%202015%2010:42:05%20GMT+0800%20(HKT)</div><div class="line">Post field:</div><div class="line">uid:208115253</div><div class="line">btname:[MGRT&amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC GB&amp;BIG5&amp;JP)</div><div class="line">cid:MPGNCXWJJZ4XMDQRQB2D6XE4I3U7D74K</div><div class="line">goldbean:0</div><div class="line">silverbean:0</div><div class="line">tsize:6229928848</div><div class="line">findex:17_18_19_20_21_22_23_24_25_26_27_28_29_</div><div class="line">size:2363024548_9474807_2818296_22001218_146039473_37178662_146284_146266_2469742194_326404175_436642897_397730513_18579515_</div><div class="line">o_taskid:0</div><div class="line">o_page:task</div><div class="line">class_id:0</div><div class="line">interfrom:task</div><div class="line">verify_code:</div><div class="line">=&gt;</div><div class="line">jsonp1439433353636(&#123;&quot;id&quot;:&quot;1033432253338880&quot;,&quot;avail_space&quot;:&quot;2249634561012829&quot;,&quot;time&quot;:0.42569899559021,&quot;progress&quot;:1&#125;)</div></pre></td></tr></table></figure>
+</li>
+<li><p>提交普通任务(http/ed2k等)</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">GET :http://dynamic.cloud.vip.xunlei.com/interface/task_commit?callback=ret_task&amp;uid=208115253&amp;cid=6269CC18A9B66728C1E5A67ACA7523A424513D76&amp;gcid=B06FE736DADEDBA4364348C779E9CC7DC859F17D&amp;size=1073741824&amp;goldbean=0&amp;silverbean=0&amp;t=Wu.Xia.Setup.V1.1.3.2.Full.Client.part02.rar&amp;url=http%3A%2F%2Fgdl.lixian.vip.xunlei.com%2FWu.Xia.Setup.V1.1.3.2.Full.Client.part02.rar%3Ffid%3DYmnMGKm2ZyjB5aZ6ynUjpCRRPXYAAABAAAAAALBv5zba3tukNkNIx3npzH3IWfF9%26mid%3D666%26threshold%3D150%26tid%3D0AAE0146A6116A4BE5B84EE4F9A3D51B%26srcid%3D6%26verno%3D1%26g%3DB06FE736DADEDBA4364348C779E9CC7DC859F17D%26ui%3D208115253%26s%3D1073741824%26pk%3Dkuaichuan%26ak%3D8%3A0%3A999%3A0%26e%3D1439520556%26ms%3D51200%26ci%3D%26ck%3DE3DAEF800B933F3167A0197646D3B4A0%26at%3D1A3E485B19E9EB13EB8C3F11DD7B599F%26hy%3D1%26n%3D0C32B5BC89281E2A5300B4E7A16F29352E54EEA1FF7351427509ACBC922D16616E11EEE2B0330B34324BB2F3A3417F0400&amp;type=0&amp;o_page=history&amp;o_taskid=0&amp;class_id=0&amp;database=undefined&amp;interfrom=task&amp;verify_code=&amp;time=Thu%20Aug%2013%202015%2010:52:54%20GMT+0800%20(HKT)&amp;noCacheIE=1439434374477</div><div class="line">=&gt;</div><div class="line">ret_task(1,&apos;1033437575386368&apos;,&apos;0.2315080165863&apos;)</div></pre></td></tr></table></figure>
+</li>
+<li><p>翻页查询任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">GET: http://dynamic.cloud.vip.xunlei.com/interface/showtask_unfresh?callback=jsonp1439433877220&amp;t=Thu%20Aug%2013%202015%2010:44:37%20GMT+0800%20(HKT)&amp;type_id=4&amp;page=1&amp;tasknum=30&amp;p=1&amp;interfrom=task</div><div class="line">=&gt;</div><div class="line">queryCid(&apos;6269CC18A9B66728C1E5A67ACA7523A424513D76&apos;, &apos;B06FE736DADEDBA4364348C779E9CC7DC859F17D&apos;, &apos;1073741824&apos;,&apos;2249633487271005&apos;, &apos;Wu.Xia.Setup.V1.1.3.2.Full.Client.part02.rar&apos;, &apos;0&apos;,&apos;0&apos;, 0,&apos;1439434366089947731.337838443&apos;,&apos;rar&apos;,&apos;0&apos;)</div></pre></td></tr></table></figure>
+</li>
+<li><p>列出BT、magnet任务的文件列表</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">GET: http://dynamic.cloud.vip.xunlei.com/interface/fill_bt_list?callback=fill_bt_list&amp;tid=1033432253338880&amp;infoid=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;g_net=1&amp;p=1&amp;uid=208115253&amp;interfrom=task&amp;noCacheIE=1439433922810</div><div class="line">=&gt;</div><div class="line">fill_bt_list(&#123;&quot;Result&quot;:&#123;&quot;Tid&quot;:&quot;1033432253338880&quot;,&quot;Infoid&quot;:&quot;63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&quot;,&quot;btnum&quot;:&quot;13&quot;,&quot;btpernum&quot;:30,&quot;now_page&quot;:1,&quot;Record&quot;:[&#123;&quot;id&quot;:0,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Audio 5.1.flac&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;99C94A8BDC84DCEAFD7356F232557F27FAF81E43&quot;,&quot;size&quot;:&quot;2.20G&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253404480&quot;,&quot;icon&quot;:&quot;RAR&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=mclKi9yE3Or9c1byMlV\/J\/r4HkOk5NiMAAAAAM0QeeQUdvGKWARXXwfMCh0lt934&amp;mid=666&amp;threshold=150&amp;tid=493E66D0ECA261B41AA97E8ECE0561AA&amp;srcid=4&amp;verno=1&amp;g=CD1079E41476F18A5804575F07CC0A1D25B7DDF8&amp;scn=t18&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253404480&amp;s=2363024548&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA7F2D20417505588B7F352E312E075D853C00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=17&amp;pi=1033432253338880&amp;ff=0&amp;co=B07951D481443FF3B125AF546C501605&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=F2191321811F9920CE166300279ABA1B&quot;,&quot;vod&quot;:&quot;0&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;other&quot;,&quot;filesize&quot;:&quot;2363024548&quot;,&quot;verify&quot;:&quot;ca609506d44b624fdd0c117da1f843d0&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/17&quot;,&quot;openformat&quot;:&quot;&quot;,&quot;ext&quot;:&quot;flac&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Audio 5.1.flac&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:1,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Menu 01(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;8B88BA5C635F9E8606A1059AC594A5B62FC5898D&quot;,&quot;size&quot;:&quot;9.03M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253470016&quot;,&quot;icon&quot;:&quot;RMVB&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=i4i6XGNfnoYGoQWaxZSlti\/FiY33kpAAAAAAALqMOWwoV6AQ5zopMFal0RP5VQpE&amp;mid=666&amp;threshold=150&amp;tid=B917B3233B55EAA7E6293CEB10D4DA53&amp;srcid=4&amp;verno=1&amp;g=BA8C396C2857A010E73A293056A5D113F9550A44&amp;scn=u2&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253470016&amp;s=9474807&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA7F2D204D650F44C46F312842441358947F313932301900D467302078325705C41E4143292E0C5A925F00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=18&amp;pi=1033432253338880&amp;ff=0&amp;co=8046D92536CB73B6ACA5CDD2E6647C1C&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=63500B46C3C5A833E454AFE1824E19C4&quot;,&quot;vod&quot;:&quot;1&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;video&quot;,&quot;filesize&quot;:&quot;9474807&quot;,&quot;verify&quot;:&quot;f87c5821789304dce494c4430ae5717f&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/18&quot;,&quot;openformat&quot;:&quot;movie&quot;,&quot;ext&quot;:&quot;mkv&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Menu 01(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:2,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Menu 02(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;1B9D7D66B87C8B809EE1F7F6844C5E237C1FF5DF&quot;,&quot;size&quot;:&quot;2.68M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253535552&quot;,&quot;icon&quot;:&quot;RMVB&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=G519Zrh8i4Ce4ff2hExeI3wf9d\/4ACsAAAAAAODuVHjC9g9eAQ0WVSutnyDl\/wZ\/&amp;mid=666&amp;threshold=150&amp;tid=8449710F1FB9C13B236A932BD0C55BFC&amp;srcid=4&amp;verno=1&amp;g=E0EE5478C2F60F5E010D16552BAD9F20E5FF067F&amp;scn=u1&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253535552&amp;s=2818296&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA7F2D204D650F44C46F322842441358947F313932301900D467302078325705C41E4143292E0C5A925F00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=19&amp;pi=1033432253338880&amp;ff=0&amp;co=0B4508291E892F59357B13FFECFC36CA&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=614C54E08D0B8BF4975CDAD173051D7F&quot;,&quot;vod&quot;:&quot;1&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;video&quot;,&quot;filesize&quot;:&quot;2818296&quot;,&quot;verify&quot;:&quot;f6a67416abd94e12789c8975abb3af3c&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/19&quot;,&quot;openformat&quot;:&quot;movie&quot;,&quot;ext&quot;:&quot;mkv&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - Menu 02(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:3,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - NCOP(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;D9688AA52D48BB24C6CEB4847C17E2FBBEDD6963&quot;,&quot;size&quot;:&quot;20.9M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253601088&quot;,&quot;icon&quot;:&quot;RMVB&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=2WiKpS1IuyTGzrSEfBfi+77daWNCtk8BAAAAAGDI6XLMe8VwWyjM2sYD8ZBPeXFp&amp;mid=666&amp;threshold=150&amp;tid=B4071273C65DB771E13977D953D099AC&amp;srcid=4&amp;verno=1&amp;g=60C8E972CC7BC5705B28CCDAC603F1904F797169&amp;scn=u2&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253601088&amp;s=22001218&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA7F2D204E432E61CC1D447269704100DD6D307831305901C427323634202070A7762E6D6B76&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=20&amp;pi=1033432253338880&amp;ff=0&amp;co=89D0B0F90BDB5952CFE0FBE8288D2DDC&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=1B78AFF7AE5A243001937C0530A8ADB7&quot;,&quot;vod&quot;:&quot;1&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;video&quot;,&quot;filesize&quot;:&quot;22001218&quot;,&quot;verify&quot;:&quot;ba0671b7f5bac7ef4a80559408ff5257&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/20&quot;,&quot;openformat&quot;:&quot;movie&quot;,&quot;ext&quot;:&quot;mkv&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - NCOP(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:4,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - SP 01(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;A03B272727AB66B4E6B1146810DDC637DF259AEE&quot;,&quot;size&quot;:&quot;139M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253666624&quot;,&quot;icon&quot;:&quot;RMVB&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=oDsnJyerZrTmsRRoEN3GN98lmu6xYrQIAAAAAGLpp9cenPuTuu2gf2ScgFMP9sH\/&amp;mid=666&amp;threshold=150&amp;tid=CE317301A02824D3A70B07E0A3837C98&amp;srcid=4&amp;verno=1&amp;g=62E9A7D71E9CFB93BAEDA07F649C80530FF6C1FF&amp;scn=t36&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253666624&amp;s=146039473&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA7F2D2053504101D577424472691111D566323078315109D47F783236344170A51C292E6D6B1731E45F00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=21&amp;pi=1033432253338880&amp;ff=0&amp;co=F9C243ABFCA7B155387966DEA5F30B94&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=E31070775C737855FF303FC85840FCEB&quot;,&quot;vod&quot;:&quot;1&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;video&quot;,&quot;filesize&quot;:&quot;146039473&quot;,&quot;verify&quot;:&quot;ba279489d6b6ee5f1dd19920bd6b83eb&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/21&quot;,&quot;openformat&quot;:&quot;movie&quot;,&quot;ext&quot;:&quot;mkv&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - SP 01(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:5,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - SP 02(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;B29B36F826CB965DB158A32082D7532D27FF906D&quot;,&quot;size&quot;:&quot;35.4M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253732160&quot;,&quot;icon&quot;:&quot;RMVB&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=sps2+CbLll2xWKMggtdTLSf\/kG0mTTcCAAAAAL\/iLScbZ7YtJhoaD4OTklAS\/Mlr&amp;mid=666&amp;threshold=150&amp;tid=3D42AABF47FD03964F44D060361AFF9B&amp;srcid=4&amp;verno=1&amp;g=BFE22D271B67B62D261A1A0F8393925012FCC96B&amp;scn=u2&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253732160&amp;s=37178662&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA7F2D2053504101D677424472691111D566323078315109D47F783236344170A51C292E6D6B1731E45F00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=22&amp;pi=1033432253338880&amp;ff=0&amp;co=889A413CD4946B4AADC203633FB8C90F&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=1857D940BD6E1F36910AD27BDF4C1586&quot;,&quot;vod&quot;:&quot;1&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;video&quot;,&quot;filesize&quot;:&quot;37178662&quot;,&quot;verify&quot;:&quot;498d1349691a6f7ac403b77e063969c2&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/22&quot;,&quot;openformat&quot;:&quot;movie&quot;,&quot;ext&quot;:&quot;mkv&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai. - SP 02(BDrip 1920x1080 x264 AAC).mkv&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:6,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).big5.ass&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;58040A73363D851B245503D2942F8DB4D69CAD5F&quot;,&quot;size&quot;:&quot;142K&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253797696&quot;,&quot;icon&quot;:&quot;RAR&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=WAQKczY9hRskVQPSlC+NtNacrV9sOwIAAAAAAPkWnP+FfMcK8unvPXNu3uGFMcYF&amp;mid=666&amp;threshold=150&amp;tid=779661D8252B842B5C5980E551F510AE&amp;srcid=4&amp;verno=1&amp;g=F9169CFF857CC70AF2E9EF3D736EDEE18531C605&amp;scn=u1&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253797696&amp;s=146284&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA77424472691111D566323078315109D47F783236344177A81E432041412218CA3D6967352E0042975F00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=23&amp;pi=1033432253338880&amp;ff=0&amp;co=D1601A52F60DA5C28F156B4C36BAADC9&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=BD2805F1A23E8A3E97F118C54D4AF218&quot;,&quot;vod&quot;:&quot;0&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;other&quot;,&quot;filesize&quot;:&quot;146284&quot;,&quot;verify&quot;:&quot;9b12510b53c14701a1a932e3f4efc5c2&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/23&quot;,&quot;openformat&quot;:&quot;&quot;,&quot;ext&quot;:&quot;ass&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).big5.ass&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:7,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).gb.ass&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;B6C5245A9303571FEC5F448504FA2A14D7EFF5A6&quot;,&quot;size&quot;:&quot;142K&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253863232&quot;,&quot;icon&quot;:&quot;RAR&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=tsUkWpMDVx\/sX0SFBPoqFNfv9aZaOwIAAAAAAPqH9eNTUTK05pyR5gRKcTSOziAj&amp;mid=666&amp;threshold=150&amp;tid=A92E865C2B13D776FDEEC88A1A78C26B&amp;srcid=4&amp;verno=1&amp;g=FA87F5E3535132B4E69C91E6044A71348ECE2023&amp;scn=c14&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253863232&amp;s=146266&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA77424472691111D566323078315109D47F783236344177A81E432041412218CA38622E61731231E45F00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=24&amp;pi=1033432253338880&amp;ff=0&amp;co=7B9E3B8DECBE1272C5AF0F374152C178&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=549524CF2A45282C5E3B6942EBEA8C83&quot;,&quot;vod&quot;:&quot;0&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;other&quot;,&quot;filesize&quot;:&quot;146266&quot;,&quot;verify&quot;:&quot;37e0ce7c27c96aa71cf359f6a571e0e0&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/24&quot;,&quot;openformat&quot;:&quot;&quot;,&quot;ext&quot;:&quot;ass&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).gb.ass&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:8,&quot;title&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).mkv&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;BDE1E4C2E445E03AFE12365C342C425116340423&quot;,&quot;size&quot;:&quot;2.30G&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253928768&quot;,&quot;icon&quot;:&quot;RMVB&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=veHkwuRF4Dr+EjZcNCxCURY0BCNyRjWTAAAAACMhW\/VIu9RrN1HfSQ3yhtpbeBdO&amp;mid=666&amp;threshold=150&amp;tid=4FE3E9C81AAD65CFE1889B80C14E7351&amp;srcid=4&amp;verno=1&amp;g=23215BF548BBD46B3751DF490DF286DA5B78174E&amp;scn=u2&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253928768&amp;s=2469742194&amp;m=0&amp;n=013A7CA30D54264D61035E962C205375623C768134696A6F7503508A7F416E6F202958C4126974612029508A3E206E6F202F50893E65206F20235E8F2A746163680811933E204D61640011B7376972616E0058CA77424472691111D566323078315109D47F783236344177A81E432041412218CA326B760000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=25&amp;pi=1033432253338880&amp;ff=0&amp;co=4B093BF041312F70C0327DB4D9D745E3&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=FCA839D230AF7BF499A48287C6FE6361&quot;,&quot;vod&quot;:&quot;1&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;video&quot;,&quot;filesize&quot;:&quot;2469742194&quot;,&quot;verify&quot;:&quot;8e99bf5f12b3aae8371ecaa5e2294cae&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/25&quot;,&quot;openformat&quot;:&quot;movie&quot;,&quot;ext&quot;:&quot;mkv&quot;,&quot;dirtitle&quot;:&quot;[MGRT&amp;amp;Mabors Sub]Gekijouban Ano Hi Mita Hana no Namae o Bokutachi wa Mada Shiranai.(BDrip 1920x1080 x264 FLAC AAC).mkv&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:9,&quot;title&quot;:&quot;[MGRT][13.08.21] \u5287\u5834\u7248\u300c\u3042\u306e\u65e5\u898b\u305f\u82b1\u306e\u540d\u524d\u3092\u50d5\u9054\u306f\u307e\u3060\u77e5\u3089\u306a\u3044\u3002\u300d\u4e3b\u984c\u6b4c - \u30b5\u30fc\u30af\u30eb\u30b2\u30fc\u30e0\u3010\u671f\u9593\u751f\u7523\u9650\u5b9a\u30a2\u30cb\u30e1\u76e4\u3011 \u6b4c\uff1aGalileo Galilei (ALAC+cue+log+png+DVDISO).rar&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;C0466CBD1B0D6B7A68D7D0381BE33FFAA40268FD&quot;,&quot;size&quot;:&quot;311M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432253994304&quot;,&quot;icon&quot;:&quot;RAR&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=wEZsvRsNa3po19A4G+M\/+qQCaP1PiHQTAAAAAAyccZr4L96XOemFf+gPmdBnVNkD&amp;mid=666&amp;threshold=150&amp;tid=1718B0786966239C73B33F3A785E6EDB&amp;srcid=4&amp;verno=1&amp;g=0C9C719AF82FDE9739E9857FE80F99D06754D903&amp;scn=u2&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432253994304&amp;s=326404175&amp;m=0&amp;n=013A7CA30D545D5B31521FD4672E32315D41B545D7F6B0E6A1D99546FBCEC8D5D2EB955BE4A8A4CEC39AF654FBF28357DF3E952BFBDEA4C0D6CB950DFBCAA4A4A1C2905D89F7EE7DB88911C97FA5B5A960C49E41B4A5B2A960C4D145E1C6DAE967A8CB4A3DCFDEB6A8C4934194A5E1B150C08EC4E7E8A3BA47005D8D33656F2047005D8D3365692028207DA51C2B6375654A5D8B382B706E674A75B21B49534F294F43852D00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=26&amp;pi=1033432253338880&amp;ff=0&amp;co=B3328ED373BAC2FF1024FC7FA827030F&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=B8D80E30FE9B3484F034C1817B6184FE&quot;,&quot;vod&quot;:&quot;0&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;rar&quot;,&quot;filesize&quot;:&quot;326404175&quot;,&quot;verify&quot;:&quot;baf437596d3fc8579a37c83b3cf221c3&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/26&quot;,&quot;openformat&quot;:&quot;rar&quot;,&quot;ext&quot;:&quot;rar&quot;,&quot;dirtitle&quot;:&quot;[MGRT][13.08.21] \u5287\u5834\u7248\u300c\u3042\u306e\u65e5\u898b\u305f\u82b1\u306e\u540d\u524d\u3092\u50d5\u9054\u306f\u307e\u3060\u77e5\u3089\u306a\u3044\u3002\u300d\u4e3b\u984c\u6b4c - \u30b5\u30fc\u30af\u30eb\u30b2\u30fc\u30e0\u3010\u671f\u9593\u751f\u7523\u9650\u5b9a\u30a2\u30cb\u30e1\u76e4\u3011 \u6b4c\uff1aGalileo Galilei (ALAC+cue+log+png+DVDISO).rar&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:10,&quot;title&quot;:&quot;[MGRT][13.08.28] \u5287\u5834\u7248\u300c\u3042\u306e\u65e5\u898b\u305f\u82b1\u306e\u540d\u524d\u3092\u50d5\u9054\u306f\u307e\u3060\u77e5\u3089\u306a\u3044\u3002\u300d\u30aa\u30ea\u30b8\u30ca\u30eb\u30fb\u30b5\u30a6\u30f3\u30c9\u30c8\u30e9\u30c3\u30af  \u97f3\u697d\uff1aREMEDIOS (2ALAC+cue+log+png).rar&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;CAF507BFEE8196790C8EE2792FEBB3E5F388AD8E&quot;,&quot;size&quot;:&quot;416M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432254059840&quot;,&quot;icon&quot;:&quot;RAR&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=yvUHv+6BlnkMjuJ5L+uz5fOIrY5RpAYaAAAAAAoMmWGcbjxRxE0lO1jOQuDQ0NjK&amp;mid=666&amp;threshold=150&amp;tid=9688E18D6FEFC21A44AE91EBADF72319&amp;srcid=4&amp;verno=1&amp;g=0A0C99619C6E3C51C44D253B58CE42E0D0D0D8CA&amp;scn=u2&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432254059840&amp;s=436642897&amp;m=0&amp;n=013A7CA30D545D5B31521FD4672E32385D41B545D7F6B0E6A1D99546FBCEC8D5D2EB955BE4A8A4CEC39AF654FBF28357DF3E952BFBDEA4C0D6CB950DFBCAA4A4A1C2905DFAAAA5EAA5D9942EFAEB8139A7589451FAA6A5F3A5A8942CFAE9A5C3A5CE11C48DF49853A3DB63A1124544494F3211CC6D414C41434A52913A2B6C6F674A418A38292E72611331E45F00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=27&amp;pi=1033432253338880&amp;ff=0&amp;co=BA5C3D395BA72264D88E28AA2F830C15&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=55AFB0FBED521F5190BEEB103739B7F0&quot;,&quot;vod&quot;:&quot;0&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;rar&quot;,&quot;filesize&quot;:&quot;436642897&quot;,&quot;verify&quot;:&quot;21f40dbe89d38e1f73048e25542313c7&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/27&quot;,&quot;openformat&quot;:&quot;rar&quot;,&quot;ext&quot;:&quot;rar&quot;,&quot;dirtitle&quot;:&quot;[MGRT][13.08.28] \u5287\u5834\u7248\u300c\u3042\u306e\u65e5\u898b\u305f\u82b1\u306e\u540d\u524d\u3092\u50d5\u9054\u306f\u307e\u3060\u77e5\u3089\u306a\u3044\u3002\u300d\u30aa\u30ea\u30b8\u30ca\u30eb\u30fb\u30b5\u30a6\u30f3\u30c9\u30c8\u30e9\u30c3\u30af  \u97f3\u697d\uff1aREMEDIOS (2ALAC+cue+log+png).rar&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:11,&quot;title&quot;:&quot;COMPILATION MUSIC.rar&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;E2E717DA7A121A9ADE4EC07F942D0629F619CA48&quot;,&quot;size&quot;:&quot;379M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432254125376&quot;,&quot;icon&quot;:&quot;RAR&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=4ucX2noSGpreTsB\/lC0GKfYZykjR4rQXAAAAAPcL77QMfZKZQ3\/UjmC\/3PfYfwT4&amp;mid=666&amp;threshold=150&amp;tid=140792B8B9FDBD3D9883D38634532C7F&amp;srcid=4&amp;verno=1&amp;g=F70BEFB40C7D9299437FD48E60BFDCF7D87F04F8&amp;scn=u2&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432254125376&amp;s=397730513&amp;m=0&amp;n=01227EA90F494C4154287EAA7F4D555349221F963E72000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=28&amp;pi=1033432253338880&amp;ff=0&amp;co=9191E0BE47AF5E75280AF8D3C45725CB&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=C8A9FBFE2116F272CE722B5D25AAC2CF&quot;,&quot;vod&quot;:&quot;0&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;rar&quot;,&quot;filesize&quot;:&quot;397730513&quot;,&quot;verify&quot;:&quot;00f7b749c39934c8aa438ed10b4ce115&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/28&quot;,&quot;openformat&quot;:&quot;rar&quot;,&quot;ext&quot;:&quot;rar&quot;,&quot;dirtitle&quot;:&quot;COMPILATION MUSIC.rar&quot;,&quot;is_blocked&quot;:0&#125;,&#123;&quot;id&quot;:12,&quot;title&quot;:&quot;Fonts.rar&quot;,&quot;download_status&quot;:&quot;2&quot;,&quot;cid&quot;:&quot;75F5BA6F476120B3663BB96F460D39C337111440&quot;,&quot;size&quot;:&quot;17.7M&quot;,&quot;percent&quot;:100,&quot;taskid&quot;:&quot;1033432254190912&quot;,&quot;icon&quot;:&quot;RAR&quot;,&quot;livetime&quot;:&quot;365\u5929&quot;,&quot;downurl&quot;:&quot;http:\/\/gdl.lixian.vip.xunlei.com\/download?fid=dfW6b0dhILNmO7lvRg05wzcRFEA7gBsBAAAAAHnPF0NBEx0oMYs70Hu9Wqg\/a0Q+&amp;mid=666&amp;threshold=150&amp;tid=CE4019E6D03E3A16451051D09D531008&amp;srcid=4&amp;verno=1&amp;g=79CF174341131D28318B3BD07BBD5AA83F6B443E&amp;scn=u2&amp;i=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;t=6&amp;ui=208115253&amp;ti=1033432254190912&amp;s=18579515&amp;m=0&amp;n=01275E8A2B732E72611331E45F00000000&amp;ih=63CCD15EC94E79760E1180743F5C9C46E9F1FF8A&amp;fi=29&amp;pi=1033432253338880&amp;ff=0&amp;co=B3789EBC09FF1DFE5557FDEFBCE51DDC&amp;cm=1&amp;pk=lixian&amp;ak=1:0:6:4&amp;e=1447209695&amp;ms=10485760&amp;ck=601902F2D83C9A97ED4E6FAC83FA4010&amp;at=2D70E9E97F5E0CC55DCDC8B6905B50CB&quot;,&quot;vod&quot;:&quot;0&quot;,&quot;cdn&quot;:[],&quot;format_img&quot;:&quot;rar&quot;,&quot;filesize&quot;:&quot;18579515&quot;,&quot;verify&quot;:&quot;a3d729967d842fed18c7b36308339b25&quot;,&quot;url&quot;:&quot;bt:\/\/63CCD15EC94E79760E1180743F5C9C46E9F1FF8A\/29&quot;,&quot;openformat&quot;:&quot;rar&quot;,&quot;ext&quot;:&quot;rar&quot;,&quot;dirtitle&quot;:&quot;Fonts.rar&quot;,&quot;is_blocked&quot;:0&#125;]&#125;&#125;)</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>更多XHR示例可在github项目的xhr-sample目录中找到。</p>
+<h3 id="关于迅雷离线的登录验证方式"><a href="#关于迅雷离线的登录验证方式" class="headerlink" title="关于迅雷离线的登录验证方式"></a>关于迅雷离线的登录验证方式</h3><p>一开始我未找到模拟登录迅雷离线的方法，是通过人工登录获取cookie的方式实现的。后来我将登录页面的JS beautify之后，找到了登录API及相应加密算法。用户密码加密基于RSA。我用nodejs+express实现了一个加密密码的API，关键代码如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">app.get(<span class="string">'/api/crypto/rsa_encrypt.do'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>)</span>&#123;</div><div class="line">    <span class="keyword">var</span> kn = req.query.check_n || <span class="string">'123'</span>;</div><div class="line">    <span class="keyword">var</span> ke = req.query.check_e || <span class="string">'123'</span>;</div><div class="line">    <span class="keyword">var</span> captcha = req.query.captcha || <span class="string">'123'</span>;</div><div class="line">    <span class="keyword">var</span> pwd = req.query.pwd || <span class="string">'123'</span>;</div><div class="line">    <span class="keyword">var</span> rsa = <span class="keyword">new</span> RSAKey();</div><div class="line">    rsa.setPublic(b64tohex(kn), b64tohex(ke));</div><div class="line">    <span class="keyword">var</span> code = captcha.toUpperCase();</div><div class="line">    <span class="keyword">var</span> encrypted_pwd = hex2b64(rsa.encrypt(md5(pwd) + code));</div><div class="line">    res.json(&#123;<span class="string">'encrypted_pwd'</span>:encrypted_pwd&#125;)</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<h3 id="离线服务器的验证"><a href="#离线服务器的验证" class="headerlink" title="离线服务器的验证"></a>离线服务器的验证</h3><p>服务端脚本获取到离线下载地址后，需要弄清楚如何让用户能直接用这个链接下载。当然不能直接将服务器通过模拟登录获取到的cookie直接返回给用户。经过测试，发现用户只需要在cookie中提供正确的gdriveid的值，离线服务器就允许用户下载，因此服务器脚本需要返回该值。<br>要实现此功能，服务端脚本关键代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#从文件中读入模拟请求所需cookie</span></div><div class="line">cookie = str(open(<span class="string">'cookie.txt'</span>,<span class="string">'rb'</span>).read()).replace(<span class="string">'\n'</span>,<span class="string">''</span>)</div><div class="line">...</div><div class="line"><span class="comment">#从cookie中提取gdriveid字段</span></div><div class="line">app.config[<span class="string">'thunder_gdriveid'</span>] = re.search(<span class="string">r'gdriveid=(\w+?);'</span>, cookie).group(<span class="number">1</span>)</div><div class="line"><span class="comment">#用于返回gdriveid的API</span></div><div class="line"><span class="meta">@app.route('/api/gdriveid', methods=['GET'])</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">API_get_gdriveid</span><span class="params">()</span>:</span></div><div class="line">	<span class="keyword">return</span> jsonify(&#123;<span class="string">'gdriveid'</span>:app.config[<span class="string">'thunder_gdriveid'</span>]&#125;)</div></pre></td></tr></table></figure></p>
+<p>用户只需在Aria2请求中带上此cookie即可。在用户端生成的Aria2命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">aria2c -c -s10 -x10 --header &quot;Cookie: gdriveid=XXXXX;&quot; -o &quot;filename.XXX&quot; &quot;http://gdl.lixian.vip.xunlei.com/download?...&quot;</div></pre></td></tr></table></figure></p>
+<h3 id="服务端实现"><a href="#服务端实现" class="headerlink" title="服务端实现"></a>服务端实现</h3><p>使用Flask框架实现了API server，写了个简易的网页版前端。在API抓到并分析清楚后已没有多大难度，用requests实现模拟操作即可。有以下几点需要注意：  </p>
+<ul>
+<li>虽尚不明确迅雷离线网页端的登录过期时间是多少，但实验发现若服务器脚本长时间不进行重新登录，模拟请求失败率升高，因此使用cron实现每天定时重新模拟登录一次，获取新的cookie。</li>
+<li>服务器需要拥有国内IP，若使用境外VPS做服务器，向迅雷服务器发出的请求很容易被reset。原因未明。</li>
+<li>受服务器网络状况影响，单次请求可能耗时较长，为了提高性能，用gunicorn、uwsgi等容器来跑web server。</li>
+</ul>
+<h3 id="CLI客户端"><a href="#CLI客户端" class="headerlink" title="CLI客户端"></a>CLI客户端</h3><p>对于linux和mac，使用CLI更为方便。目前已上线CLI客户端，python实现，已上传pypi，通过pip可快速安装。使用详情见 <a href="https://github.com/Chion82/xunlei_share.git" target="_blank" rel="external">https://github.com/Chion82/xunlei_share.git</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="cisvylbt8001eqycmvluv42h0" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crawler/">crawler</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/21/netease-music-app-reversed-proxy/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          网易云音乐APP反代开发笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/20/pixivhack-development-log/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">PixivHack：记P站爬图脚本开发</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  var disqus_url = 'http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

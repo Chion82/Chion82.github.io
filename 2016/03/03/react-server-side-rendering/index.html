@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>自译：如何使用服务端渲染加速React APP首屏加载 | ChionLab  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文：How to build React apps that load quickly using server side rendering (by Stefan Fidanov)
+使用客户端框架（译者注：此处指大多数在浏览器端运行的前端MV*框架）可快速开发用户交互丰富、性能高效的web app，前端开发者都非常喜欢使用该类框架。不幸的是，客户端框架也有缺点，其中最主要的问题是首屏加载速度。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自译：如何使用服务端渲染加速React APP首屏加载">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="原文：How to build React apps that load quickly using server side rendering (by Stefan Fidanov)
+使用客户端框架（译者注：此处指大多数在浏览器端运行的前端MV*框架）可快速开发用户交互丰富、性能高效的web app，前端开发者都非常喜欢使用该类框架。不幸的是，客户端框架也有缺点，其中最主要的问题是首屏加载速度。">
+<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自译：如何使用服务端渲染加速React APP首屏加载">
+<meta name="twitter:description" content="原文：How to build React apps that load quickly using server side rendering (by Stefan Fidanov)
+使用客户端框架（译者注：此处指大多数在浏览器端运行的前端MV*框架）可快速开发用户交互丰富、性能高效的web app，前端开发者都非常喜欢使用该类框架。不幸的是，客户端框架也有缺点，其中最主要的问题是首屏加载速度。">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-react-server-side-rendering" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/03/react-server-side-rendering/" class="article-date">
+  <time datetime="2016-03-03T12:11:17.000Z" itemprop="datePublished">2016-03-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/前端/">前端</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      自译：如何使用服务端渲染加速React APP首屏加载
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文：<a href="https://www.terlici.com/2015/03/18/fast-react-loading-server-rendering.html" target="_blank" rel="external">How to build React apps that load quickly using server side rendering (by Stefan Fidanov)</a></p>
+<p>使用客户端框架（译者注：此处指大多数在浏览器端运行的前端MV*框架）可快速开发用户交互丰富、性能高效的web app，前端开发者都非常喜欢使用该类框架。<br>不幸的是，客户端框架也有缺点，其中最主要的问题是首屏加载速度。<br>客户端首先从服务器接收少量的HTML代码，但是之后却需要接收大量的JavaScript代码。<br>然后，它们（指前端框架）需要向服务器请求数据，等待收到数据，进行必要的数据处理，并最终渲染到用户的浏览器上。<br>相比之下，传统的web做法是，全部数据由服务端进行渲染，当服务端向用户首次递交HTML时，用户端浏览器就收到了渲染完成的页面了。<br>再者，大多数情况下，web服务器的渲染速度要快于客户端的渲染。所以，（传统web）的首屏渲染是非常快速的。</p>
+<h2 id="React的解决方案"><a href="#React的解决方案" class="headerlink" title="React的解决方案"></a>React的解决方案</h2><p>很自然的，你会想同时拥有上述两者（分别指：使用了MV*框架的web app、传统的web站点）的全部优点。快速的首屏加载、高度的交互性和快速的响应。React可以帮助你同时做到这几点。<br>React是这样做到的：首先，它可以在服务端渲染任意的组件（Component），包括这些组件的数据，这样渲染得到的结果是一些HTML代码，这些HTML代码在这之后可以直接发送到浏览器。<br>当这些HTML在用户浏览器上被显示出来时，React会在本地（这里的本地指用户浏览器）进行计算。它的智能算法将进行判断并得出：React即将要在浏览器端动态渲染出来的结果，跟当前已经被显示出来的页面一样。<br>在这之后，除了添加必要的事件处理，React不会对页面做任何的修改。<br>那么为什么这样会更快呢？我们不是在做几乎跟客户端一样的事情吗？<br>是的。但仅仅是“几乎”而已。<br>首先，当服务器响应浏览器请求时，用户马上就能看到整个页面了。所以页面响应速度更快了。<br>其次，因为React能够判断出无需再对DOM做修改，它就不会再去碰DOM。修改DOM是前端渲染中最慢的部分。<br>再者，这样可以节省请求次数。因为所有数据已经被渲染所以React不需要再向服务器请求。</p>
+<p><strong>那么有没有可能：当页面加载时，页面已经显示出来但是用户不能对其进行交互，因为这时事件处理尚未被添加？</strong><br>理论上这种情况是有可能发生的。但是因为用了服务端渲染，我们就避免了所有的高开销操作，而且这样不但加速了页面响应速度，添加事件处理的速度也会变得很快。<br>所以，你的应用将总是可交互的，并且用户不会察觉到有什么问题。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>光说无用，我们来看看如何在代码中实现。我们的第一个示例是非常简单的。我们要显示一个”hello”消息，并且点击后会有提示。<br>我们的示例将使用NodeJS作为服务端部分，不过这里的一切都可以应用在其他平台，比如PHP, Ruby, Python, Java或者.NET。</p>
+<p>我们需要以下Node模块：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install babel react react-dom express jade</div></pre></td></tr></table></figure></p>
+<p>我们将使用<code>express</code>和<code>jade</code>来做一个示例服务器。<br><code>react</code>和<code>react-dom</code>包可提供React组件的服务端渲染。<br><code>babel</code>包允许我们通过node直接加载JSX模块，比如<code>require(&#39;some-component.jsx&#39;)</code>或者<code>require(&#39;some-component.js&#39;)</code>。<br><code>babel</code>实际上更加强大。现在你可以用ES6支持。<br>我们的应用只有3个文件，文件结构如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public/components.js</div><div class="line">views/index.jade</div><div class="line">app.js</div></pre></td></tr></table></figure></p>
+<p><code>components.js</code>包含了我们的React组件；<code>index.jade</code>是网站的基本模板文件，将会加载全部JavaScript；<code>app.js</code>是node服务器。<br>让我们来看看<code>index.jade</code>里面有什么内容：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">doctype</div><div class="line">html</div><div class="line">  head</div><div class="line">    title React Server Side Rendering Example</div><div class="line">  body</div><div class="line">    div(id='react-root')!= react</div><div class="line"></div><div class="line">    script(src='https://fb.me/react-0.14.0.js')</div><div class="line">    script(src='https://fb.me/react-dom-0.14.0.js')</div><div class="line">    script(src='https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js')</div><div class="line"></div><div class="line">    script(src='/components.js', type='text/babel')</div></pre></td></tr></table></figure></p>
+<p><code>div(id=&#39;react-root&#39;)!= react</code>是最关键的部分。它的作用是作为React根组件的容器。另外，<code>react</code>变量的值是服务端渲染React组件后得到的HTML。<br>前两个引用进来的JavaScript文件是React本身，如果你想要在组件里面使用JSX，还需要引用一个Babel。<br>最后一个引用的文件是具体的组件。我们要把type设成<code>text/babel</code>好让Babel来处理这个文件。<br>这将提供一个基本的HTML结构，并加载全部的JavaScript和你需要的React组件。<br>来看看这个简单的服务器：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)</div><div class="line">  , app = express()</div><div class="line">  , React = <span class="built_in">require</span>(<span class="string">'react'</span>)</div><div class="line">  , ReactDOM = <span class="built_in">require</span>(<span class="string">'react-dom/server'</span>)</div><div class="line">  , components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div><div class="line"></div><div class="line"></div><div class="line">app.engine(<span class="string">'jade'</span>, <span class="built_in">require</span>(<span class="string">'jade'</span>).__express)</div><div class="line">app.set(<span class="string">'view engine'</span>, <span class="string">'jade'</span>)</div><div class="line"></div><div class="line">app.use(express.static(__dirname + <span class="string">'/public'</span>))</div><div class="line"></div><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    react: ReactDOM.renderToString(HelloMessage(&#123;name: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'Listening on port 3000...'</span>)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这部分代码中，大部分和一个普通的express应用程序没有多大区别。但是其中有些行需要注意。<br>第一行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div></pre></td></tr></table></figure></p>
+<p>加载Babel到你的依赖。这么做，你可以直接导入(<code>require()</code>)由JSX组成的React组件，它们会被自动翻译为JavaScript，就像后面的两行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div></pre></td></tr></table></figure></p>
+<p>在上面的代码中，第一行导入JSX编写的React组件。然后，由<code>React.createFactory</code>生成一个函数，该函数可以创建<code>HelloMessage</code>的组件。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    react: ReactDOM.renderToString(HelloMessage(&#123;name: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>上面这里就是渲染React组件的代码，并且渲染包含该组件的页面然后发送至浏览器。<br>首先，使用值为<code>John</code>的<code>name</code>属性创建一个新的<code>HelloMessage</code>组件，然后使用<code>React.renderToString</code>将这个组件渲染为HTML。<br>这里需要注意的是，组件仅仅被渲染(rendered)，而没有被挂载(mounted)，所以 <strong>所有关于挂载的方法都不会被调用</strong> 。<br>在创建组件之后，将组件的HTML传递到index模版。<br>我们的组件看起来是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isNode = <span class="keyword">typeof</span> <span class="built_in">module</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">module</span>.exports</div><div class="line">  , React = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.React</div><div class="line">  , ReactDOM = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.ReactDOM</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createClass(&#123;</div><div class="line">  handleClick: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    alert(<span class="string">'You clicked!'</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onClick</span>=<span class="string">&#123;this.handleClick&#125;</span>&gt;</span>Hello &#123;this.props.name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div><div class="line">  &#125;</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="keyword">if</span> (isNode) &#123;</div><div class="line">  exports.HelloMessage = HelloMessage</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  ReactDOM.render(<span class="xml"><span class="tag">&lt;<span class="name">HelloMessage</span> <span class="attr">name</span>=<span class="string">"John"</span> /&gt;</span>, document.getElementById('react-root'))</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>你可以看见，这跟一般的由JSX编写的React组件没有什么不同，除了开头和结尾。这里就是你要让组件能同时在浏览器和Node端运行所需要注意的地方。</p>
+<h2 id="高级示例：加载服务端数据"><a href="#高级示例：加载服务端数据" class="headerlink" title="高级示例：加载服务端数据"></a>高级示例：加载服务端数据</h2><p>真正的Web app做的事情通常远不止你看见的这些。它们经常需要跟服务器交互并从服务器加载数据。<br>但是，我们不希望这在服务端渲染时发生。<br>我们来对这个示例程序做一些小修改。首先，模版文件需要引用jQuery，在这里它的唯一作用是从服务端请求数据。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">doctype</div><div class="line">html</div><div class="line">  head</div><div class="line">    title React Server Side Rendering Example</div><div class="line">  body</div><div class="line">    div(id='react-root')!= react</div><div class="line"></div><div class="line">    script(src='https://fb.me/react-0.14.0.js')</div><div class="line">    script(src='https://fb.me/react-dom-0.14.0.js')</div><div class="line">    script(src='https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js')</div><div class="line">    script(src='http://code.jquery.com/jquery-2.1.3.js')</div><div class="line"></div><div class="line">    script(src='/components.js', type='text/babel')</div></pre></td></tr></table></figure></p>
+<p>我们的服务器现在需要增加一个请求路由。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)</div><div class="line">  , app = express()</div><div class="line">  , React = <span class="built_in">require</span>(<span class="string">'react'</span>)</div><div class="line">  , ReactDOM = <span class="built_in">require</span>(<span class="string">'react-dom/server'</span>)</div><div class="line">  , components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div><div class="line"></div><div class="line"></div><div class="line">app.engine(<span class="string">'jade'</span>, <span class="built_in">require</span>(<span class="string">'jade'</span>).__express)</div><div class="line">app.set(<span class="string">'view engine'</span>, <span class="string">'jade'</span>)</div><div class="line"></div><div class="line">app.use(express.static(__dirname + <span class="string">'/public'</span>))</div><div class="line"></div><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    react: React.renderToString(HelloMessage(&#123;name: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.send(<span class="string">"Paul, "</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().toString())</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'Listening on port 3000...'</span>)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这里跟之前的例子唯一的不同之处在于这三行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">app.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.send(<span class="string">"Paul, "</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().toString())</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这三行代码的作用是，当<code>/name</code>被请求时，返回名字<code>Paul</code>和当前时间。<br>来看看这整个应用最有趣和最重要的部分，即React组件：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isNode = <span class="keyword">typeof</span> <span class="built_in">module</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">module</span>.exports</div><div class="line">  , React = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.React</div><div class="line">  , ReactDOM = isNode ? <span class="built_in">require</span>(<span class="string">'react-dom'</span>) : <span class="built_in">window</span>.ReactDOM</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createClass(&#123;</div><div class="line">  getInitialState: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> &#123;&#125;</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  loadServerData: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    $.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.isMounted()) &#123;</div><div class="line">        <span class="keyword">this</span>.setState(&#123;name: result&#125;)</div><div class="line">      &#125;</div><div class="line">    &#125;.bind(<span class="keyword">this</span>))</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  componentDidMount: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.intervalID = setInterval(<span class="keyword">this</span>.loadServerData, <span class="number">3000</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  componentWillUnmount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    clearInterval(<span class="keyword">this</span>.intervalID)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  handleClick: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    alert(<span class="string">'You clicked!'</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> name = <span class="keyword">this</span>.state.name ? <span class="keyword">this</span>.state.name : <span class="keyword">this</span>.props.name</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onClick</span>=<span class="string">&#123;this.handleClick&#125;</span>&gt;</span>Hello &#123;name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div><div class="line">  &#125;</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="keyword">if</span> (isNode) &#123;</div><div class="line">  exports.HelloMessage = HelloMessage</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  ReactDOM.render(<span class="xml"><span class="tag">&lt;<span class="name">HelloMessage</span> <span class="attr">name</span>=<span class="string">"John"</span> /&gt;</span>, document.getElementById('react-root'))</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们只添加了这4个方法，其他和之前的例子相同：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">getInitialState: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> &#123;&#125;</div><div class="line">&#125;,</div><div class="line"></div><div class="line">loadServerData: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  $.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isMounted()) &#123;</div><div class="line">      <span class="keyword">this</span>.setState(&#123;name: result&#125;)</div><div class="line">    &#125;</div><div class="line">  &#125;.bind(<span class="keyword">this</span>))</div><div class="line">&#125;,</div><div class="line"></div><div class="line">componentDidMount: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.intervalID = setInterval(<span class="keyword">this</span>.loadServerData, <span class="number">3000</span>)</div><div class="line">&#125;,</div><div class="line"></div><div class="line">componentWillUnmount: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  clearInterval(<span class="keyword">this</span>.intervalID)</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>当组件被挂载后，每隔3秒它会向服务器请求数据<code>/name</code>并且显示出来。<br><code>componentDidMount</code>和<code>componentWillUnmount</code>在组件被渲染时是不会被调用的，它们只有在组件被挂载时才会被调用。<br>所以这两个方法在服务端渲染时不会被调用，<code>loadServerData</code>方法也不会被调用。<br>这三个方法只有当组件被挂载时才会被执行，而这只会发生在浏览器端。<br>由此可见，想要从整体中分离出只在浏览器运行的那部分，并且保持代码的复用是很简单的。</p>
+<h2 id="在这之后？"><a href="#在这之后？" class="headerlink" title="在这之后？"></a>在这之后？</h2><p>你已经学会了如何借助服务端渲染创建一个能被快速加载的React应用程序。但是，我的这个示例只是针对NodeJS服务器。<br>如果你在使用其他技术（比如PHP, .NET, Ruby, Python或者Java），你一样可以利用React服务端渲染的优点，这将会是你下一步要研究的方向。<br>另外，我直接在浏览器端使用了JSX，这将多亏于Babel，但是这也会降低性能。在生产环境中，在将JSX提供给浏览器之前先将之转换为JavaScript会更快。<br>我相信你一定可以找到你最喜欢的开发语言和Web框架下的类似解决方案。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="cisvylbt30019qycm5pvdzzj7" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/front-end/">front-end</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/31/WeChatMomentStat-update-log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          WeChatMomentStat：微信朋友圈导出工具开发记录
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/02/28/hello-old-driver/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">你好，老司机：种子爬虫企划</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  var disqus_url = 'http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>在GitHub Pages上使用CloudFlare https CDN | ChionLab  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
+GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在GitHub Pages上使用CloudFlare https CDN">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
+GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
+<meta property="og:image" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/dns-config.png">
+<meta property="og:image" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/dig-result.png">
+<meta property="og:image" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/page-rules.png">
+<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在GitHub Pages上使用CloudFlare https CDN">
+<meta name="twitter:description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
+GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
+<meta name="twitter:image" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/dns-config.png">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-github-pages-with-https" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/28/github-pages-with-https/" class="article-date">
+  <time datetime="2016-01-27T16:49:18.000Z" itemprop="datePublished">2016-01-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/运维/">运维</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      在GitHub Pages上使用CloudFlare https CDN
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本站就是使用<a href="https://hexo.io" target="_blank" rel="external">hexo</a>搭建的静态Web站点，托管在<a href="https://github.com/Chion82/Chion82.github.io" target="_blank" rel="external">GitHub repo</a>，并使用GitHub Pages。<br>另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。</p>
+<h2 id="GitHub-Pages应用自定义域名"><a href="#GitHub-Pages应用自定义域名" class="headerlink" title="GitHub Pages应用自定义域名"></a>GitHub Pages应用自定义域名</h2><p>默认情况下，访问GitHub Pages页面的域名为<code>username.github.io</code>，如果需要使用自己的域名（以下简称“你的域名”），可<a href="https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/" target="_blank" rel="external">参考官方的帮助文档</a>，其实非常简单：</p>
+<ol>
+<li>在repo根目录下创建<code>CNAME</code>文件，内容为你的域名。<a href="https://github.com/Chion82/Chion82.github.io/blob/master/CNAME" target="_blank" rel="external">本站的CNAME文件</a></li>
+<li>在你的域名管理中心，添加一条<code>CNAME</code>记录，指向<code>username.github.io</code>。（将username替换为你的GitHub用户名）</li>
+</ol>
+<p>现在，访问<code>http://你的域名</code> ，已经可以访问到站点首页了。而如果访问<code>http://username.github.io</code> （即原来的地址），将被302跳转到<code>http://你的域名</code>。</p>
+<h2 id="https的问题"><a href="#https的问题" class="headerlink" title="https的问题"></a>https的问题</h2><p>尝试直接访问<code>https://你的域名</code>，浏览器会报SSL_DOMAIN_NOT_MATCHED警告。因为GitHub Pages默认提供的SSL证书的根域名是<code>github.io</code>，和你的域名不相同。<br>而且，GitHub Pages不支持上传SSL证书。</p>
+<h2 id="使用CloudFlare"><a href="#使用CloudFlare" class="headerlink" title="使用CloudFlare"></a>使用CloudFlare</h2><p><a href="https://www.cloudflare.com" target="_blank" rel="external">CloudFlare</a>（以下简称CF）是一家CDN提供商，它的free plan里面就提供https服务（免费计划不能上传SSL）。现在可以通过CF实现：从用户到CDN服务器的连接为https，而CDN服务器到GitHub Pages服务器的连接为http。<br>1.注册并登录到CF。按照提示，在你的域名的管理中心，将域名的name server改为CF的name server。CF提供的NS如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">NS</td>
+<td style="text-align:center">bob.ns.cloudflare.com</td>
+</tr>
+<tr>
+<td style="text-align:center">NS</td>
+<td style="text-align:center">jamie.ns.cloudflare.com</td>
+</tr>
+</tbody>
+</table>
+<p>2.在CF的DNS设置页中，检查对应的子域名记录。博主的DNS记录如下：<br>  <img src="/2016/01/28/github-pages-with-https/dns-config.png" alt="blog.chionlab.moe的DNS记录" title="blog.chionlab.moe的DNS记录"><br>  其中，右侧的橙色云图标代表该条记录将经过CF的CDN加速。<br>  在这里设置的DNS记录，如果是CNAME记录或者A记录，若右边的STATUS为连通状态，CF都会在name server中将其设置为A记录并指向CF的CDN服务器（并根据用户所在地选择最优CDN），当用户通过该域名访问CF的CDN时（仅限http或https），CDN再转发到刚才填写的真实目的主机（即username.github.io）<br>  <img src="/2016/01/28/github-pages-with-https/dig-result.png" alt="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN" title="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN"><br>  CF正是通过这种动态DNS的方式实现CDN加速的。</p>
+<h2 id="设置https"><a href="#设置https" class="headerlink" title="设置https"></a>设置https</h2><ol>
+<li>在CF的Crypto页中，SSL设置为Flexible。这将允许CDN到github pages之间的访问为http。</li>
+<li>现在，通过<code>https://你的域名</code>已经可以访问站点首页了。</li>
+</ol>
+<h2 id="强制https"><a href="#强制https" class="headerlink" title="强制https"></a>强制https</h2><p>CF提供Page Rules功能，可设置路由规则。通过规则中的<code>Always use https</code>选项，可以将用户强制跳转到https。博主的设置如下：<br><img src="/2016/01/28/github-pages-with-https/page-rules.png" alt="page-rules.png" title=""></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="cisvylbs4000iqycm3k4fbv22" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/02/01/use-pf-on-osx/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          OSX上pf的简单配置笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">OpenWRT上使用haproxy对shadowsocks做负载均衡</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  var disqus_url = 'http://blog.chionlab.moe/2016/01/28/github-pages-with-https/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

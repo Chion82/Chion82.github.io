@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>网易云音乐APP反代开发笔记 | ChionLab  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前几个月网易云音乐下架了一批版权音乐，网页端和手机客户端都无法播放。后来博主通过逆向网页端的JavaScript，写了一个Chrome插件替换页面JS，使得可以播放下架和收费音乐，但最近网易已修复，插件已失效。（不排除是因为网易更新前端代码时重新构建混淆了JS导致我写的patch失效）。本笔记主要记录移动客户端的反向代理破解方案。
+项目地址https://github.com/Chion82/16">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网易云音乐APP反代开发笔记">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="前几个月网易云音乐下架了一批版权音乐，网页端和手机客户端都无法播放。后来博主通过逆向网页端的JavaScript，写了一个Chrome插件替换页面JS，使得可以播放下架和收费音乐，但最近网易已修复，插件已失效。（不排除是因为网易更新前端代码时重新构建混淆了JS导致我写的patch失效）。本笔记主要记录移动客户端的反向代理破解方案。
+项目地址https://github.com/Chion82/16">
+<meta property="og:image" content="http://blog.chionlab.moe/images/netease-api-2.png">
+<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网易云音乐APP反代开发笔记">
+<meta name="twitter:description" content="前几个月网易云音乐下架了一批版权音乐，网页端和手机客户端都无法播放。后来博主通过逆向网页端的JavaScript，写了一个Chrome插件替换页面JS，使得可以播放下架和收费音乐，但最近网易已修复，插件已失效。（不排除是因为网易更新前端代码时重新构建混淆了JS导致我写的patch失效）。本笔记主要记录移动客户端的反向代理破解方案。
+项目地址https://github.com/Chion82/16">
+<meta name="twitter:image" content="http://blog.chionlab.moe/images/netease-api-2.png">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-netease-music-app-reversed-proxy" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/21/netease-music-app-reversed-proxy/" class="article-date">
+  <time datetime="2016-01-21T13:27:50.000Z" itemprop="datePublished">2016-01-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/Python/">Python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      网易云音乐APP反代开发笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前几个月网易云音乐下架了一批版权音乐，网页端和手机客户端都无法播放。后来博主通过逆向网页端的JavaScript，写了一个<a href="https://github.com/Chion82/163_music_cracker" target="_blank" rel="external">Chrome插件</a>替换页面JS，使得可以播放下架和收费音乐，但最近网易已修复，插件已失效。（不排除是因为网易更新前端代码时重新构建混淆了JS导致我写的patch失效）。本笔记主要记录移动客户端的反向代理破解方案。</p>
+<h2 id="项目地址"><a href="#项目地址" class="headerlink" title="项目地址"></a>项目地址</h2><p><a href="https://github.com/Chion82/163-music-unlock" target="_blank" rel="external">https://github.com/Chion82/163-music-unlock</a></p>
+<h2 id="关于下架、收费音乐"><a href="#关于下架、收费音乐" class="headerlink" title="关于下架、收费音乐"></a>关于下架、收费音乐</h2><p>网易云音乐上的每首歌都有唯一ID，通过歌曲ID调用API可获得每个资源文件的ID，将资源文件ID加密后可获取到mp3链接地址，从<a href="https://github.com/darknessomi/musicbox" target="_blank" rel="external">网易云音乐命令行版</a>源码中可获得链接拼接方式。经测试，这样拼接出来链接同样适用于下架和付费音乐。从歌曲ID获取资源文件URL的关键代码如下:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#代码来自darknessomi/musicbox</span></div><div class="line">...</div><div class="line"><span class="comment"># 歌曲加密算法, 基于https://github.com/yanunon/NeteaseCloudMusic脚本实现</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">encrypted_id</span><span class="params">(id)</span>:</span></div><div class="line">    magic = bytearray(<span class="string">'3go8&amp;$8*3*3h0k(2)2'</span>)</div><div class="line">    song_id = bytearray(id)</div><div class="line">    magic_len = len(magic)</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(len(song_id)):</div><div class="line">        song_id[i] = song_id[i] ^ magic[i % magic_len]</div><div class="line">    m = hashlib.md5(song_id)</div><div class="line">    result = m.digest().encode(<span class="string">'base64'</span>)[:<span class="number">-1</span>]</div><div class="line">    result = result.replace(<span class="string">'/'</span>, <span class="string">'_'</span>)</div><div class="line">    result = result.replace(<span class="string">'+'</span>, <span class="string">'-'</span>)</div><div class="line">    <span class="keyword">return</span> result</div><div class="line">...</div><div class="line"><span class="comment"># song id --&gt; song url ( details )</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">song_detail</span><span class="params">(self, music_id)</span>:</span></div><div class="line">    action = <span class="string">"http://music.163.com/api/song/detail/?id="</span> + str(music_id) + <span class="string">"&amp;ids=["</span> + str(music_id) + <span class="string">"]"</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        data = self.httpRequest(<span class="string">'GET'</span>, action)</div><div class="line">        <span class="keyword">return</span> data[<span class="string">'songs'</span>]</div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        <span class="keyword">return</span> []</div><div class="line">...</div><div class="line"><span class="comment"># 获取高音质mp3 url</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">geturl</span><span class="params">(song)</span>:</span></div><div class="line">    config = Config()</div><div class="line">    quality = Config().get_item(<span class="string">"music_quality"</span>)</div><div class="line">    <span class="keyword">if</span> song[<span class="string">'hMusic'</span>] <span class="keyword">and</span> quality &lt;= <span class="number">0</span>:</div><div class="line">        music = song[<span class="string">'hMusic'</span>]</div><div class="line">...</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">return</span> song[<span class="string">'mp3Url'</span>], <span class="string">''</span></div><div class="line">...</div><div class="line">    <span class="comment">#拼接最终资源文件URL</span></div><div class="line">    song_id = str(music[<span class="string">'dfsId'</span>])</div><div class="line">    enc_id = encrypted_id(song_id)</div><div class="line">    url = <span class="string">"http://m%s.music.126.net/%s/%s.mp3"</span> % (random.randrange(<span class="number">1</span>, <span class="number">3</span>), enc_id, song_id)</div><div class="line">    <span class="keyword">return</span> url, quality</div></pre></td></tr></table></figure></p>
+<h2 id="移动客户端抓包"><a href="#移动客户端抓包" class="headerlink" title="移动客户端抓包"></a>移动客户端抓包</h2><p>在路由器上运行tcpdump抓包，使用wireshark分析出几个关键API，这些API用于网易云音乐移动客户端（IOS）获取歌曲信息。</p>
+<ol>
+<li><p>获取播放列表详细信息<br>POST: <a href="http://music.163.com/eapi/v3/playlist/detail/" target="_blank" rel="external">http://music.163.com/eapi/v3/playlist/detail/</a><br>该API返回JSON，经JSON viewer解析后部分内容如下：<br><img src="/images/netease-api-2.png" width="200px"><br>上图privileges数组的每个元素中，”fee”, “payed”, “st”等字段分别标示每首音乐的状态。其中0号元素是下架音乐，3号元素的音乐可正常播放，存在不同的参数一目了然。其中”fee”和”payed”和付费歌曲有关。</p>
+</li>
+<li><p>获取音乐资源URL</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">POST: http://music.163.com/eapi/song/enhance/player/url</div><div class="line">=&gt;</div><div class="line">&#123;&quot;data&quot;:[&#123;&quot;id&quot;:26117507,&quot;url&quot;:&quot;http://m8.music.126.net/20160121231817/b4980525dca8b023c187321115a2463d/ymusic/5e8a/e1af/5a94/bd16133f4ebc8d5a5aaa5a44c6111813.mp3&quot;,&quot;br&quot;:320000,&quot;size&quot;:10722786,&quot;md5&quot;:&quot;bd16133f4ebc8d5a5aaa5a44c6111813&quot;,&quot;code&quot;:200,&quot;expi&quot;:1200,&quot;type&quot;:&quot;mp3&quot;,&quot;gain&quot;:-6.15,&quot;fee&quot;:0,&quot;uf&quot;:null,&quot;payed&quot;:0,&quot;canExtend&quot;:false&#125;],&quot;code&quot;:200&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="Hack-the-World"><a href="#Hack-the-World" class="headerlink" title="Hack the World"></a>Hack the World</h2><p>从抓包结果可知，只需更改几个播放列表的参数，客户端即可播放下架和付费音乐。因此需要架设一个反向代理服务器，使用nginx的sub_filter实现文本替换，nginx的关键配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">        listen 80;</div><div class="line">        server_name music.163.com;</div><div class="line">        resolver 114.114.114.114;</div><div class="line">        set $backend_upstream &quot;http://music.163.com&quot;;</div><div class="line"></div><div class="line">        location / &#123;</div><div class="line">               proxy_pass $backend_upstream;</div><div class="line">               proxy_set_header Host $host;</div><div class="line">               proxy_set_header X-Real-IP $remote_addr;</div><div class="line">               proxy_set_header Accept-Encoding &quot;&quot;; #十分重要，默认为gzip encoding，sub_filter无法识别</div><div class="line">               sub_filter &apos;&quot;st&quot;:-200&apos; &apos;&quot;st&quot;:0&apos;;</div><div class="line">               sub_filter &apos;&quot;st&quot;:-100&apos; &apos;&quot;st&quot;:0&apos;;</div><div class="line">               sub_filter &apos;&quot;st&quot;:-1&apos; &apos;&quot;st&quot;:0&apos;;</div><div class="line">               sub_filter &apos;&quot;st&quot;:-2&apos; &apos;&quot;st&quot;:0&apos;;</div><div class="line">               sub_filter &apos;&quot;st&quot;:-3&apos; &apos;&quot;st&quot;:0&apos;;</div><div class="line">               sub_filter &apos;&quot;pl&quot;:0&apos; &apos;&quot;pl&quot;:320000&apos;;</div><div class="line">               sub_filter &apos;&quot;dl&quot;:0&apos; &apos;&quot;dl&quot;:320000&apos;;</div><div class="line">               sub_filter &apos;&quot;fee&quot;:1&apos; &apos;&quot;fee&quot;:0&apos;;</div><div class="line">               sub_filter &apos;&quot;sp&quot;:0&apos; &apos;&quot;sp&quot;:7&apos;;</div><div class="line">               sub_filter &apos;&quot;cp&quot;:0&apos; &apos;&quot;cp&quot;:1&apos;;</div><div class="line">               sub_filter &apos;&quot;subp&quot;:0&apos; &apos;&quot;subp&quot;:1&apos;;</div><div class="line">               sub_filter &apos;&quot;fl&quot;:0&apos; &apos;&quot;fl&quot;:320000&apos;;</div><div class="line">               sub_filter_once off;</div><div class="line">               sub_filter_types *;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        location /eapi/song/enhance/player/url &#123;  #这里是需要重新拼接歌曲URL的代理，稍后将说明</div><div class="line">               proxy_pass http://localhost:5001;</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>通过几个sub_filter，可将歌曲参数从下架／收费状态更改成普通状态。但是对于下架和收费歌曲，通过 <a href="http://music.163.com/eapi/song/enhance/player/url" target="_blank" rel="external">http://music.163.com/eapi/song/enhance/player/url</a> 这个API无法直接获取到歌曲播放地址，因此需要借助前文提到的URL拼接方法提供新的URL。在清楚歌曲ID加密算法后，在借助Flask的帮助下能快速写出一个API server，在nginx中将相应请求反代到这个API server即可。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="cisvylbsi000rqycmc98pexn4" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/22/python2.7-on-centos6/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          在CentOS6上编译安装Python2.7
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/20/thunderhack-development-log/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">ThunderHack开发笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  var disqus_url = 'http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

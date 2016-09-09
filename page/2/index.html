@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ChionLab | 归宅开发部活动纪录 </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ChionLab">
+<meta property="og:url" content="http://blog.chionlab.moe/page/2/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ChionLab">
+<meta name="twitter:description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-compile-nginx-on-osx" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/02/02/compile-nginx-on-osx/" class="article-date">
+  <time datetime="2016-02-01T16:31:21.000Z" itemprop="datePublished">2016-02-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OSX/">OSX</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/02/02/compile-nginx-on-osx/">在OSX上编译安装nginx</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在OSX上，一般情况下，使用<code>brew</code>安装nginx，再链接一个plist到<code>/Library/LaunchDaemons</code>即可。但是有时候brew中的nginx缺少某些模块，比如上文提到的<code>ngx_http_image_filter_module</code>，这时就需要重新编译nginx。<br>更正：homebrew中提供<code>nginx-full</code>包，包含了常用的绝大多数模块。当然如果需要添加第三方模块还是需要手动编译。</p>
+<h2 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ brew install pcre</div><div class="line">$ brew install gd #image filter依赖gd</div><div class="line">$ brew link --force openssl #避免编译openssl时报错</div></pre></td></tr></table></figure>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>下面的示例中，添加以下几个模块：</p>
+<ul>
+<li>http_image_filter_module</li>
+<li>http_ssl_module</li>
+<li>http_gzip_static_module</li>
+<li>http_sub_module<br>并且其他配置和homebrew的nginx大致相同（带版本号的路径除外）<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">#cd到nginx源码目录</div><div class="line">$ ./configure --with-http_image_filter_module --with-http_ssl_module --with-http_gzip_static_module --with-http_sub_module \</div><div class="line">--prefix=/usr/local/Cellar/nginx/1.9.10 \</div><div class="line">--with-cc-opt=&quot;-I /usr/local/include&quot; --with-ld-opt=&quot;-L /usr/local/lib&quot; \</div><div class="line">--sbin-path=/usr/local/Cellar/nginx/1.9.10/bin/nginx \</div><div class="line">--conf-path=/usr/local/etc/nginx/nginx.conf \</div><div class="line">--pid-path=/usr/local/var/run/nginx.pid \</div><div class="line">--http-log-path=/usr/local/var/log/nginx/access.log \</div><div class="line">--error-log-path=/usr/local/var/log/nginx/error.log --with-pcre --with-ipv6 \</div><div class="line">--lock-path=/usr/local/var/run/nginx.lock \</div><div class="line">--http-client-body-temp-path=/usr/local/var/run/nginx/client_body_temp \</div><div class="line">--http-proxy-temp-path=/usr/local/var/run/nginx/proxy_temp \</div><div class="line">--http-fastcgi-temp-path=/usr/local/var/run/nginx/fastcgi_temp \</div><div class="line">--http-uwsgi-temp-path=/usr/local/var/run/nginx/uwsgi_temp \</div><div class="line">--http-scgi-temp-path=/usr/local/var/run/nginx/scgi_temp</div><div class="line">$ make</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>其中，<code>--with-cc-opt=&quot;-I /usr/local/include&quot; --with-ld-opt=&quot;-L /usr/local/lib&quot;</code>可避免报<code>Undefined symbols for architecture x86_64</code>错误。<code>/usr/local/Cellar/nginx/1.9.10</code>这里的<code>1.9.10</code>替换为将要编译的nginx版本号。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>如果之前未安装过nginx，运行这条命令来安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ make install</div></pre></td></tr></table></figure></p>
+<p>如果已使用brew安装nginx，可以通过替换文件的方式换成刚才编译的版本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#备份原来的binary</div><div class="line">$ cp /usr/local/opt/nginx/bin/nginx /usr/local/opt/nginx/bin/nginx.bak</div><div class="line">#先cd到nginx源码目录</div><div class="line">$ sudo cp objs/nginx /usr/local/opt/nginx/bin/nginx</div><div class="line">$ rm /usr/local/bin/nginx</div><div class="line">$ ln -s /usr/local/opt/nginx/bin/nginx /usr/local/bin/nginx</div></pre></td></tr></table></figure></p>
+<p>现在，可以查看nginx版本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ nginx -V</div></pre></td></tr></table></figure></p>
+<p>强迫症患者可以像我这样在<code>Cellar</code>中建立一个新的版本目录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ cp -r /usr/local/Cellar/nginx/1.8.0 /usr/local/Cellar/nginx/1.9.10</div><div class="line">#恢复1.8.0中的binary</div><div class="line">$ rm /usr/local/Cellar/nginx/1.8.0/bin/nginx</div><div class="line">$ mv /usr/local/Cellar/nginx/1.8.0/bin/nginx.bak /usr/local/Cellar/nginx/1.8.0/bin/nginx</div><div class="line">#更新/usr/local/opt/nginx</div><div class="line">$ rm /usr/local/opt/nginx</div><div class="line">$ ln -s /usr/local/Cellar/nginx/1.9.10 /usr/local/opt/nginx</div></pre></td></tr></table></figure></p>
+<h2 id="将nginx加入LaunchDaemons"><a href="#将nginx加入LaunchDaemons" class="headerlink" title="将nginx加入LaunchDaemons"></a>将nginx加入LaunchDaemons</h2><p>编辑<code>/Library/LaunchDaemons/homebrew.mxcl.nginx.plist</code>内容如下：（brew的nginx自带的版本）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</div><div class="line">&lt;plist version=&quot;1.0&quot;&gt;</div><div class="line">  &lt;dict&gt;</div><div class="line">    &lt;key&gt;Label&lt;/key&gt;</div><div class="line">    &lt;string&gt;homebrew.mxcl.nginx&lt;/string&gt;</div><div class="line">    &lt;key&gt;RunAtLoad&lt;/key&gt;</div><div class="line">    &lt;true/&gt;</div><div class="line">    &lt;key&gt;KeepAlive&lt;/key&gt;</div><div class="line">    &lt;false/&gt;</div><div class="line">    &lt;key&gt;ProgramArguments&lt;/key&gt;</div><div class="line">    &lt;array&gt;</div><div class="line">        &lt;string&gt;/usr/local/opt/nginx/bin/nginx&lt;/string&gt;</div><div class="line">        &lt;string&gt;-g&lt;/string&gt;</div><div class="line">        &lt;string&gt;daemon off;&lt;/string&gt;</div><div class="line">    &lt;/array&gt;</div><div class="line">    &lt;key&gt;WorkingDirectory&lt;/key&gt;</div><div class="line">    &lt;string&gt;/usr/local&lt;/string&gt;</div><div class="line">  &lt;/dict&gt;</div><div class="line">&lt;/plist&gt;</div></pre></td></tr></table></figure></p>
+<p>然后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ launchctl load -F /Library/LaunchDaemons/homebrew.mxcl.nginx.plist</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="cisvylbr70006qycmcqmhefof" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OSX/">OSX</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backend/">backend</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-use-pf-on-osx" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/02/01/use-pf-on-osx/" class="article-date">
+  <time datetime="2016-01-31T17:16:55.000Z" itemprop="datePublished">2016-02-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OSX/">OSX</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/02/01/use-pf-on-osx/">OSX上pf的简单配置笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>水果的OSX上没有iptables，在10.10以后以pf取代ipfw。相比于iptables，pf一般使用配置文件保存防火墙规则，语法规范上更严谨，但是配置也更复杂、规则冗长。本文记录pf的简单配置方法。</p>
+<p><code>cat /etc/pf.conf</code>，可看到以下已有内容：（忽略注释部分）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">scrub-anchor &quot;com.apple/*&quot;</div><div class="line">nat-anchor &quot;com.apple/*&quot;</div><div class="line">rdr-anchor &quot;com.apple/*&quot;</div><div class="line">dummynet-anchor &quot;com.apple/*&quot;</div><div class="line">anchor &quot;com.apple/*&quot;</div><div class="line">load anchor &quot;com.apple&quot; from &quot;/etc/pf.anchors/com.apple&quot;</div></pre></td></tr></table></figure></p>
+<p><code>anchor</code>可理解为一组规则的集合。默认情况下，这里的几行anchor都是苹果留的place holder，实际上没有active的规则。<br><code>/etc/pf.conf</code>在以后的OSX更新中可能会被覆盖，最好可以另外建立一个自定义的<code>pf.conf</code>。<br>配置文件必须按照<code>Macros</code>, <code>Tables</code>, <code>Options</code>, <code>Traffic Normalization</code>, <code>Queueing</code>, <code>Translation</code>, <code>Packet Filtering</code>的顺序。<br>更详细的说明参考<a href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man5/pf.conf.5.html" target="_blank" rel="external">pf.conf man page</a></p>
+<ol>
+<li><p>添加一个<code>anchor</code>。修改<code>/etc/pf.conf</code>如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">scrub-anchor &quot;com.apple/*&quot;</div><div class="line">nat-anchor &quot;com.apple/*&quot;</div><div class="line">nat-anchor &quot;custom&quot;</div><div class="line">rdr-anchor &quot;com.apple/*&quot;</div><div class="line">rdr-anchor &quot;custom&quot;</div><div class="line">dummynet-anchor &quot;com.apple/*&quot;</div><div class="line">anchor &quot;com.apple/*&quot;</div><div class="line">anchor &quot;custom&quot;</div><div class="line">load anchor &quot;com.apple&quot; from &quot;/etc/pf.anchors/com.apple&quot;</div><div class="line">load anchor &quot;custom&quot; from &quot;/etc/pf.anchors/custom&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>建立<code>anchor</code>规则文件<code>/etc/pf.anchors/custom</code>，内容为具体规则。<br>常用的规则：</p>
+<ul>
+<li><p>屏蔽IP入站TCP连接并记录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">block in log proto tcp from 192.168.1.136 to any</div></pre></td></tr></table></figure>
+</li>
+<li><p>转发入站TCP连接到另一本地端口：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rdr inet proto tcp from any to any port 8081 -&gt; 127.0.0.1 port 80</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>经测试，rdr无法转发到另一台外部主机上（man page的示例，只可以转发到internal network），内核开启<code>net.inet.ip.forwarding=1</code>也无效。如需转发到另一个外网IP，需要配合<a href="http://mitmproxy.org/doc/transparent/osx.html" target="_blank" rel="external">mitmproxy的透明代理</a></p>
+<ul>
+<li>NAT，路由vlan12接口上(192.168.168.0/24)的出口包，经由非vlan12的接口转换到外部地址(204.92.77.111)，并允许vlan12之间的互相访问:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nat on ! vlan12 from 192.168.168.0/24 to any -&gt; 204.92.77.111</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>使配置文件生效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pfctl -evf /etc/pf.conf</div></pre></td></tr></table></figure>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="cisvylbth001jqycm53jql3aq" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OSX/">OSX</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-github-pages-with-https" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/28/github-pages-with-https/" class="article-date">
+  <time datetime="2016-01-27T16:49:18.000Z" itemprop="datePublished">2016-01-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/运维/">运维</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/28/github-pages-with-https/">在GitHub Pages上使用CloudFlare https CDN</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本站就是使用<a href="https://hexo.io" target="_blank" rel="external">hexo</a>搭建的静态Web站点，托管在<a href="https://github.com/Chion82/Chion82.github.io" target="_blank" rel="external">GitHub repo</a>，并使用GitHub Pages。<br>另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。</p>
+<h2 id="GitHub-Pages应用自定义域名"><a href="#GitHub-Pages应用自定义域名" class="headerlink" title="GitHub Pages应用自定义域名"></a>GitHub Pages应用自定义域名</h2><p>默认情况下，访问GitHub Pages页面的域名为<code>username.github.io</code>，如果需要使用自己的域名（以下简称“你的域名”），可<a href="https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/" target="_blank" rel="external">参考官方的帮助文档</a>，其实非常简单：</p>
+<ol>
+<li>在repo根目录下创建<code>CNAME</code>文件，内容为你的域名。<a href="https://github.com/Chion82/Chion82.github.io/blob/master/CNAME" target="_blank" rel="external">本站的CNAME文件</a></li>
+<li>在你的域名管理中心，添加一条<code>CNAME</code>记录，指向<code>username.github.io</code>。（将username替换为你的GitHub用户名）</li>
+</ol>
+<p>现在，访问<code>http://你的域名</code> ，已经可以访问到站点首页了。而如果访问<code>http://username.github.io</code> （即原来的地址），将被302跳转到<code>http://你的域名</code>。</p>
+<h2 id="https的问题"><a href="#https的问题" class="headerlink" title="https的问题"></a>https的问题</h2><p>尝试直接访问<code>https://你的域名</code>，浏览器会报SSL_DOMAIN_NOT_MATCHED警告。因为GitHub Pages默认提供的SSL证书的根域名是<code>github.io</code>，和你的域名不相同。<br>而且，GitHub Pages不支持上传SSL证书。</p>
+<h2 id="使用CloudFlare"><a href="#使用CloudFlare" class="headerlink" title="使用CloudFlare"></a>使用CloudFlare</h2><p><a href="https://www.cloudflare.com" target="_blank" rel="external">CloudFlare</a>（以下简称CF）是一家CDN提供商，它的free plan里面就提供https服务（免费计划不能上传SSL）。现在可以通过CF实现：从用户到CDN服务器的连接为https，而CDN服务器到GitHub Pages服务器的连接为http。<br>1.注册并登录到CF。按照提示，在你的域名的管理中心，将域名的name server改为CF的name server。CF提供的NS如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">NS</td>
+<td style="text-align:center">bob.ns.cloudflare.com</td>
+</tr>
+<tr>
+<td style="text-align:center">NS</td>
+<td style="text-align:center">jamie.ns.cloudflare.com</td>
+</tr>
+</tbody>
+</table>
+<p>2.在CF的DNS设置页中，检查对应的子域名记录。博主的DNS记录如下：<br>  <img src="/2016/01/28/github-pages-with-https/dns-config.png" alt="blog.chionlab.moe的DNS记录" title="blog.chionlab.moe的DNS记录"><br>  其中，右侧的橙色云图标代表该条记录将经过CF的CDN加速。<br>  在这里设置的DNS记录，如果是CNAME记录或者A记录，若右边的STATUS为连通状态，CF都会在name server中将其设置为A记录并指向CF的CDN服务器（并根据用户所在地选择最优CDN），当用户通过该域名访问CF的CDN时（仅限http或https），CDN再转发到刚才填写的真实目的主机（即username.github.io）<br>  <img src="/2016/01/28/github-pages-with-https/dig-result.png" alt="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN" title="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN"><br>  CF正是通过这种动态DNS的方式实现CDN加速的。</p>
+<h2 id="设置https"><a href="#设置https" class="headerlink" title="设置https"></a>设置https</h2><ol>
+<li>在CF的Crypto页中，SSL设置为Flexible。这将允许CDN到github pages之间的访问为http。</li>
+<li>现在，通过<code>https://你的域名</code>已经可以访问站点首页了。</li>
+</ol>
+<h2 id="强制https"><a href="#强制https" class="headerlink" title="强制https"></a>强制https</h2><p>CF提供Page Rules功能，可设置路由规则。通过规则中的<code>Always use https</code>选项，可以将用户强制跳转到https。博主的设置如下：<br><img src="/2016/01/28/github-pages-with-https/page-rules.png" alt="page-rules.png" title=""></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="cisvylbs4000iqycm3k4fbv22" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-use-haproxy-to-optimize-shadowsocks-on-openwrt" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" class="article-date">
+  <time datetime="2016-01-27T14:22:34.000Z" itemprop="datePublished">2016-01-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/">OpenWRT上使用haproxy对shadowsocks做负载均衡</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上篇<a href="/2016/01/27/optimize-shadowsocks-on-openwrt/">OpenWRT科学上网的问题及其优化</a>中，提到使用haproxy对shadowsocks的远程TCP连接做负载均衡，本文将介绍其实现过程。</p>
+<h2 id="交叉编译haproxy"><a href="#交叉编译haproxy" class="headerlink" title="交叉编译haproxy"></a>交叉编译haproxy</h2><p>虽然haproxy有预编译版本的ipk包，但是作者的小米路由mini所使用的Pandorabox的内核版本与该包依赖的内核版本不一致，于是作者选择交叉编译。因为haproxy的源码简单，外部依赖少，编译过程比较简单，甚至不需要OpenWRT的完整SDK，只需要toolchain即可。</p>
+<p>博主这里提供一个在MT7620平台编译好的binary:<br><a href="/downloads/haproxy">MT7620</a></p>
+<ol>
+<li><p>获取haproxy源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ git clone https://github.com/haproxy/haproxy.git</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改Makefile<br>只需要在Makefile中将编译器改为OpenWRT的toolchain即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cd haproxy</div><div class="line">$ vim Makefile</div></pre></td></tr></table></figure>
+<p>找到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#### Toolchain options.</div><div class="line"># GCC is normally used both for compiling and linking.</div></pre></td></tr></table></figure>
+<p>下面的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CC = XXX</div><div class="line">LD = XXX</div></pre></td></tr></table></figure>
+<p>这两行，将<code>CC</code>的值改为路由器toolchain的gcc的完整路径，<code>LD</code>的值改为<code>$(CC)</code><br>例如，博主修改后是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CC = /home/chiontang/development/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2/staging_dir/toolchain-mipsel_24kec+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-uclibc-gcc</div><div class="line">LD = $(CC)</div></pre></td></tr></table></figure>
+</li>
+<li><p>编译</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ make TARGET=generic</div></pre></td></tr></table></figure>
+<p>如不出意外，当前目录下已经有了一个编译好的<code>haproxy</code>。可以在电脑上直接运行它测试一下，如果一切正常，会返回如下错误，因为使用了OpenWRT ARM平台的toolchain进行编译，x86环境下无法直接运行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ ./haproxy</div><div class="line">zsh: exec format error: ./haproxy</div></pre></td></tr></table></figure>
+<p>如果能够成功运行，说明刚才toolchain的设置没有成功，编译时直接使用了当前系统的编译器（如x86下的gcc）</p>
+</li>
+<li>将编译好的haproxy复制到路由器下的<code>/root/haproxy</code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ scp haproxy root@192.168.1.1:/root/haproxy</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="配置haproxy"><a href="#配置haproxy" class="headerlink" title="配置haproxy"></a>配置haproxy</h2><p>现在ssh连接上OpwnWRT路由器：</p>
+<ol>
+<li><p>建立haproxy配置文件：<code>/etc/haproxy.cfg</code>，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">global</div><div class="line">    log         127.0.0.1 local2</div><div class="line"></div><div class="line">    chroot      /root</div><div class="line">    pidfile     /tmp/haproxy.pid</div><div class="line">    maxconn     4000</div><div class="line">    user        root</div><div class="line">    daemon</div><div class="line"></div><div class="line">defaults</div><div class="line">    mode                    tcp    #TCP模式</div><div class="line">    log                     global</div><div class="line">    option                  httplog</div><div class="line">    option                  dontlognull</div><div class="line">    option http-server-close</div><div class="line">    option forwardfor       except 127.0.0.0/8</div><div class="line">    option                  redispatch</div><div class="line">    retries                 2</div><div class="line">    timeout http-request    10s</div><div class="line">    timeout queue           1m</div><div class="line">    timeout connect         2s     #上游TCP服务器连接等待时间                                      </div><div class="line">    timeout client          1m</div><div class="line">    timeout server          1m</div><div class="line">    timeout http-keep-alive 10s</div><div class="line">    timeout check           10s</div><div class="line">    maxconn                 3000</div><div class="line"></div><div class="line">listen test1</div><div class="line">    bind 0.0.0.0:8388       #haproxy监听端口</div><div class="line">    mode tcp</div><div class="line">    server s1 X.X.X.X:8388</div><div class="line">    server s2 X.X.X.X:8389</div><div class="line">    server s3 X.X.X.X:8390</div><div class="line">    server s4 X.X.X.X:8391</div></pre></td></tr></table></figure>
+<p>其中，<code>X.X.X.X</code>为ss服务器，8388~8391这四个端口都为ss服务器上运行ssserver的端口（如果觉得不够你可以再加几个），稍后将讲到服务器端的配置。haproxy监听的端口为8388。</p>
+</li>
+<li><p>建立启动脚本：<code>/etc/init.d/haproxy</code>，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh /etc/rc.common</div><div class="line"></div><div class="line">START=99  #启动优先级设置为99，即最后启动</div><div class="line"></div><div class="line">start() &#123;</div><div class="line">        /root/haproxy -f /etc/haproxy.cfg</div><div class="line">&#125;</div><div class="line"></div><div class="line">stop() &#123;</div><div class="line">        killall haproxy</div><div class="line">&#125;</div><div class="line"></div><div class="line">restart() &#123;</div><div class="line">        stop</div><div class="line">        sleep 1</div><div class="line">        start</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后使其生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># /etc/init.d/haproxy enable</div><div class="line"># /etc/init.d/haproxy start</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="服务器配置"><a href="#服务器配置" class="headerlink" title="服务器配置"></a>服务器配置</h2><p>作者使用supervisor作为ssserver的daemon，本例中，服务器同时监听8388~8391这四个端口。<br>博主服务器上的supervisor配置文件如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">[supervisord]</div><div class="line"></div><div class="line">[program:ssserver1]</div><div class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8388 -k [KEY]</div><div class="line"></div><div class="line">[program:ssserver2]</div><div class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8389 -k [KEY]</div><div class="line"></div><div class="line">[program:ssserver3]</div><div class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8390 -k [KEY]</div><div class="line"></div><div class="line">[program:ssserver4]</div><div class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8391 -k [KEY]</div></pre></td></tr></table></figure></p>
+<p>将<code>[KEY]</code>替换为ss密码即可</p>
+<h2 id="ShadowSocks配置"><a href="#ShadowSocks配置" class="headerlink" title="ShadowSocks配置"></a>ShadowSocks配置</h2><ol>
+<li>编辑<code>/etc/shadowsocks/ignore.list</code>（如果你设置的忽略列表为其他文件，则编辑那个文件）,在最后添加一行，输入ss服务器的IP。</li>
+<li>进入路由器配置Web，在luci配置页中，将ss服务器IP改为<code>127.0.0.1</code>，端口改为<code>8388</code>。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="cisvylbte001hqycmgxvxubbj" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-cc-defence-log" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/27/cc-defence-log/" class="article-date">
+  <time datetime="2016-01-26T19:28:34.000Z" itemprop="datePublished">2016-01-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/运维/">运维</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/27/cc-defence-log/">运维纪录：遭遇CC攻击，防御与查水表</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>博主之前完成了一个外包项目，最近两个月在负责这个项目的运维。这是一个web，主营不良资产催收O2O。由于可能存在竞争对手，有人试图攻击服务器。</p>
+<h2 id="事件回顾"><a href="#事件回顾" class="headerlink" title="事件回顾"></a>事件回顾</h2><p>24日下午3点，博主正在去拜访亲戚家的路上，这时公司的菜鸟开发者突然从QQ上发消息过来，问我服务器是不是被黑了。我认为这个可能性不大。这个项目由我亲手带领团队开发，后端使用的是Python+Flask+PostgreSQL，前端使用nodejs+express实现的midway，服务器部署也是由博主亲手完成。这类技术栈，已公布的可直接利用的漏洞十分有限，再者，博主在领队开发时已多次强调安全的重要性，具体到每个API都对用户权限进行了严格认证，编码过程中也不存在可能被注入、被远程执行等低级的危险代码，于是博主认为服务器被web渗透的可能性非常小。当然，不排除黑客从web之外的服务渗透进入，但是服务器上除了web只有ssh服务（强密码+公钥认证），除非公司的开发者部署了其他服务，否则能渗进来的可能性不大。</p>
+<p>博主于是立即用手机访问网站，网站返回了504，这说明nginx的上游没有响应了，node midway或者Python后端，肯定有一个处于freeze状态。</p>
+<p>到达亲戚家后，经过简短的问候，我即问道有没有能用的电脑。朋友让我使用一台08年的笔记本，运行的XP系统，只有IE8和360安全浏览器，但是已经够用了。下载Putty后ssh连接上服务器，立即<code>killall supervisord &amp;&amp; supervisord</code>。因为node midway和Python后端都处于开发中状态，为了调试方便，所以直接是用supervisor作为daemon的。结果是，网站首页仍然返回504。</p>
+<p>下意识地<code>tail /var/log/nginx/access.log -n 100</code>，出来的结果让我目瞪口呆.jpg<br><br>我立即就知道是怎么一回事了：黑客在flood发送短信的API。由于当时开发急促，没有对短信API加入图形验证码或者reCaptcha之类的验证，使得可以通过软件实现模拟请求，并且由于项目处于开发中，为方便调试没有使用wsgi容器调度请求和超时处理，再者，由于发送短信需要服务器向第三方短信平台请求，这个请求将比较费时，同时的大量请求使得Python后端完全被阻塞，难怪nginx报504。从log上看，flood来源自多个不同的IP，这是分布式的攻击，算得上是一场小型的CC攻击。后来发现参与这次CC的肉鸡大概有700～800台。</p>
+<p><strong>出于保密原则，本文以下内容中，发送短信API的URI均由[SMS_API]代替</strong></p>
+<h2 id="应急防御"><a href="#应急防御" class="headerlink" title="应急防御"></a>应急防御</h2><p>运行了一下<code>cat /var/log/nginx/access.log | grep &#39;[SMS_API]&#39; | wc -l</code>，返回的数字超过了30万，这时公司购买的短信平台套餐肯定已经用光了。但是现在首先要考虑恢复网站的正常访问。</p>
+<p>对于这种小型的CC防御，除了ban ip之外我没有想到更好的解决方法。于是，我用ipset+iptables将当天访问过短信API的IP全部ban了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># ipset create blacklist hash:net</div><div class="line"># cat /var/log/nginx/access.log | grep &apos;[SMS_API]&apos; | awk &apos;&#123;print $1&#125;&apos; | while read line;do ipset add blacklist $line;done  #将访问过短信API的IP全部加入ipset的blacklist集合</div><div class="line"># iptables -I INPUT -m set --match-set blacklist src -j DROP</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>笔记： iptables -m set –match-set [SET_NAME] [src|dst]</p>
+</blockquote>
+<p>执行后，再查看access log，flood马上就停下来了。但是现在遇到了新问题：后端跑不起来了。</p>
+<h2 id="修复后端"><a href="#修复后端" class="headerlink" title="修复后端"></a>修复后端</h2><p>手动运行后端Python脚本，Peewee报不能连接上数据库。<br>跑了一下psql，发现正常读取数据，再查看PostgreSQL的log，没有发现异常。没有头绪，通知公司的后端开发者检查后端代码。<br>公司的开发者没有回应，我折腾了很久找不到问题所在，直到我想到会不会是刚才添加iptables过滤规则时把本机也过滤了。<br>试着运行了一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># ipset test blacklist 127.0.0.1</div></pre></td></tr></table></figure></p>
+<p>返回<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">127.0.0.1 is in set blacklist.</div></pre></td></tr></table></figure></p>
+<p>再次目瞪口呆.jpg。突然想起来，刚才我为了测试短信接口，在服务器上跑了一下<code>curl localhost/[SMS_API]</code>，于是nginx access log中就有了127.0.0.1，然后在跑脚本的时候就把127.0.0.1加入到blacklist中了。立即运行了一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># ipset del blacklist 127.0.0.1</div></pre></td></tr></table></figure></p>
+<p>再次重启后端，一切正常，网站也能够访问了。</p>
+<h2 id="nginx中添加访问限制"><a href="#nginx中添加访问限制" class="headerlink" title="nginx中添加访问限制"></a>nginx中添加访问限制</h2><p>目前后端是从session判断唯一用户的，并限制每个用户每分钟只能调用短信API一次。但是如果黑客手动清空cookie，服务器将允许再次请求。在nginx的文档中快速查找了一下，发现nginx支持从IP上request limit。现在需要限制1 request/min per IP，为此修改nginx配置：</p>
+<ol>
+<li><p>添加limit_req_zone</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># /etc/nginx/nginx.conf</div><div class="line">http &#123;</div><div class="line">  limit_req_zone $binary_remote_addr zone=sms:10m rate=1r/m;</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>location中应用limit_req_zone</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">  ...</div><div class="line">  location ~ ^([SMS_API]) &#123;</div><div class="line">      limit_req zone=sms nodelay;</div><div class="line">      proxy_pass http://127.0.0.1:5000;</div><div class="line">      proxy_set_header Host $host;</div><div class="line">      proxy_set_header X-Real-IP $remote_addr;</div><div class="line">  &#125;</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>经过这样的配置，同一IP在一分钟内只能访问该URL一次，否则返回503 server unavailable。</p>
+<h2 id="脚本实现自动Ban-IP"><a href="#脚本实现自动Ban-IP" class="headerlink" title="脚本实现自动Ban IP"></a>脚本实现自动Ban IP</h2><p>之后发现源源不断地还有更多IP试图发起CC，不可能人工一个一个的ban，于是写了一个简单shell脚本实现：当天access log中，访问短信API超过30次的IP，将被加入黑名单。当然，这只是临时的，生产环境中，对于同一内网中的多个真实用户可能会出现误ban的情况，因此攻击过后要将脚本关闭。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line"></div><div class="line">while [ True ]</div><div class="line">do</div><div class="line">        cat /var/log/nginx/access.log | grep &apos;[SMS_API]&apos; | awk &apos;&#123;print $1&#125;&apos; | sort | uniq -c | awk &apos;$1&gt;30&#123;print $2&#125;&apos; | while read line;do echo &apos;Blocking IP:&apos;$line &amp;&amp; ipset add blacklist $line;done</div><div class="line">        sleep 10</div><div class="line">done</div></pre></td></tr></table></figure></p>
+<h2 id="找出攻击发起者"><a href="#找出攻击发起者" class="headerlink" title="找出攻击发起者"></a>找出攻击发起者</h2><p>由于CC分布式的特征，很难找出真正的攻击发起者。但是，往往可以找到第一个嫌疑者。通过翻看当天上午的access log，发现如下有趣的信息:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">113.232.156.* - - [23/Jan/2016:11:19:13 +0800] &quot;GET /register.html HTTP/1.1&quot; 200 8383 &quot;https://www.google.com/&quot; &quot;Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1&quot; &quot;-&quot; #使用Chrome进入网站注册页</div><div class="line">#...</div><div class="line">#下面若干行纪录均为页面静态资源请求</div><div class="line">#...</div><div class="line">113.232.156.* - - [23/Jan/2016:11:19:20 +0800] &quot;GET [SMS_API]?phone=1584059XXXX HTTP/1.1&quot; 200 46 &quot;http://网站域名.com/register.html&quot; &quot;Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1&quot; &quot;-&quot;</div><div class="line">#在Chrome中点击“发送短信验证码”按钮</div></pre></td></tr></table></figure></p>
+<p>正常的UA（Chrome 21.0.1180.89），并且有静态资源访问记录，基本可以确定是人工操作。<br>继续翻：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">113.232.156.* - - [23/Jan/2016:11:19:27 +0800] &quot;GET /register.html HTTP/1.1&quot; 200 8383 &quot;-&quot; &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)&quot; &quot;-&quot;</div><div class="line">#注意，这个人在1分钟内使用了IE9重新进入网站注册页</div><div class="line">#...</div><div class="line">#下面若干行纪录均为页面静态资源请求</div><div class="line">#...</div><div class="line">113.232.156.* - - [23/Jan/2016:11:19:35 +0800] &quot;GET [SMS_API]?phone=1552442XXXX HTTP/1.1&quot; 200 46 &quot;http://网站域名.com/register.html&quot; &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)&quot; &quot;-&quot;</div><div class="line">#这个人在1分钟内使用IE9再次点击“发送短信验证码”按钮</div></pre></td></tr></table></figure></p>
+<p>普通用户是不会同时使用两款浏览器登录同一个网站并点击发送短信按钮的。除非——你想要验证这个网站是否根据session判断同一用户是否在一分钟内调用了多次发送短信API。再往后翻记录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">113.232.156.* - - [23/Jan/2016:11:19:51 +0800] &quot;GET [SMS_API]?phone=1504032XXXX HTTP/1.1&quot; 200 46 &quot;-&quot; &quot;-&quot; &quot;-&quot;</div></pre></td></tr></table></figure></p>
+<p>果不其然，这个人用模拟请求调用了发送短信API（因为没有正常的UA）<br>在这的几分钟后，来自全国各地的肉鸡就开始flood服务器了。</p>
+<h2 id="人肉攻击发起者"><a href="#人肉攻击发起者" class="headerlink" title="人肉攻击发起者"></a>人肉攻击发起者</h2><p>换位思考一下，如果我是黑客，在开始CC之前，是否需要测试一下这个API，然后再在肉鸡上配置随机手机号，最后再进行CC？<br>再次翻log，发现flood开始后，来自肉鸡的请求中，手机号码来自全国各地，但是都每个号码重复了很多次，并且每台肉鸡都有自己的手机号。据此可判断，肉鸡用的手机号码一定不是黑客本人或相关者的号码，而应该是随机生成的或者是通过非法渠道获取到的“受害者”的手机号。但是，113.232.156.* （即黑客嫌疑者）一开始在Chrome和IE9中用的号码在后面的记录中都没有找到，并且号码所属地和IP所属地吻合（都为辽宁沈阳），据此，怀疑黑客一开始在Chrome中会用真实的手机号先进行测试，然后再实施CC。<br>将黑客IP和他第一次在浏览器中提交的手机号码（1584059XXXX）告诉了公司，公司立即拨打了这个手机号码。<br>对方一开始不承认。后来对方打回来，问我们是什么网站做什么的，并且听到对面几个人在偷着乐。因此，对方很有可能就是这次攻击的发起者，并且可能是黑客团伙，专职外包。（其实博主认为，国内这种组织根本算不上真正意义上的黑客，只是非常低级的为了图利的非法技术组织，并且自身技术也是很菜…）<br>公司随后开始通过手机号码查询该人身份信息。由于公司本身性质的关系，有后台可以调查某些信息。<br>之后的事情我就没有多问了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="cisvylbr90007qycmvbbkdcyj" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/27/cc-defence-log/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-optimize-shadowsocks-on-openwrt" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-date">
+  <time datetime="2016-01-26T17:45:48.000Z" itemprop="datePublished">2016-01-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/27/optimize-shadowsocks-on-openwrt/">OpenWRT自动科学上网的问题及优化</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在<a href="/2016/01/23/openwrt-bypass-gfw-solution/">OpenWRT路由器配置ShadowSocks+ChinaDNS</a>虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：</p>
+<ul>
+<li>ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）</li>
+<li>链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在<code>SYN_SENT</code>，最终导致超时</li>
+<li>ChinaDNS长时间运行后可能出现的解析不正常的情况，表现为始终返回国外DNS结果，导致国内网站访问缓慢<br>针对以上问题，作者琢磨出一些优化方法。</li>
+</ul>
+<h2 id="优化UDP稳定性"><a href="#优化UDP稳定性" class="headerlink" title="优化UDP稳定性"></a>优化UDP稳定性</h2><p>由于ISP封杀境外UDP包，那么UDP只可以走境内。那么可以将一台境内服务器作为UDP跳板。TCP包直接发到境外的ss服务器，UDP包则经过境内的跳板服务器中转到ss服务器。跳板服务器可以选择阿里云、腾讯云等，带宽不需要太大，1M都完全够了，主要是用来中转DNS查询包。作者用的是腾讯云的1元／月的学生优惠。</p>
+<p>一、在UDP跳板服务器上进行以下配置以实现中转。</p>
+<ol>
+<li><p>开启内核的ip_forward</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/sysctl.conf</div></pre></td></tr></table></figure>
+<p>将<code>net.ipv4.ip_forward=0</code>修改为<code>net.ipv4.ip_forward=1</code>。如果文件为空，则添加一行<code>net.ipv4.ip_forward=1</code>即可。<br>运行这条命令即时生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># sysctl -p</div></pre></td></tr></table></figure>
+</li>
+<li><p>用iptables实现TCP+UDP中转</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># iptables -t nat -A PREROUTING -p tcp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A PREROUTING -p ucp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A POSTROUTING -j MASQUERADE</div><div class="line"># service iptables save #永久保存修改</div></pre></td></tr></table></figure>
+<p>其中，<code>X.X.X.X:X</code>为ss服务器IP和端口，<code>[PORT]</code>为跳板服务器上用于中转的监听端口（为了方便，可以和ss服务器的端口相同）。</p>
+</li>
+</ol>
+<p>二、修改OpenWRT上的配置</p>
+<ol>
+<li><p>ssh连接上路由器，建立一个跳板服务器的ss配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># cp /var/etc/shadowsocks.json /root/shadowsocks_udp.json #复制当前的ss配置文件</div><div class="line"># vim /root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
+<p>然后修改<code>/root/shadowsocks_udp.json</code>，将远程服务器IP改为跳板服务器的IP，远程端口改为跳板服务器的监听端口（即刚才的<code>[PORT]</code>）</p>
+</li>
+<li><p>然后需要修改shadowsocks的启动脚本，让ss隧道使用跳板服务器的配置文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/init.d/shadowsocks</div></pre></td></tr></table></figure>
+<p>在<code>CONFIG_FILE=/var/etc/shadowsocks.json</code>下增加一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UDP_CONFIG_FILE=/root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
+<p>找到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
+<p>将其修改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $UDP_CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
+<p>保存后重启shadowsocks</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># /etc/init.d/shadowsocks restart</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="优化TCP稳定性"><a href="#优化TCP稳定性" class="headerlink" title="优化TCP稳定性"></a>优化TCP稳定性</h2><ol>
+<li>最好的方法是选择链路质量好的服务器作为ss服务器，比如香港的vps，将不容易出现多并发TCP连接无法建立的情况。</li>
+<li>如果不能选择更换ss服务器，可在ss服务器上同时监听多个端口，同时在路由器上使用haproxy进行负载均衡，把ss服务器的多个端口加入到upstream列表中，由于haproxy超时自动更换upstream的特性，可大大降低连接失败的概率。详细操作方法作者将在下篇博文中介绍。</li>
+</ol>
+<h2 id="ChinaDNS偶然解析不正常的解决"><a href="#ChinaDNS偶然解析不正常的解决" class="headerlink" title="ChinaDNS偶然解析不正常的解决"></a>ChinaDNS偶然解析不正常的解决</h2><p>尚不明确为何ChinaDNS长时间运行后偶然地可能会始终返回国外DNS结果（重启ChinaDNS即恢复），作者之前尝试<a href="https://github.com/Chion82/ChinaDNS" target="_blank" rel="external">修改了一下ChinaDNS</a>，将判断某个IP是否为国内IP的逻辑修改为借助ipset来判断，但是作者没有测试过其稳定性。<br>本文介绍的解决方法很无脑，即定时重启ChinaDNS。使用cron，在每天的零时重启一次ChinaDNS。经作者测试，这招确实有效。<br>在路由器上运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># crontab -e</div></pre></td></tr></table></figure></p>
+<p>添加一行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 0 * * * /etc/init.d/chinadns restart</div></pre></td></tr></table></figure></p>
+<p>保存并重启路由器生效。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cisvylbso000yqycma98ey8u7" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-openwrt-bypass-gfw-solution" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/23/openwrt-bypass-gfw-solution/" class="article-date">
+  <time datetime="2016-01-23T08:07:53.000Z" itemprop="datePublished">2016-01-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/23/openwrt-bypass-gfw-solution/">OpenWRT路由器上的ShadowSocks+ChinaDNS搭梯子方案</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在路由器上运行ShadowSocks科学上网是最为优雅的方案。本文将介绍其安装和配置步骤。<br>首先为智能路由器刷上OpenWRT，博主推荐<a href="http://downloads.openwrt.org.cn/PandoraBox/" target="_blank" rel="external">Pandorabox</a>修改版。本文将实现：连接上路由器的客户端当访问国内主机时，直接连接，而访问国外主机时，自动代理。</p>
+<h2 id="安装ShadowSocks"><a href="#安装ShadowSocks" class="headerlink" title="安装ShadowSocks"></a>安装ShadowSocks</h2><ol>
+<li><p>因为本文讨论的是SS+ChinaDNS的翻墙方案，对于部分已集成SS+domain list的固件版本，需要先删除已安装的SS及相关工具。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#ssh连接上路由器后运行</div><div class="line">$ opkg list_installed | grep shadowsocks #查询已安装的ss和相关工具</div><div class="line"># opkg remove shadowsocks-* #删除之</div></pre></td></tr></table></figure>
+</li>
+<li><p>下载安装shadowsocks-libev-spec<br><a href="http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/</a><br>经作者测试，最新版在极贰最新OpenWRT固件上会出现iptables规则失效的情况，建议使用<code>shadowsocks-libev-spec_2.3.0-1_XXXX</code>版本。<br>以MT7620系列为例，在路由器上运行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># opkg update</div><div class="line"># cd /tmp</div><div class="line"># wget http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/2.3.0-3ff06a6/ramips/shadowsocks-libev-spec_2.3.0-1_ramips_24kec.ipk  #如果不是ramips平台，请根据路由器ARCH选择对应ipk</div><div class="line"># opkg install shadowsocks-libev-spec_2.3.0-1_ramips_24kec.ipk</div></pre></td></tr></table></figure>
+</li>
+<li><p>下载安装luci-app-shadowsocks-spec<br>luci-app提供ss的图形化配置界面。<br><a href="http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/</a><br>如果<code>shadowsocks-libev-spec</code>使用的版本是本文推荐的<code>2.3.0</code>，请下载<code>luci-app-shadowsocks-spec_1.3.2-1_all.ipk</code>。路由器上运行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># wget http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/luci-app-shadowsocks-spec_1.3.2-1_all.ipk</div><div class="line"># opkg install luci-app-shadowsocks-spec_1.3.2-1_all.ipk</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="安装ChinaDNS"><a href="#安装ChinaDNS" class="headerlink" title="安装ChinaDNS"></a>安装ChinaDNS</h2><p>ChinaDNS用于解决国内DNS污染问题，同时可加速国内网站的访问。其原理如下：<br>提供至少一个国内DNS服务器和一个国外DNS服务器，ChinaDNS收到来自用户的DNS请求后，同时向这两个服务器发DNS请求。如果从国内DNS服务器返回的解析结果为国外IP，则选择国外DNS服务器的解析结果，否则选择国内DNS的解析结果，最后返回给用户。<br><a href="http://sourceforge.net/projects/openwrt-dist/files/chinadns/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/chinadns/</a></p>
+<ol>
+<li><p>ChinaDNS</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ wget http://sourceforge.net/projects/openwrt-dist/files/chinadns/1.3.2-d3e75dd/ChinaDNS_1.3.2-3_ramips_24kec.ipk</div><div class="line"># opkg install ChinaDNS_1.3.2-3_ramips_24kec.ipk</div></pre></td></tr></table></figure>
+</li>
+<li><p>luci-app-ChinaDNS<br><a href="http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ wget http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/luci-app-chinadns_1.3.4-1_all.ipk</div><div class="line"># opkg install luci-app-chinadns_1.3.4-1_all.ipk</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="配置ShadowSocks"><a href="#配置ShadowSocks" class="headerlink" title="配置ShadowSocks"></a>配置ShadowSocks</h2><ol>
+<li><p>创建国内IP段列表，用于忽略国内目标主机。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># mkdir /etc/shadowsocks</div><div class="line"># wget -O- &apos;http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest&apos; | awk -F\| &apos;/CN\|ipv4/ &#123; printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) &#125;&apos; &gt; /etc/shadowsocks/ignore.list</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用luci-app配置ss<br>进入路由器管理web页面，用root登录，进入服务(Services)-&gt;ShadowSocks。<br>勾选启用Shadowsocks，输入ss服务器信息（服务器IP、端口、密码、加密方式）。<br>代理方法(Proxy method)选择忽略列表(Ignore list)，并在–custom–中填入<code>/etc/shadowsocks/ignore.list</code>。代理协议(Proxy protocol)选择<code>TCP+UDP</code>。<br>开启UDP隧道，UDP本地端口5300，目的地址<code>8.8.8.8:53</code>。UDP隧道用于加密DNS查询包，稍后将会用到。<br><img src="/images/openwrt-ss-1.png" alt=""></p>
+</li>
+<li>保存并应用(Save and Apply)</li>
+</ol>
+<h2 id="配置ChinaDNS"><a href="#配置ChinaDNS" class="headerlink" title="配置ChinaDNS"></a>配置ChinaDNS</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget -O- &apos;http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest&apos; | awk -F\| &apos;/CN\|ipv4/ &#123; printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) &#125;&apos; &gt; /etc/chinadns_chnroute.txt</div></pre></td></tr></table></figure>
+<p>在路由器web管理页面，进入服务(Services)-&gt;ChinaDNS。<br>勾选启用ChinaDNS，启用DNS压缩指针。<br>本地端口写5353，中国路由表(CHNRoute File)填<code>/etc/chinadns_chnroute.txt</code>。<br>上游DNS服务器填<code>114.114.114.114,127.0.0.1:5300</code>。（可将114.114.114.114改成当前ISP提供的DNS服务器IP）<br>这里将ss的UDP隧道作为ChinaDNS的国外DNS上游源。<br>保存并应用</p>
+<h2 id="配置路由器DNS-Dnsmasq"><a href="#配置路由器DNS-Dnsmasq" class="headerlink" title="配置路由器DNS(Dnsmasq)"></a>配置路由器DNS(Dnsmasq)</h2><p>进入网络(Network)-&gt;DHCP and DNS。<br>将DNS转发(DNS forwardings)设置为<code>127.0.0.1#5353</code>。这将使得路由器将DNS请求经由dnsmasq全部转发至ChinaDNS处理。<br>这样设置后，从内网主机端发出的国外DNS请求将发送至：dnsmasq-&gt;ChinaDNS-&gt;ss-tunnel-&gt;ss服务器-&gt;8.8.8.8，<br>国内DNS请求则：dnsmasq-&gt;ChinaDNS-&gt;114.114.114.114<br>还要记得勾选“忽略解析文件”(ignore resolve file)。</p>
+<p>至此，路由器上的梯子已经搭建完毕，如不出意外，你已经可以进youtube了。<br>但是，受路由器到ss服务器的链路质量影响，可能会出现不稳定的情况。例如某些ISP下会出现境外UDP流量丢包、多TCP并发连接容易建立失败等情况。博主将在下篇文章中介绍优化方案。</p>
+<h2 id="关于shadowsocks-libev-spec的原理"><a href="#关于shadowsocks-libev-spec的原理" class="headerlink" title="关于shadowsocks-libev-spec的原理"></a>关于shadowsocks-libev-spec的原理</h2><p>通过分析ss的启动脚本，初步确定ss-libev-spec是以以下步骤实现自动翻墙的。</p>
+<ol>
+<li>运行<code>/usr/bin/ss-rules</code>，设置在ipset中建立一个列表<code>ss_spec_wan_ac</code>，列表中存放了<code>/etc/shadowsocks/ignore.list</code>中的IP段（即为需要忽略的国内IP段），然后设置iptables，在<code>nat</code>表的<code>OUTPUT</code>链中将目标地址<code>match-set ss_spec_wan_ac</code>的包采取<code>RETURN</code>处理。然后再在这条规则后增加一条，将全部包<code>REDIRECT</code>到<code>127.0.0.1:1080</code></li>
+<li>运行<code>/usr/bin/ss-redir</code>，监听本地端口<code>1080</code>，负责将收到的包经由ss，加密socks代理至ss服务器。</li>
+<li>运行<code>/usr/bin/ss-tunnel</code>，经由ss服务器建立加密的UDP隧道，隧道一端为本地监听端口<code>5300</code>，另一端为<code>8.8.8.8:53</code>。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cisvylbsv0012qycmjxoec4u6" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-tldr-man-page" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/23/tldr-man-page/" class="article-date">
+  <time datetime="2016-01-23T07:48:33.000Z" itemprop="datePublished">2016-01-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/23/tldr-man-page/">tldr - 懒人的man page</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>其实我是十分不愿意在紧张开发时为了一个小工具翻看man page的，直到我从GitHub上找到这个工具。tldr即too long don’t read，提供简化版的man page，每页page只有非常简短的说明，十分适合懒人查询和情急时快速检索。当然，这个工具提供的page覆盖率还不够高，还有劳各位去发pull request。</p>
+<p><a href="https://github.com/tldr-pages/tldr" target="_blank" rel="external">https://github.com/tldr-pages/tldr</a></p>
+<h2 id="tl-dr"><a href="#tl-dr" class="headerlink" title="tl;dr"></a>tl;dr</h2><p>安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># npm install -g tldr</div></pre></td></tr></table></figure></p>
+<p>使用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ tldr aria2c</div></pre></td></tr></table></figure></p>
+<p>Done!</p>
+<p>最后提一下，时间充裕时还是尽量去阅读完整版的man page！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cisvylbt00016qycmydmv372b" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-use-xposed-to-crawl-wechat-moments" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/22/use-xposed-to-crawl-wechat-moments/" class="article-date">
+  <time datetime="2016-01-22T15:38:02.000Z" itemprop="datePublished">2016-01-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/安卓/">安卓</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/22/use-xposed-to-crawl-wechat-moments/">用Xposed框架抓取微信朋友圈数据</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>因微信朋友圈为私有协议，从抓包上分析朋友圈数据几乎不可能，目前也尚未找到开源的抓取朋友圈的脚本。博主于是尝试通过使用安卓下的Xposed框架实现从微信安卓版上抓取朋友圈数据。<br>本文针对微信版本6.3.8。<br><a href="https://github.com/Chion82/WeChatMomentExport" target="_blank" rel="external">GitHub仓库</a></p>
+<h2 id="主要思路"><a href="#主要思路" class="headerlink" title="主要思路"></a>主要思路</h2><p>从UI获取文本信息是最为简单的方法，于是应该优先逆向UI代码部分。</p>
+<h2 id="逆向微信apk"><a href="#逆向微信apk" class="headerlink" title="逆向微信apk"></a>逆向微信apk</h2><p>首先解包微信apk，用dex2jar反编译classes.dex，然后用JD-GUI查看jar源码。<br>当然，能看到的源码都是经过高度混淆的。但是，继承自安卓重要组件（如Activity、Service等）的类名无法被混淆，于是还是能从中看到点东西。</p>
+<ol>
+<li>首先定位到微信APP package。我们知道这个是<code>com.tencent.mm</code>。</li>
+<li>在<code>com.tencent.mm</code>中，我们找到一个<code>ui</code>包，有点意思。</li>
+<li>展开<code>com.tencent.mm.ui</code>，发现多个未被混淆的类，其中发现<code>MMBaseActivity</code>直接继承自<code>Activity</code>，<code>MMFragmentActivity</code>继承自<code>ActionBarActivity</code>，<code>MMActivity</code>继承自<code>MMFragmentActivity</code>，并且<code>MMActivity</code>是微信中大多数Activity的父类：<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MMFragmentActivity</span></span></div><div class="line">  <span class="keyword">extends</span> <span class="title">ActionBarActivity</span></div><div class="line">  <span class="keyword">implements</span> <span class="title">SwipeBackLayout</span>.<span class="title">a</span>, <span class="title">b</span>.<span class="title">a</span> &#123;</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">MMActivity</span></span></div><div class="line">  <span class="keyword">extends</span> <span class="title">MMFragmentActivity</span> &#123;</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MMBaseActivity</span></span></div><div class="line">  <span class="keyword">extends</span> <span class="title">Activity</span> &#123;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>现在需要找出朋友圈的Activity，为此要用Xposed hook<code>MMActivity</code>。</p>
+<h2 id="创建一个Xposed模块"><a href="#创建一个Xposed模块" class="headerlink" title="创建一个Xposed模块"></a>创建一个Xposed模块</h2><p>参考<a href="http://forum.xda-developers.com/showthread.php?t=2709324" target="_blank" rel="external">[TUTORIAL]Xposed module devlopment</a>，创建一个Xposed项目。<br>简单Xposed模块的基本思想是：hook某个APP中的某个方法，从而达到读写数据的目的。<br>小编尝试hook<code>com.tencent.mm.ui.MMActivity.setContentView</code>这个方法，并打印出这个Activity下的全部TextView内容。那么首先需要遍历这个Activity下的所有TextView，遍历ViewGroup的方法参考了SO的以下代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">getAllTextViews</span><span class="params">(<span class="keyword">final</span> View v)</span> </span>&#123;</div><div class="line">   <span class="keyword">if</span> (v <span class="keyword">instanceof</span> ViewGroup) &#123;</div><div class="line">       ViewGroup vg = (ViewGroup) v;</div><div class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; vg.getChildCount(); i++) &#123;</div><div class="line">           View child = vg.getChildAt(i);</div><div class="line">           getAllTextViews(child);</div><div class="line">       &#125;</div><div class="line">   &#125; <span class="keyword">else</span> <span class="keyword">if</span> (v <span class="keyword">instanceof</span> TextView ) &#123;</div><div class="line">       dealWithTextView((TextView)v); <span class="comment">//dealWithTextView(TextView tv)方法：打印TextView中的显示文本</span></div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Hook<code>MMActivity.setContentView</code>的关键代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">findAndHookMethod(<span class="string">"com.tencent.mm.ui.MMActivity"</span>, lpparam.classLoader, <span class="string">"setContentView"</span>, View.class, <span class="keyword">new</span> XC_MethodHook() &#123;</div><div class="line">  ...</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>在findAndHookMethod方法中，第一个参数为完整类名，第三个参数为需要hook的方法名，其后若干个参数分别对应该方法的各形参类型。在这里，<code>Activity.setContentView(View view)</code>方法只有一个类型为<code>View</code>的形参，因此传入一个<code>View.class</code>。<br>现在，期望的结果是运行时可以从Log中读取到每个Activity中的所有的TextView的显示内容。<br><strong>但是，因为View中的数据并不一定在<code>setContentView()</code>时就加载完毕，因此小编的实验结果是，log中啥都没有。</strong></p>
+<h2 id="意外的收获"><a href="#意外的收获" class="headerlink" title="意外的收获"></a>意外的收获</h2><p>当切换到朋友圈页面时，Xposed模块报了一个异常，异常源从<code>com.tencent.mm.plugin.sns.ui.SnsTimeLineUI</code>这个类捕捉到。从类名上看，这个很有可能是朋友圈首页的UI类。展开这个类，发现更多有趣的东西：<br>这个类下有个子类<code>a</code>(被混淆过的类名)，该子类下有个名为<code>gyO</code>的<code>ListView</code>类的实例。我们知道，<code>ListView</code>是显示列表类的UI组件，有可能就是用来展示朋友圈的列表。</p>
+<h2 id="顺藤摸瓜"><a href="#顺藤摸瓜" class="headerlink" title="顺藤摸瓜"></a>顺藤摸瓜</h2><p>那么，我们先要获得一个<code>SnsTimeLineUI.a.gyO</code>的实例。但是在这之前，要先获得一个<code>com.tencent.mm.plugin.sns.ui.SnsTimeLineUI.a</code>的实例。继续搜索，发现<code>com.tencent.mm.plugin.sns.ui.SnsTimeLineUI</code>有一个名为<code>gLZ</code>的<code>SnsTimeLineUI.a</code>实例，那么我们先取得这个实例。</p>
+<p>经过测试，<code>com.tencent.mm.plugin.sns.ui.SnsTimeLineUI.a(boolean, boolean, String, boolean)</code>这个方法在每次初始化微信界面的时候都会被调用。因此我们将hook这个方法，并从中取得<code>gLZ</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">findAndHookMethod(<span class="string">"com.tencent.mm.plugin.sns.ui.SnsTimeLineUI"</span>, lpparam.classLoader, <span class="string">"a"</span>, <span class="keyword">boolean</span>.class, <span class="keyword">boolean</span>.class, String.class, <span class="keyword">boolean</span>.class, <span class="keyword">new</span> XC_MethodHook() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">        XposedBridge.log(<span class="string">"Hooked. "</span>);</div><div class="line">        Object currentObject = param.thisObject;</div><div class="line">        <span class="keyword">for</span> (Field field : currentObject.getClass().getDeclaredFields()) &#123; <span class="comment">//遍历类成员</span></div><div class="line">            field.setAccessible(<span class="keyword">true</span>);</div><div class="line">            Object value = field.get(currentObject);</div><div class="line">            <span class="keyword">if</span> (field.getName().equals(<span class="string">"gLZ"</span>)) &#123;</div><div class="line">                XposedBridge.log(<span class="string">"Child A found."</span>);</div><div class="line">                childA = value;</div><div class="line">                <span class="comment">//这里获得了gLZ</span></div><div class="line">                ...</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>现在取得了<code>SnsTimeLineUI.a</code>的一个实例<code>gLZ</code>，需要取得这个类下的<code>ListView</code>类型的<code>gyO</code>属性。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dealWithA</span><span class="params">()</span> <span class="keyword">throws</span> Throwable</span>&#123;</div><div class="line">    <span class="keyword">if</span> (childA == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (Field field : childA.getClass().getDeclaredFields()) &#123; <span class="comment">//遍历属性</span></div><div class="line">        field.setAccessible(<span class="keyword">true</span>);</div><div class="line">        Object value = field.get(childA);</div><div class="line">        <span class="keyword">if</span> (field.getName().equals(<span class="string">"gyO"</span>)) &#123;  <span class="comment">//取得了gyO</span></div><div class="line">            ViewGroup vg = (ListView)value;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; vg.getChildCount(); i++) &#123;  <span class="comment">//遍历这个ListView的每一个子View</span></div><div class="line">                ...</div><div class="line">                View child = vg.getChildAt(i);</div><div class="line">                getAllTextViews(child); <span class="comment">//这里调用上文的getAllTextViews()方法，每一个子View里的所有TextView的文本</span></div><div class="line">                ...</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>现在已经可以将朋友圈页面中的全部文字信息打印出来了。我们需要根据TextView的子类名判断这些文字是朋友圈内容、好友昵称、点赞或评论等。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dealWithTextView</span><span class="params">(TextView v)</span> </span>&#123;</div><div class="line">        String className = v.getClass().getName();</div><div class="line">        String text = ((TextView)v).getText().toString().trim().replaceAll(<span class="string">"\n"</span>, <span class="string">" "</span>);</div><div class="line">        <span class="keyword">if</span> (!v.isShown())</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        <span class="keyword">if</span> (text.equals(<span class="string">""</span>))</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        <span class="keyword">if</span> (className.equals(<span class="string">"com.tencent.mm.plugin.sns.ui.AsyncTextView"</span>)) &#123;</div><div class="line">            <span class="comment">//好友昵称</span></div><div class="line">            ...</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (className.equals(<span class="string">"com.tencent.mm.plugin.sns.ui.SnsTextView"</span>)) &#123;</div><div class="line">            <span class="comment">//朋友圈文字内容</span></div><div class="line">            ...</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (className.equals(<span class="string">"com.tencent.mm.plugin.sns.ui.MaskTextView"</span>)) &#123;</div><div class="line">            <span class="keyword">if</span> (!text.contains(<span class="string">":"</span>)) &#123;</div><div class="line">                <span class="comment">//点赞</span></div><div class="line">                ...</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">//评论</span></div><div class="line">                ...</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>自此，我们已经从微信APP里取得了朋友圈数据。当然，这部分抓取代码需要定时执行。因为从<code>ListView</code>中抓到的数据只有当前显示在屏幕上的可见部分，为此需要每隔很短一段时间再次执行，让用户在下滑加载的过程中抓取更多数据。<br>剩下的就是数据分类处理和格式化输出到文件，受本文篇幅所限不再赘述，详细实现可参考作者GitHub上的源码。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cisvylbtj001mqycmxinirzwz" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-python2.7-on-centos6" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/22/python2.7-on-centos6/" class="article-date">
+  <time datetime="2016-01-21T18:11:53.000Z" itemprop="datePublished">2016-01-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/linux/">linux</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/22/python2.7-on-centos6/">在CentOS6上编译安装Python2.7</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>参考了友站的博文<a href="https://www.starduster.me/2016/01/04/py27-on-centos6/" target="_blank" rel="external">CentOS6上的Python2.7问题</a>，正如所言，在CentOS6上安装Python2.7是非常头疼的问题。友站的这篇博文阐述了如何了从源安装Python2.7，本站则讲述从源码编译安装要注意的问题。<br>编译依赖参考<a href="http://toomuchdata.com/2014/02/16/how-to-install-python-on-centos/" target="_blank" rel="external">How to install Python 2.7 and Python 3.3 on CentOS 6</a>。</p>
+<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><p><strong>十分重要:</strong> 编译Python2.7之前务必安装齐必须依赖。在configure过程中，若缺少依赖则不会报错，编译也可顺利通过，但编译出的Python将缺少几个必要模块，导致在运行<code>ez_setup.py</code>时出错。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># yum groupinstall &quot;Development tools&quot;</div><div class="line"># yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel</div></pre></td></tr></table></figure>
+<h2 id="编译和安装"><a href="#编译和安装" class="headerlink" title="编译和安装"></a>编译和安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ wget http://python.org/ftp/python/2.7.6/Python-2.7.6.tar.xz</div><div class="line">$ tar xf Python-2.7.6.tar.xz</div><div class="line">$ cd Python-2.7.6</div><div class="line">$ ./configure --prefix=/usr/local --enable-unicode=ucs4 --enable-shared LDFLAGS=&quot;-Wl,-rpath /usr/local/lib&quot;</div><div class="line"># make &amp;&amp; make altinstall</div></pre></td></tr></table></figure>
+<p>这将会把Python2.7安装在<code>/usr/local/bin/python2.7</code></p>
+<h2 id="将默认Python版本从2-6改为2-7"><a href="#将默认Python版本从2-6改为2-7" class="headerlink" title="将默认Python版本从2.6改为2.7"></a>将默认Python版本从2.6改为2.7</h2><p>首先将<code>/usr/bin/python</code>这个软链接指向刚刚安装的Python2.7<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># rm /usr/bin/python</div><div class="line"># ln -s /usr/local/bin/python2.7 /usr/bin/python</div></pre></td></tr></table></figure></p>
+<p><strong>重要：</strong> 进行这步操作后，yum会失效，运行即报错。这是因为<code>/usr/bin/yum</code>其实是个python2.6脚本，刚刚安装的python2.7缺少yum的相关依赖。因此需要改动<code>/usr/bin/yum</code>的解释器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /usr/bin/yum</div></pre></td></tr></table></figure></p>
+<p>将第一行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/python</div></pre></td></tr></table></figure></p>
+<p>改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/python2.6</div></pre></td></tr></table></figure></p>
+<p>现在运行<code>yum --version</code>应该不会再报错</p>
+<h2 id="安装pip"><a href="#安装pip" class="headerlink" title="安装pip"></a>安装pip</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py</div><div class="line"># python ez_setup.py</div><div class="line"># easy_install-2.7 pip</div></pre></td></tr></table></figure>
+<h2 id="替换默认pip为pip2-7"><a href="#替换默认pip为pip2-7" class="headerlink" title="替换默认pip为pip2.7"></a>替换默认pip为pip2.7</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># vim /usr/bin/pip2.6 #第一行改为#!/usr/bin/python2.6</div><div class="line">$ which pip2.7  #应该返回/usr/local/bin/pip2.7</div><div class="line"># rm /usr/bin/pip</div><div class="line"># ln -s /usr/local/bin/pip2.7 /usr/bin/pip</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cisvylbsr0010qycmosr8yudh" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

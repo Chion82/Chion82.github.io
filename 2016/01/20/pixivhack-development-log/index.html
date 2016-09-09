@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>PixivHack：记P站爬图脚本开发 | ChionLab  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="由于7月学校考试，预习功课有点忙，最近又忙着做外包，一直都忘了维护博客，所以现在补上上个月本来应该写的技术博文。
+这是啥跟生活在2.5次元的老司机混久了便跟着入了ACG坑（看到本站首页LL大法时您应该意识到了，博主是个死宅(:з」∠) ）。P站找图是每一个ACG爱好者的必备技能，然而像我这种刚入坑不久的，收藏的画师才几个，再者没有钱买Premium，不能按人气选图，每次找图都要手动一页一页翻(╯‵">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PixivHack：记P站爬图脚本开发">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="由于7月学校考试，预习功课有点忙，最近又忙着做外包，一直都忘了维护博客，所以现在补上上个月本来应该写的技术博文。
+这是啥跟生活在2.5次元的老司机混久了便跟着入了ACG坑（看到本站首页LL大法时您应该意识到了，博主是个死宅(:з」∠) ）。P站找图是每一个ACG爱好者的必备技能，然而像我这种刚入坑不久的，收藏的画师才几个，再者没有钱买Premium，不能按人气选图，每次找图都要手动一页一页翻(╯‵">
+<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PixivHack：记P站爬图脚本开发">
+<meta name="twitter:description" content="由于7月学校考试，预习功课有点忙，最近又忙着做外包，一直都忘了维护博客，所以现在补上上个月本来应该写的技术博文。
+这是啥跟生活在2.5次元的老司机混久了便跟着入了ACG坑（看到本站首页LL大法时您应该意识到了，博主是个死宅(:з」∠) ）。P站找图是每一个ACG爱好者的必备技能，然而像我这种刚入坑不久的，收藏的画师才几个，再者没有钱买Premium，不能按人气选图，每次找图都要手动一页一页翻(╯‵">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-pixivhack-development-log" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/20/pixivhack-development-log/" class="article-date">
+  <time datetime="2016-01-19T17:28:14.000Z" itemprop="datePublished">2016-01-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/Python/">Python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      PixivHack：记P站爬图脚本开发
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>由于7月学校考试，预习功课有点忙，最近又忙着做外包，一直都忘了维护博客，所以现在补上上个月本来应该写的技术博文。</p>
+<h1 id="这是啥"><a href="#这是啥" class="headerlink" title="这是啥"></a>这是啥</h1><p>跟生活在2.5次元的老司机混久了便跟着入了ACG坑（看到本站首页LL大法时您应该意识到了，博主是个死宅<em>(:з」∠)</em> ）。P站找图是每一个ACG爱好者的必备技能，然而像我这种刚入坑不久的，收藏的画师才几个，再者没有钱买Premium，不能按人气选图，每次找图都要手动一页一页翻(╯‵□′)╯︵┻━┻ 于是我想用Py写个自动爬图脚本。这个脚本可以按你输入的关键词搜索作品，并根据Rating（评分次数，以此来判断作品人气）的最小值来筛选并自动下载，也可以手动指定画师ID列表，也是按照设定最小Rating的方法下载每个画师的图。目前支持下载插画、漫画和大图。</p>
+<h1 id="你为什么还不用！"><a href="#你为什么还不用！" class="headerlink" title="你为什么还不用！"></a>你为什么还不用！</h1><p><a href="https://github.com/Chion82/PixivHack.git" target="_blank" rel="external">GitHub链接</a><br>使用方法详见README.md</p>
+<h1 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h1><ul>
+<li>要从P站搜图首先要登录。我原来的设想是通过抓包直接用Py模拟登录，但是不出所料，P站的登录API参数都是经过加密的（貌似是基于RSA的），在不知加密算法的情况下无法实现。（虽然在另一个开源项目中我已经能够分析登录部分的JS加密逻辑，但在那之前我还是懒得审查JS）<br>于是目前的解决方案是要求用户在浏览器登录进P站一次，通过浏览器debugger获取Cookies中的PHPSESSID的值并输入到脚本中，脚本向P站发出的每次http请求都要带上该Cookie，目的是让P站服务器认为我们已经登录。<br>下面贴一行每次请求带上Cookie的代码  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">search_result = self.__session.get(<span class="string">'http://www.pixiv.net/search.php?word='</span> + urllib.quote(self.__keyword) + <span class="string">'&amp;p='</span> + str(page), cookies=&#123;<span class="string">'PHPSESSID'</span>: self.__session_id&#125;)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>更好的方法：在requests的session中通过headers.update()方法在Header中设置Cookie，该session的每次请求都能自动带上该header，这样就不需要每次都在请求中加上cookies参数</strong></p>
+<ul>
+<li><p>从HTML源码中提取有用数据：虽然Python中可以使用HTMLParser更灵活地分析HTML，但是由于不想在这个小项目上浪费太多时间，我直接用正则从HTML中匹配。这里贴一行匹配作品搜索列表的代码：  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">result_list = re.findall(<span class="string">r'&lt;a href="(/member_illust\.php\?mode=.*?&amp;amp;illust_id=.*?)"&gt;'</span>, search_result.text)</div></pre></td></tr></table></figure>
+</li>
+<li><p>自动脚本的流程是：获取作品搜索结果页面，从每个搜索结果分别进入作品首页，判断Rating是否高于设定的最小值（若低于则跳过该作品），判断作品类型（插画/漫画/大图）并根据不同的流程进入作品二级页面并获取原图的URL</p>
+</li>
+<li><p>绕过P站的防Bot机制：P站的原图不可直接下载。用户在浏览器中访问原图链接时，浏览器会自动加上Refer这个HTTP头，P站图片服务器会验证Refer是否合法。所以，脚本在访问原图链接并下载时，也需要在header中带上Refer。经过测试，Refer的值为作品首页或者作品二级页的URL。总之，在下载原图时带上当前页面（也就是HTML中能找到原图src的页面）的URL作为Refer就不会出问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">download_result = self.__session.get(url, cookies=&#123;<span class="string">'PHPSESSID'</span>: self.__session_id&#125;, headers=&#123;<span class="string">'Referer'</span>:referer&#125;)</div></pre></td></tr></table></figure>
+</li>
+<li><p>连接失败处理：经过测试，在长时间连续爬图时很有可能会有一两次requests请求超时（不排除是天朝某墙的TCP RST所致，也有可能是requests2.0在同域下长时间保持单TCP连接使P站服务器拒绝所致），因此，requests每次发出http请求时，都应该用try…except捕获超时异常并重试。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>:</div><div class="line">	page_result = self.__session.get(url, cookies=&#123;<span class="string">'PHPSESSID'</span>: self.__session_id&#125;, headers=&#123;<span class="string">'Referer'</span>:referer&#125;)</div><div class="line"><span class="keyword">except</span> Exception:</div><div class="line">	print(<span class="string">'Connection failure. Retrying...'</span>)</div><div class="line">	self.__enter_manga_big_page(url, referer, directory)</div><div class="line">	<span class="keyword">return</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>统计画师总评分数：按关键词爬完一波图后，需要统计所爬的每个画师的ID、Rating等值，方便我们之后能收藏人气高的画师。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">__increment_author_ratings</span><span class="params">(self, author_id, increment, pixiv_id)</span>:</span></div><div class="line">	<span class="keyword">for</span> author <span class="keyword">in</span> self.__author_ratings:</div><div class="line">		<span class="keyword">if</span> (author[<span class="string">'author_id'</span>] == author_id):</div><div class="line">			<span class="keyword">if</span> (pixiv_id <span class="keyword">in</span> author[<span class="string">'illust_id'</span>]):</div><div class="line">				<span class="keyword">return</span></div><div class="line">			author[<span class="string">'total_ratings'</span>] = author[<span class="string">'total_ratings'</span>] + increment</div><div class="line">			author[<span class="string">'illust_id'</span>].append(pixiv_id)</div><div class="line">			<span class="keyword">return</span></div><div class="line">	self.__author_ratings.append(&#123;<span class="string">'author_id'</span>:author_id, <span class="string">'total_ratings'</span>:increment, <span class="string">'illust_id'</span>:[pixiv_id]&#125;)</div></pre></td></tr></table></figure>
+</li>
+<li><p>用户交互：用argparse实现CLI参数传入分析。在本脚本中，通过”-a”或”–authorlist”参数指定存储了画师ID列表的JSON文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">parser = argparse.ArgumentParser()</div><div class="line">parser.add_argument(<span class="string">'-a'</span>, <span class="string">'--authorlist'</span>, help=<span class="string">'Crawl illustrations by author IDs. A JSON file containg the list of Pixiv member IDs is required.'</span>)</div><div class="line">args = parser.parse_args()</div></pre></td></tr></table></figure>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cisvylbsz0013qycm6sv0ktwz" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crawler/">crawler</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/20/thunderhack-development-log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          ThunderHack开发笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Using Gulp to Simplify Front end Development Workflow</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  
+  var disqus_url = 'http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
