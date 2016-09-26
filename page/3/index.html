@@ -71,6 +71,63 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-python2.7-on-centos6" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/22/python2.7-on-centos6/" class="article-date">
+  <time datetime="2016-01-21T18:11:53.000Z" itemprop="datePublished">2016-01-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/linux/">linux</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/22/python2.7-on-centos6/">在CentOS6上编译安装Python2.7</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>参考了友站的博文<a href="https://www.starduster.me/2016/01/04/py27-on-centos6/" target="_blank" rel="external">CentOS6上的Python2.7问题</a>，正如所言，在CentOS6上安装Python2.7是非常头疼的问题。友站的这篇博文阐述了如何了从源安装Python2.7，本站则讲述从源码编译安装要注意的问题。<br>编译依赖参考<a href="http://toomuchdata.com/2014/02/16/how-to-install-python-on-centos/" target="_blank" rel="external">How to install Python 2.7 and Python 3.3 on CentOS 6</a>。</p>
+<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><p><strong>十分重要:</strong> 编译Python2.7之前务必安装齐必须依赖。在configure过程中，若缺少依赖则不会报错，编译也可顺利通过，但编译出的Python将缺少几个必要模块，导致在运行<code>ez_setup.py</code>时出错。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># yum groupinstall &quot;Development tools&quot;</div><div class="line"># yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel</div></pre></td></tr></table></figure>
+<h2 id="编译和安装"><a href="#编译和安装" class="headerlink" title="编译和安装"></a>编译和安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ wget http://python.org/ftp/python/2.7.6/Python-2.7.6.tar.xz</div><div class="line">$ tar xf Python-2.7.6.tar.xz</div><div class="line">$ cd Python-2.7.6</div><div class="line">$ ./configure --prefix=/usr/local --enable-unicode=ucs4 --enable-shared LDFLAGS=&quot;-Wl,-rpath /usr/local/lib&quot;</div><div class="line"># make &amp;&amp; make altinstall</div></pre></td></tr></table></figure>
+<p>这将会把Python2.7安装在<code>/usr/local/bin/python2.7</code></p>
+<h2 id="将默认Python版本从2-6改为2-7"><a href="#将默认Python版本从2-6改为2-7" class="headerlink" title="将默认Python版本从2.6改为2.7"></a>将默认Python版本从2.6改为2.7</h2><p>首先将<code>/usr/bin/python</code>这个软链接指向刚刚安装的Python2.7<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># rm /usr/bin/python</div><div class="line"># ln -s /usr/local/bin/python2.7 /usr/bin/python</div></pre></td></tr></table></figure></p>
+<p><strong>重要：</strong> 进行这步操作后，yum会失效，运行即报错。这是因为<code>/usr/bin/yum</code>其实是个python2.6脚本，刚刚安装的python2.7缺少yum的相关依赖。因此需要改动<code>/usr/bin/yum</code>的解释器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /usr/bin/yum</div></pre></td></tr></table></figure></p>
+<p>将第一行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/python</div></pre></td></tr></table></figure></p>
+<p>改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/python2.6</div></pre></td></tr></table></figure></p>
+<p>现在运行<code>yum --version</code>应该不会再报错</p>
+<h2 id="安装pip"><a href="#安装pip" class="headerlink" title="安装pip"></a>安装pip</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py</div><div class="line"># python ez_setup.py</div><div class="line"># easy_install-2.7 pip</div></pre></td></tr></table></figure>
+<h2 id="替换默认pip为pip2-7"><a href="#替换默认pip为pip2-7" class="headerlink" title="替换默认pip为pip2.7"></a>替换默认pip为pip2.7</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># vim /usr/bin/pip2.6 #第一行改为#!/usr/bin/python2.6</div><div class="line">$ which pip2.7  #应该返回/usr/local/bin/pip2.7</div><div class="line"># rm /usr/bin/pip</div><div class="line"># ln -s /usr/local/bin/pip2.7 /usr/bin/pip</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="citk7mxas001d4ncmtydbb1ju" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/#disqus_thread" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-netease-music-app-reversed-proxy" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/01/21/netease-music-app-reversed-proxy/" class="article-date">
@@ -114,7 +171,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="cisvylbsi000rqycmc98pexn4" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="citk7mxag000q4ncmd2ty66ai" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -193,7 +250,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="cisvylbt8001eqycmvluv42h0" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="citk7mxb1001n4ncmrd7i5a7y" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -265,7 +322,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cisvylbsz0013qycm6sv0ktwz" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="citk7mxaq00184ncmapp5t8v7" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -361,7 +418,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cisvylbro000cqycmoz29oujf" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="citk7mx9q00064ncm59k24uz0" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -428,7 +485,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cisvylbqa0002qycmbsxop882" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="citk7mx9l00034ncmgmwbzl85" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -466,7 +523,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
     </div>
   </div>
 
@@ -476,7 +533,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 14px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16px;">front-end</a> <a href="/tags/hack/" style="font-size: 20px;">hack</a> <a href="/tags/linux/" style="font-size: 18px;">linux</a> <a href="/tags/maintenance/" style="font-size: 20px;">maintenance</a> <a href="/tags/network/" style="font-size: 10px;">network</a> <a href="/tags/nginx/" style="font-size: 14px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/router/" style="font-size: 16px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
     </div>
   </div>
 
@@ -486,7 +543,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -497,6 +554,10 @@
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/09/24/linux-tcp-keepalive/">TCP keepalive的探究 (1) : NAT和保活机制</a>
+          </li>
         
           <li>
             <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
@@ -512,10 +573,6 @@
         
           <li>
             <a href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/06/163-music-unlock-update-log/">网易云音乐反向代理163-music-unlock更新记录</a>
           </li>
         
       </ul>
