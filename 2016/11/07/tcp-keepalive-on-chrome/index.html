@@ -3,25 +3,25 @@
 <head>
   <meta charset="utf-8">
   
-  <title>在GitHub Pages上使用CloudFlare https CDN | ChionLab  </title>
+  <title>TCP keepalive的探究 (2) : 浏览器的Keepalive机制 | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
-GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
+  <meta name="description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。
+HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
 <meta property="og:type" content="article">
-<meta property="og:title" content="在GitHub Pages上使用CloudFlare https CDN">
-<meta property="og:url" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/index.html">
+<meta property="og:title" content="TCP keepalive的探究 (2) : 浏览器的Keepalive机制">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/index.html">
 <meta property="og:site_name" content="ChionLab">
-<meta property="og:description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
-GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/dns-config.png">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/dig-result.png">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/page-rules.png">
-<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta property="og:description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。
+HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
+<meta property="og:image" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/http1.1.png">
+<meta property="og:image" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/10.png">
+<meta property="og:image" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/9.png">
+<meta property="og:updated_time" content="2016-11-14T14:01:16.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="在GitHub Pages上使用CloudFlare https CDN">
-<meta name="twitter:description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
-GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
-<meta name="twitter:image" content="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/dns-config.png">
+<meta name="twitter:title" content="TCP keepalive的探究 (2) : 浏览器的Keepalive机制">
+<meta name="twitter:description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。
+HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
+<meta name="twitter:image" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/http1.1.png">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -77,14 +77,14 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-github-pages-with-https" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-tcp-keepalive-on-chrome" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/01/28/github-pages-with-https/" class="article-date">
-  <time datetime="2016-01-27T16:49:18.000Z" itemprop="datePublished">2016-01-28</time>
+    <a href="/2016/11/07/tcp-keepalive-on-chrome/" class="article-date">
+  <time datetime="2016-11-07T11:40:07.000Z" itemprop="datePublished">2016-11-07</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/运维/">运维</a>
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/linux/">linux</a>
   </div>
 
   </div>
@@ -95,7 +95,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
         
   
     <h1 class="article-title" itemprop="name">
-      在GitHub Pages上使用CloudFlare https CDN
+      TCP keepalive的探究 (2) : 浏览器的Keepalive机制
     </h1>
   
 
@@ -103,49 +103,48 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本站就是使用<a href="https://hexo.io" target="_blank" rel="external">hexo</a>搭建的静态Web站点，托管在<a href="https://github.com/Chion82/Chion82.github.io" target="_blank" rel="external">GitHub repo</a>，并使用GitHub Pages。<br>另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。</p>
-<h2 id="GitHub-Pages应用自定义域名"><a href="#GitHub-Pages应用自定义域名" class="headerlink" title="GitHub Pages应用自定义域名"></a>GitHub Pages应用自定义域名</h2><p>默认情况下，访问GitHub Pages页面的域名为<code>username.github.io</code>，如果需要使用自己的域名（以下简称“你的域名”），可<a href="https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/" target="_blank" rel="external">参考官方的帮助文档</a>，其实非常简单：</p>
+        <p>上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。</p>
+<h2 id="HTTP1-1中的Connection-Keep-Alive"><a href="#HTTP1-1中的Connection-Keep-Alive" class="headerlink" title="HTTP1.1中的Connection: Keep-Alive"></a>HTTP1.1中的Connection: Keep-Alive</h2><p>在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Keep-Alive机制。</p>
+<p>HTTP1.1协议头(header)中的<code>Connection</code>字段可取这两个值的其中之一：<code>keep-alive</code>, <code>close</code>。<br>该字段在请求头(request header)和响应头(response header)中都可以存在，这说明，客户端可以申请开启Keep-Alive，而服务端可以接受Keep-Alive请求，或者拒绝并在响应头中告知客户端。</p>
+<h3 id="作用机理"><a href="#作用机理" class="headerlink" title="作用机理"></a>作用机理</h3><p>这里以一次完整的HTTP1.1网站访问来说明。</p>
 <ol>
-<li>在repo根目录下创建<code>CNAME</code>文件，内容为你的域名。<a href="https://github.com/Chion82/Chion82.github.io/blob/master/CNAME" target="_blank" rel="external">本站的CNAME文件</a></li>
-<li>在你的域名管理中心，添加一条<code>CNAME</code>记录，指向<code>username.github.io</code>。（将username替换为你的GitHub用户名）</li>
+<li>客户端浏览器向 <code>www.bilibili.com:80</code> 建立TCP连接，并在此TCP连接上传输七层报文，请求<code>GET /index.html</code>资源，在请求头中，<code>Connection</code>置为<code>keep-alive</code>。</li>
+<li>服务端向浏览器返回<code>index.html</code>的文件内容，响应报头中<code>Connection</code>置为<code>keep-alive</code>，随后，<strong>不关闭和客户端的TCP连接</strong>。</li>
+<li>客户端复用该TCP连接，并请求<code>GET /style.css</code>资源，请求头置<code>Connection</code>为<code>keep-alive</code>。</li>
+<li>服务器向浏览器返回<code>index.css</code>文件内容，仍然不关闭该TCP连接。</li>
+<li>客户端继续复用该TCP连接请求多个同域资源。</li>
+<li>客户端所需的各种资源都请求完毕，但是因为客户端的最后一次资源请求头中仍置<code>Connection</code>为<code>keep-alive</code>，该TCP连接仍未被关闭。</li>
+<li>如果在一段时间（通常是3分钟左右）内客户端没有使用该TCP连接请求资源，服务器可能会关闭该连接。连接被关闭后，客户端需要重新向该域建立TCP连接才能继续请求数据。</li>
 </ol>
-<p>现在，访问<code>http://你的域名</code> ，已经可以访问到站点首页了。而如果访问<code>http://username.github.io</code> （即原来的地址），将被302跳转到<code>http://你的域名</code>。</p>
-<h2 id="https的问题"><a href="#https的问题" class="headerlink" title="https的问题"></a>https的问题</h2><p>尝试直接访问<code>https://你的域名</code>，浏览器会报SSL_DOMAIN_NOT_MATCHED警告。因为GitHub Pages默认提供的SSL证书的根域名是<code>github.io</code>，和你的域名不相同。<br>而且，GitHub Pages不支持上传SSL证书。</p>
-<h2 id="使用CloudFlare"><a href="#使用CloudFlare" class="headerlink" title="使用CloudFlare"></a>使用CloudFlare</h2><p><a href="https://www.cloudflare.com" target="_blank" rel="external">CloudFlare</a>（以下简称CF）是一家CDN提供商，它的free plan里面就提供https服务（免费计划不能上传SSL）。现在可以通过CF实现：从用户到CDN服务器的连接为https，而CDN服务器到GitHub Pages服务器的连接为http。<br>1.注册并登录到CF。按照提示，在你的域名的管理中心，将域名的name server改为CF的name server。CF提供的NS如下：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">Type</th>
-<th style="text-align:center">Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">NS</td>
-<td style="text-align:center">bob.ns.cloudflare.com</td>
-</tr>
-<tr>
-<td style="text-align:center">NS</td>
-<td style="text-align:center">jamie.ns.cloudflare.com</td>
-</tr>
-</tbody>
-</table>
-<p>2.在CF的DNS设置页中，检查对应的子域名记录。博主的DNS记录如下：<br>  <img src="/2016/01/28/github-pages-with-https/dns-config.png" alt="blog.chionlab.moe的DNS记录" title="blog.chionlab.moe的DNS记录"><br>  其中，右侧的橙色云图标代表该条记录将经过CF的CDN加速。<br>  在这里设置的DNS记录，如果是CNAME记录或者A记录，若右边的STATUS为连通状态，CF都会在name server中将其设置为A记录并指向CF的CDN服务器（并根据用户所在地选择最优CDN），当用户通过该域名访问CF的CDN时（仅限http或https），CDN再转发到刚才填写的真实目的主机（即username.github.io）<br>  <img src="/2016/01/28/github-pages-with-https/dig-result.png" alt="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN" title="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN"><br>  CF正是通过这种动态DNS的方式实现CDN加速的。</p>
-<h2 id="设置https"><a href="#设置https" class="headerlink" title="设置https"></a>设置https</h2><ol>
-<li>在CF的Crypto页中，SSL设置为Flexible。这将允许CDN到github pages之间的访问为http。</li>
-<li>现在，通过<code>https://你的域名</code>已经可以访问站点首页了。</li>
-</ol>
-<h2 id="强制https"><a href="#强制https" class="headerlink" title="强制https"></a>强制https</h2><p>CF提供Page Rules功能，可设置路由规则。通过规则中的<code>Always use https</code>选项，可以将用户强制跳转到https。博主的设置如下：<br><img src="/2016/01/28/github-pages-with-https/page-rules.png" alt="page-rules.png" title=""></p>
+<img src="/2016/11/07/tcp-keepalive-on-chrome/http1.1.png" alt="HTTP1.1的请求示意图" title="HTTP1.1的请求示意图">
+<img src="/2016/11/07/tcp-keepalive-on-chrome/10.png" alt="一次HTTP1.1的请求和响应报头" title="一次HTTP1.1的请求和响应报头">
+<h3 id="几点细节"><a href="#几点细节" class="headerlink" title="几点细节"></a>几点细节</h3><ul>
+<li><p>HTTP1.1的Keep-Alive机制仅对同域下的网络请求有效。比如，对于<code>http://www.bilibili.com/index.html</code>和<code>http://www.bilibili.com/style.css</code>这两个资源请求，浏览器能够复用其TCP连接，而对于非同域下的<code>http://space.bilibili.com/index.html</code>，则需要重新建立一次TCP连接。</p>
+</li>
+<li><p>服务器有权拒绝客户端的Keep-Alive请求，在响应头中置<code>Connection</code>为<code>close</code>，并在传输一次完整的响应报文后主动关闭TCP连接，在这之后，客户端如需向该域请求资源，则需重新建立TCP连接。而事实上，即使客户端和服务端都开启了Keep-Alive，服务端一般会主动关闭非活动的连接，否则会造成资源浪费。</p>
+</li>
+<li><p>Keep-Alive虽然可以在一定程度上通过复用TCP连接来提高页面资源加载性能，但是受HTTP1.1的max-connection限制，提高的性能很有限。很多时候，为了加快更多资源的加载，通常会使用多个不同域名的CDN。而在HTTP2中，通过二进制数据帧的方式来传输同域下多资源，可以解决这个问题。关于HTTP2的传输机制，可以参考<a href="https://segmentfault.com/a/1190000006923359" target="_blank" rel="external">这篇文章</a>。</p>
+</li>
+</ul>
+<h2 id="Chrome对TCP连接的保活机制"><a href="#Chrome对TCP连接的保活机制" class="headerlink" title="Chrome对TCP连接的保活机制"></a>Chrome对TCP连接的保活机制</h2><p>上篇章节中我们熟悉了七层协议中HTTP1.1的Keep-Alive机制，本章节我们介绍Chrome对四层协议的TCP Keepalive的实现。</p>
+<p><strong>Chrome何时需要启用TCP Keepalive？</strong><br>假定服务器启用了HTTP1.1 Keep-Alive，浏览器与服务器建立TCP连接，并在该TCP连接上有序地传输多个HTTP1.1七层报文，以此来请求多个资源。对于同域下，在浏览器完成一次请求并获得对应资源后，若一段时间内暂时未有新的资源请求（资源请求可能由页面JavaScript发出，如Ajax），直至下次请求发出前，该TCP连接保持空闲状态。而在这段空闲时间内，浏览器需要对该TCP连接进行保活。</p>
+<p>下面我们将通过Wireshark抓包来验证。</p>
+<img src="/2016/11/07/tcp-keepalive-on-chrome/9.png" alt="Wireshark抓到的Chrome发出的TCP keepalive探测包" title="Wireshark抓到的Chrome发出的TCP keepalive探测包">
+<p>从上面的抓包结果中看到，在服务器返回完整HTTP 200报文的45秒后（Time=72），本地发出了第一个TCP Keepalive探测包并收到来自服务器的ACK。</p>
+<p>这说明，Chrome对于可复用的TCP连接，采用的保活机制是TCP层（传输层）自带的Keepalive机制，通过TCP Keepalive探测包的方式实现，而不是在七层报文上自成协议来传输其它数据。</p>
+<p>而实际上，由于HTTP1.1对时序和报文的约定，浏览器也不可在七层实现保活。假设，客户端在通过HTTP1.1获取一次资源后，若在这个TCP连接上发送一个<code>0x70</code>（无意义的数据，在七层实现保活的方式大多如此），服务器会在应用层接收到并缓存该数据，一段时间后客户端发送有效的HTTP请求报头，则服务端CGI应用程序收到的数据是<code>0x70</code>再接上一段HTTP请求头，这被认为是无效的HTTP报文，服务器则会返回400响应头，告知客户端这是坏的请求（Bad Request）。</p>
+<p>所以，浏览器在处理HTTP1.1请求所对应的TCP连接的保活时，通过使用TCP Keepalive机制，来避免污染七层（应用层）的传输数据。</p>
+<h2 id="待续"><a href="#待续" class="headerlink" title="待续"></a>待续</h2><p>本篇主要介绍浏览器对TCP Keepalive的运用，内容简单。结合本篇内容，作者将在下篇文章中详细说明作者在使用shadowsocks浏览web时遇到的问题、解决方案以及一点思考。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="civi553za000f3tcm15ful4zu" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="civi553zv001a3tcmdq4nii0t" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/#disqus_thread" class="article-comment-link">评论</a>
+        <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#disqus_thread" class="article-comment-link">评论</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/network/">network</a></li></ul>
 
     </footer>
   </div>
@@ -153,19 +152,10 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
     
 <nav id="article-nav">
   
-    <a href="/2016/02/01/use-pf-on-osx/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          OSX上pf的简单配置笔记
-        
-      </div>
-    </a>
   
-  
-    <a href="/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2016/09/24/linux-tcp-keepalive/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">OpenWRT上使用haproxy对shadowsocks做负载均衡</div>
+      <div class="article-nav-title">TCP keepalive的探究 (1) : NAT和保活机制</div>
     </a>
   
 </nav>
@@ -297,7 +287,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
 <script>
   var disqus_shortname = 'chionlab';
   
-  var disqus_url = 'http://blog.chionlab.moe/2016/01/28/github-pages-with-https/';
+  var disqus_url = 'http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/';
   
   (function(){
     var dsq = document.createElement('script');
