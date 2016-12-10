@@ -348,7 +348,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url("images/miria.jpg") center #000;
+  background: url("/stylesheets/images/uzume.jpg") center #000;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
@@ -385,7 +385,7 @@ body {
   padding-left: 30px;
 }
 #subtitle-wrap a {
-  color: #f70;
+  color: #fff;
 }
 #main-nav {
   float: left;
@@ -554,7 +554,7 @@ body {
   transition: color 0.2s;
 }
 a.article-title:hover {
-  color: #f70;
+  color: #f03838;
 }
 .article-entry {
   color: #555;
@@ -591,7 +591,7 @@ a.article-title:hover {
   margin: 1.1em 0;
 }
 .article-entry a {
-  color: #f70;
+  color: #f03838;
   text-decoration: none;
 }
 .article-entry a:hover {
@@ -690,10 +690,10 @@ a.article-title:hover {
   text-decoration: none;
 }
 .article-more-link a:hover {
-  background: #f70;
+  background: #f03838;
   color: #fff;
   text-decoration: none;
-  text-shadow: 0 1px #cc5f00;
+  text-shadow: 0 1px #dc1111;
 }
 .article-footer {
   font-size: 0.85em;
@@ -956,7 +956,7 @@ a.article-title:hover {
   margin: 50px 0;
 }
 #comments a {
-  color: #f70;
+  color: #f03838;
 }
 .archives-wrap {
   margin: 50px 0;
@@ -1012,7 +1012,7 @@ a.article-title:hover {
   line-height: 1.6em;
 }
 .archive-article-title:hover {
-  color: #f70;
+  color: #f03838;
 }
 .archive-article-footer {
   margin-top: 1em;
@@ -1086,7 +1086,7 @@ a.article-title:hover {
   color: #ccc;
 }
 #footer a {
-  color: #f70;
+  color: #f03838;
   text-decoration: none;
 }
 #footer a:hover {
@@ -1204,7 +1204,7 @@ a.article-title:hover {
   margin-left: 20px;
 }
 .article-entry .gist .gist-file .gist-meta a {
-  color: #f70;
+  color: #f03838;
   font-weight: normal;
 }
 .article-entry .gist .gist-file .gist-meta a:hover {
@@ -1311,7 +1311,7 @@ pre .javascript .function {
   border-radius: 3px;
 }
 .widget a {
-  color: #f70;
+  color: #f03838;
   text-decoration: none;
 }
 .widget a:hover {
@@ -1379,10 +1379,10 @@ pre .javascript .function {
   padding-left: 30px;
 }
 #logo-wrap a {
-  color: #f70;
+  color: #fff;
 }
 #main-nav a {
-  color: #f70;
+  color: #fff;
 }
 blockquote {
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif !important;

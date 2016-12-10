@@ -55,6 +55,103 @@
         
           <a class="main-nav-link" href="/about.html">About Me</a>
         
+
+        
+          <div style="clear: both;"></div>
+          <style>
+            .switch-theme-btn {
+              opacity: 0.8 !important;
+            }
+
+            .switch-theme-btn:hover {
+              opacity: 1.0 !important;
+            }
+          </style>
+          <div>
+            
+              <a class="main-nav-link switch-theme-btn"
+                title="uzume" href="#" style="float: left;margin-right: -10px;"
+                data-css-url="/css/style.css"
+                data-theme-name="uzume">
+                <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
+                  <img style="width: 100%; height: 100%;" src="/images/theme_uzume.png" />
+                </div>
+              </a>
+            
+              <a class="main-nav-link switch-theme-btn"
+                title="miria" href="#" style="float: left;margin-right: -10px;"
+                data-css-url="/stylesheets/theme_miria.css"
+                data-theme-name="miria">
+                <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
+                  <img style="width: 100%; height: 100%;" src="/images/theme_miria.png" />
+                </div>
+              </a>
+            
+          </div>
+          <script>
+            (function(){
+
+              var JsCookies = {
+              	// this gets a cookie and returns the cookies value, if no cookies it returns blank ""
+              	get: function(c_name) {
+              		if (document.cookie.length > 0) {
+              			var c_start = document.cookie.indexOf(c_name + "=");
+              			if (c_start != -1) {
+              				c_start = c_start + c_name.length + 1;
+              				var c_end = document.cookie.indexOf(";", c_start);
+              				if (c_end == -1) {
+              					c_end = document.cookie.length;
+              				}
+              				return unescape(document.cookie.substring(c_start, c_end));
+              			}
+              		}
+              		return "";
+              	},
+
+              	// this sets a cookie with your given ("cookie name", "cookie value", "good for x days")
+              	set: function(c_name, value, expiredays) {
+              		var exdate = new Date();
+                  if (expiredays)
+              		  exdate.setDate(exdate.getDate() + expiredays);
+              		document.cookie = c_name + "=" + escape(value) + "; path=/" + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
+              	},
+
+              	// this checks to see if a cookie exists, then returns true or false
+              	check: function(c_name) {
+              		c_name = JsCookies.get(c_name);
+              		if (c_name != null && c_name != "") {
+              			return true;
+              		} else {
+              			return false;
+              		}
+              	}
+
+              };
+
+              function switchThemeCSS(themeName, cssUrl) {
+                document.querySelector('head').querySelectorAll('link[rel=stylesheet]')[1].href = cssUrl;
+              }
+
+              var switchThemeBtns = document.querySelectorAll('.switch-theme-btn');
+              for (var i=0; i<switchThemeBtns.length; i++) {
+                var switchThemeBtn = switchThemeBtns[i];
+                (function(switchThemeBtn) {
+                  switchThemeBtn.addEventListener('click', function(){
+                    switchThemeCSS(switchThemeBtn.dataset.themeName, switchThemeBtn.dataset.cssUrl);
+                    JsCookies.set('theme', switchThemeBtn.dataset.themeName);
+                  });
+                })(switchThemeBtn);
+              }
+
+              var initTheme = JsCookies.get('theme');
+              if (initTheme) {
+                var cssUrl = document.querySelector(".switch-theme-btn[data-theme-name='" + initTheme + "']").dataset.cssUrl;
+                switchThemeCSS(initTheme, cssUrl);
+              }
+
+            })();
+          </script>
+        
       </nav>
       <nav id="sub-nav">
         
@@ -68,6 +165,7 @@
     </div>
   </div>
 </header>
+
       <div class="outer">
         <section id="main">
   
@@ -112,7 +210,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="civi5gw6r00268vcmcoj29vuf" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwjaue0y0023vtcmxlpxr186" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -167,7 +265,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="civi5gw5h000g8vcmke2nfhtp" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwjaudzr000fvtcmclhyzood" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -229,7 +327,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="civi5gw5c000b8vcmtz4h1mkj" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwjaudzi0007vtcmeo0juehu" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -300,7 +398,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="civi5gw6l001y8vcmiqgbufkw" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwjaue0s001wvtcmrd2h6sk9" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -378,7 +476,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="civi5gw5k000k8vcm8beogpby" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwjaudzt000gvtcmgdfmdnh2" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -466,7 +564,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="civi5gw6i001t8vcmmbxxi31c" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="ciwjaue0p001svtcm7vcn2ktd" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -543,7 +641,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="civi5gw5600088vcmejim7l0y" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="ciwjaudzk0008vtcmohrydm47" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/cc-defence-log/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -632,7 +730,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="civi5gw6100178vcm15h245bk" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwjaue05000zvtcmtz0l759j" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -716,7 +814,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="civi5gw5u000u8vcm9qtrkyrs" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="ciwjaudzz000ovtcmegv9jv2n" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/#disqus_thread" class="article-comment-link">评论</a>
       
@@ -767,7 +865,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="civi5gw6f001o8vcmcpbo3xvp" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="ciwjaue0h001jvtcm8vao7axq" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/#disqus_thread" class="article-comment-link">评论</a>
       
