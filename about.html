@@ -270,7 +270,7 @@
     function getGeolocation(geoInfo) {
       var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
-        if (window.hostname === 'cn2' + '.' + rootDomain) {
+        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
           JsCookies.set('domain', 'cn2', 30);
           return;
         }
@@ -380,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/about.html" data-id="ciwkvtfkc0001w92hrw3g122w" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/about.html" data-id="ciwkvzsy90001z94rhbhe0fkm" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/about.html" class="article-duoshuo-link ds-thread-count" data-thread-key="page-undefined"></a>
       

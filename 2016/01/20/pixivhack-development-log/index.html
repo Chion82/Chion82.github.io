@@ -196,7 +196,7 @@
     function getGeolocation(geoInfo) {
       var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
-        if (window.hostname === 'cn2' + '.' + rootDomain) {
+        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
           JsCookies.set('domain', 'cn2', 30);
           return;
         }
@@ -303,7 +303,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="ciwkvtfmn001aw92hbbquj33g" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="ciwkvzt0h0011z94ri4yz3gwj" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-pixivhack-development-log"></a>
       

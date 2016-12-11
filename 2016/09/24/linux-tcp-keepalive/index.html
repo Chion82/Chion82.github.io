@@ -199,7 +199,7 @@
     function getGeolocation(geoInfo) {
       var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
-        if (window.hostname === 'cn2' + '.' + rootDomain) {
+        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
           JsCookies.set('domain', 'cn2', 30);
           return;
         }
@@ -351,7 +351,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="ciwkvtfm7000rw92hi5qo1aqm" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="ciwkvzt06000kz94rvkc6v0fu" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-linux-tcp-keepalive"></a>
       

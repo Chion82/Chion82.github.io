@@ -205,7 +205,7 @@
     function getGeolocation(geoInfo) {
       var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
-        if (window.hostname === 'cn2' + '.' + rootDomain) {
+        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
           JsCookies.set('domain', 'cn2', 30);
           return;
         }
@@ -336,7 +336,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="ciwkvtflx000hw92hcs1h663i" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="ciwkvzszq0007z94rrczufl3i" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cron-job-locale-issues"></a>
       

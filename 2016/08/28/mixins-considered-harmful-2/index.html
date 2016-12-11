@@ -202,7 +202,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
     function getGeolocation(geoInfo) {
       var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
-        if (window.hostname === 'cn2' + '.' + rootDomain) {
+        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
           JsCookies.set('domain', 'cn2', 30);
           return;
         }
@@ -435,7 +435,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwkvtfm3000nw92hfs3echmw" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwkvzt0b000rz94ra47yy65e" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful-2"></a>
       
