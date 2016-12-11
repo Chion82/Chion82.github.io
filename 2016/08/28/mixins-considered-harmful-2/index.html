@@ -435,7 +435,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwku7b2m000q504rh5hpmnpo" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwkuk3f6000m9k4rgyk5ycau" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful-2"></a>
       
@@ -472,7 +472,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -480,7 +480,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-mixins-considered-harmful-2" data-title="mixins是有害的（Mixins Considered Harmful）［下篇］" data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/"></div>
   <!-- 多说评论框 end -->
@@ -622,6 +622,11 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

@@ -402,6 +402,11 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

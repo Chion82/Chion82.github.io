@@ -290,7 +290,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwku7b4s001x504rk7w482gf" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwkuk3gb00219k4rcxx3r2ox" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-wechat-sns-reflect-classes"></a>
       
@@ -327,7 +327,7 @@
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -335,7 +335,7 @@
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-wechat-sns-reflect-classes" data-title="逆向纪录：微信朋友圈相关的几个类" data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/"></div>
   <!-- 多说评论框 end -->
@@ -477,6 +477,11 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

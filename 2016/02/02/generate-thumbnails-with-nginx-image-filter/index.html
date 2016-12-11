@@ -286,7 +286,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwku7b25000e504rx8gp6jtt" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwkuk3f2000i9k4roghsc5ky" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-generate-thumbnails-with-nginx-image-filter"></a>
       
@@ -323,7 +323,7 @@
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -331,7 +331,7 @@
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-generate-thumbnails-with-nginx-image-filter" data-title="使用nginx image filter动态生成缩略图" data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/"></div>
   <!-- 多说评论框 end -->
@@ -473,6 +473,11 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

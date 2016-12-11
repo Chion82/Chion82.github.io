@@ -330,7 +330,7 @@ VLAN配置
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="ciwku7b2w0013504rtdzlv5zy" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="ciwkuk3fd000v9k4r5e0wejfh" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-multiwan-configuration"></a>
       
@@ -367,7 +367,7 @@ VLAN配置
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -375,7 +375,7 @@ VLAN配置
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-openwrt-multiwan-configuration" data-title="OpenWRT下双WAN配置" data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/"></div>
   <!-- 多说评论框 end -->
@@ -517,6 +517,11 @@ VLAN配置
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

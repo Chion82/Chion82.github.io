@@ -296,7 +296,7 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="ciwku7b2e000l504r3b8bwcxn" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="ciwkuk3f1000h9k4rqaon9q65" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-hello-old-driver"></a>
       
@@ -333,7 +333,7 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -341,7 +341,7 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-hello-old-driver" data-title="你好，老司机：种子爬虫企划" data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/"></div>
   <!-- 多说评论框 end -->
@@ -483,6 +483,11 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

@@ -326,7 +326,7 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwku7b2u0010504rty0ab0nt" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwkuk3ff000y9k4rfsdund1i" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt"></a>
       
@@ -363,7 +363,7 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -371,7 +371,7 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-optimize-shadowsocks-on-openwrt" data-title="OpenWRT自动科学上网的问题及优化" data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/"></div>
   <!-- 多说评论框 end -->
@@ -513,6 +513,11 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

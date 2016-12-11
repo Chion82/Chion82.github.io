@@ -313,7 +313,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwku7b2b000i504ru9sq9s51" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwkuk3f5000l9k4rixq03331" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-github-pages-with-https"></a>
       
@@ -350,7 +350,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -358,7 +358,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-github-pages-with-https" data-title="在GitHub Pages上使用CloudFlare https CDN" data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/"></div>
   <!-- 多说评论框 end -->
@@ -500,6 +500,11 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

@@ -297,7 +297,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="ciwku7b3a001c504r76ui006z" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="ciwkuk3fo001b9k4r1f4ye2n0" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-react-server-side-rendering"></a>
       
@@ -334,7 +334,7 @@
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -342,7 +342,7 @@
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-react-server-side-rendering" data-title="自译：如何使用服务端渲染加速React APP首屏加载" data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/"></div>
   <!-- 多说评论框 end -->
@@ -484,6 +484,11 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 

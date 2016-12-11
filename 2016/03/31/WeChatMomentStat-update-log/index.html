@@ -304,7 +304,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="ciwku7b1u0007504rjhtsmniz" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="ciwkuk3es00089k4rmsvhxmil" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-WeChatMomentStat-update-log"></a>
       
@@ -341,7 +341,7 @@
 </article>
 
 
-<section id="comments">
+<section id="comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
@@ -349,7 +349,7 @@
 
 
 
-<section id="comments">
+<section id="duoshuo_comments">
   <!-- 多说评论框 start -->
   <div class="ds-thread" data-thread-key="post-WeChatMomentStat-update-log" data-title="WeChatMomentStat：微信朋友圈导出工具开发记录" data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/"></div>
   <!-- 多说评论框 end -->
@@ -491,6 +491,11 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     
+  } else {
+    var disqusSection = document.querySelector('.disqus-comments-section');
+    if (disqusSection) {
+      disqusSection.style.display = 'none';
+    }
   }
 </script>
 
