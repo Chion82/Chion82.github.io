@@ -225,7 +225,7 @@ https://github.com/tldr-pages/tl">
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -282,7 +282,7 @@ https://github.com/tldr-pages/tl">
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="ciwkvzt12001oz94r7mm9ggok" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="ciwkwebbh001d4s4rly6gz5q6" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tldr-man-page"></a>
       

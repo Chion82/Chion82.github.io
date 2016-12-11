@@ -221,7 +221,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }

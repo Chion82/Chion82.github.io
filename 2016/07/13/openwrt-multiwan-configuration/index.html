@@ -249,7 +249,7 @@ VLAN配置
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -330,7 +330,7 @@ VLAN配置
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="ciwkvzt0l0018z94r0xo7f7hj" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="ciwkwebb2000x4s4rkf3gpt04" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-multiwan-configuration"></a>
       

@@ -228,7 +228,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -290,7 +290,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwkvzt1d0024z94rnjt5kj0d" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwkwebbn001p4s4ryrth982k" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-wechat-sns-reflect-classes"></a>
       

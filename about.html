@@ -299,7 +299,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -380,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/about.html" data-id="ciwkvzsy90001z94rhbhe0fkm" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/about.html" data-id="ciwkweb8w00004s4r8zzgfexu" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/about.html" class="article-duoshuo-link ds-thread-count" data-thread-key="page-undefined"></a>
       

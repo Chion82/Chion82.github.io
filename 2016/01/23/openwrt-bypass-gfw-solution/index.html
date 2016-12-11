@@ -230,7 +230,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -320,7 +320,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="ciwkvzt0f000xz94r0g2kfgfb" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="ciwkwebaw000r4s4raagcradw" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-bypass-gfw-solution"></a>
       

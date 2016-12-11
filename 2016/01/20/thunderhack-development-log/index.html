@@ -222,7 +222,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -307,7 +307,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="ciwkvzt1h0027z94rvg3bp1l0" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="ciwkwebbp001s4s4r1i65l1hz" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-thunderhack-development-log"></a>
       

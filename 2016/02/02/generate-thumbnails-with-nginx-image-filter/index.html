@@ -225,7 +225,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -286,7 +286,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwkvzszz000fz94r5o73knts" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwkwebaj000d4s4rc71u2a1k" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-generate-thumbnails-with-nginx-image-filter"></a>
       

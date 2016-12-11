@@ -234,7 +234,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -336,7 +336,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="ciwkvzszq0007z94rrczufl3i" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="ciwkwebah000c4s4ro71dryrw" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cron-job-locale-issues"></a>
       

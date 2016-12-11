@@ -222,7 +222,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -295,7 +295,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="ciwkvzszp0006z94r8dl8ns8d" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="ciwkweba500034s4rp97t37vu" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Project-Conclusion-of-m-21dianping-com"></a>
       

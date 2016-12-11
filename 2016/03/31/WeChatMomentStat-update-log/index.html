@@ -225,7 +225,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -304,7 +304,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="ciwkvzszw000cz94r3u0ravt4" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="ciwkwebab00074s4r4pnld3em" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-WeChatMomentStat-update-log"></a>
       

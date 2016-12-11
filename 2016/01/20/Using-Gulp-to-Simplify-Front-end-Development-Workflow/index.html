@@ -222,7 +222,7 @@
         geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
         document.head.appendChild(geoLocationScript);
       } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname) {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
           window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
         }
       }
@@ -324,7 +324,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="ciwkvzszj0003z94rsd0het90" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="ciwkweba000024s4rivd0at7u" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Using-Gulp-to-Simplify-Front-end-Development-Workflow"></a>
       
