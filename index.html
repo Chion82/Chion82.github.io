@@ -190,10 +190,15 @@
   </div>
   <script>
     function getGeolocation(geoInfo) {
+      var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
+        if (window.hostname === 'cn2' + '.' + rootDomain) {
+          JsCookies.set('domain', 'cn2', 30);
+          return;
+        }
         $.confirm({
           title: '线路优化建议',
-          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到国内优化线路？',
+          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
           buttons: {
             '好的': function() {
               JsCookies.set('domain', 'cn2', 30);
@@ -301,7 +306,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="ciwkslc7a001wr72hj7vb7i55" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="ciwku0fs6001x2d4rax2xlw6u" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tcp-keepalive-on-chrome"></a>
       
@@ -423,7 +428,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="ciwkslc6f000wr72hvv7ey79n" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="ciwku0fr2000m2d4r3n5ai4zl" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-linux-tcp-keepalive"></a>
       
@@ -626,7 +631,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwkslc63000nr72hwl9uedbi" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwku0fr4000p2d4rbuhb61d5" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful-2"></a>
       
@@ -733,7 +738,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="ciwkslc66000qr72hmohm4zgg" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="ciwku0frd000v2d4r60i57zop" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful"></a>
       
@@ -813,7 +818,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="ciwkslc6i000zr72hahh0fzx8" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="ciwku0frg000y2d4r4ph5u1m2" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-multiwan-configuration"></a>
       
@@ -914,7 +919,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="ciwkslc5o0008r72hsxdop5n0" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="ciwku0fqu000e2d4r3hmeqsfl" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cron-job-locale-issues"></a>
       
@@ -978,7 +983,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="ciwkslc61000mr72h8kqu5r5l" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="ciwku0fqg00032d4r5ygzqra9" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-163-music-unlock-update-log"></a>
       
@@ -1056,7 +1061,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="ciwkslc5k0006r72htkydo29h" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="ciwku0fqo00082d4reykmqrh2" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-WeChatMomentStat-update-log"></a>
       
@@ -1127,7 +1132,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="ciwkslc6r001ar72hlio9cf6x" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="ciwku0frp001b2d4refjqv71a" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-react-server-side-rendering"></a>
       
@@ -1194,7 +1199,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="ciwkslc5y000jr72h38kjqwrf" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="ciwku0fr1000l2d4rtx64rgmq" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-hello-old-driver"></a>
       

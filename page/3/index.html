@@ -190,10 +190,15 @@
   </div>
   <script>
     function getGeolocation(geoInfo) {
+      var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
+        if (window.hostname === 'cn2' + '.' + rootDomain) {
+          JsCookies.set('domain', 'cn2', 30);
+          return;
+        }
         $.confirm({
           title: '线路优化建议',
-          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到国内优化线路？',
+          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
           buttons: {
             '好的': function() {
               JsCookies.set('domain', 'cn2', 30);
@@ -288,7 +293,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="ciwkslc76001or72h6zk9ksm1" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="ciwku0fs2001p2d4r5cjxwu10" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-xposed-to-crawl-wechat-moments"></a>
       
@@ -350,7 +355,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="ciwkslc6o0018r72hvpvnz3py" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="ciwku0frj00112d4riyhtyyu8" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-python2.7-on-centos6"></a>
       
@@ -413,7 +418,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="ciwkslc6d000tr72hoqy4xfek" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="ciwku0fr7000q2d4rw1m3xp4s" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-netease-music-app-reversed-proxy"></a>
       
@@ -497,7 +502,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="ciwkslc6y001gr72h4py1a569" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="ciwku0fs0001m2d4rnjhi6dlh" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-thunderhack-development-log"></a>
       
@@ -574,7 +579,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="ciwkslc6m0014r72htzmdu2vi" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="ciwku0frn00182d4rmzqyq1mr" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-pixivhack-development-log"></a>
       
@@ -675,7 +680,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="ciwkslc5f0003r72hrsmoqwtj" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="ciwku0fqm00072d4riubrurua" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Using-Gulp-to-Simplify-Front-end-Development-Workflow"></a>
       
@@ -747,7 +752,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="ciwkslc580002r72hmj81k8zz" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="ciwku0fqd00022d4rhndieh2b" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Project-Conclusion-of-m-21dianping-com"></a>
       

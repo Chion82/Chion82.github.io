@@ -191,10 +191,15 @@
   </div>
   <script>
     function getGeolocation(geoInfo) {
+      var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
+        if (window.hostname === 'cn2' + '.' + rootDomain) {
+          JsCookies.set('domain', 'cn2', 30);
+          return;
+        }
         $.confirm({
           title: '线路优化建议',
-          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到国内优化线路？',
+          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
           buttons: {
             '好的': function() {
               JsCookies.set('domain', 'cn2', 30);
@@ -319,7 +324,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="ciwkslc5f0003r72hrsmoqwtj" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="ciwku0fqm00072d4riubrurua" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Using-Gulp-to-Simplify-Front-end-Development-Workflow"></a>
       

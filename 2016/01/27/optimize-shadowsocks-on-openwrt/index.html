@@ -200,10 +200,15 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
   </div>
   <script>
     function getGeolocation(geoInfo) {
+      var rootDomain = 'chionlab.moe';
       if (geoInfo.country_code === 'CN') {
+        if (window.hostname === 'cn2' + '.' + rootDomain) {
+          JsCookies.set('domain', 'cn2', 30);
+          return;
+        }
         $.confirm({
           title: '线路优化建议',
-          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到国内优化线路？',
+          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
           buttons: {
             '好的': function() {
               JsCookies.set('domain', 'cn2', 30);
@@ -321,7 +326,7 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwkslc6k0012r72hzna41yhl" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwku0frk00142d4rx1jrul64" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt"></a>
       
