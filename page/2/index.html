@@ -51,6 +51,7 @@
     <div id="wrap">
       <header id="header">
   <script>
+    var JS_COOKIES_DOMAIN = '.chionlab.moe';
     var JsCookies = {
       // this gets a cookie and returns the cookies value, if no cookies it returns blank ""
       get: function(c_name) {
@@ -73,7 +74,7 @@
         var exdate = new Date();
         if (expiredays)
           exdate.setDate(exdate.getDate() + expiredays);
-        document.cookie = c_name + "=" + escape(value) + "; path=/" + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + escape(value) + "; path=/" + "; domain=" + JS_COOKIES_DOMAIN + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
       },
 
       // this checks to see if a cookie exists, then returns true or false
@@ -279,7 +280,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwks7d750021om2h746k2sye" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwkslc78001sr72h7f7mj5gm" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-wechat-sns-reflect-classes"></a>
       
@@ -339,7 +340,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwks7d5o000com2hwd03jt2f" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwkslc5s000cr72h45m2i5ko" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-generate-thumbnails-with-nginx-image-filter"></a>
       
@@ -406,7 +407,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwks7d5h0007om2hmgd12our" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwkslc5m0007r72hoikpc1ca" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-compile-nginx-on-osx"></a>
       
@@ -482,7 +483,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwks7d6y001uom2hbyouz989" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwkslc70001kr72hbmawivz5" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-pf-on-osx"></a>
       
@@ -565,7 +566,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwks7d5r000fom2hwg4w8bdc" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwkslc5w000hr72hkvzftapd" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-github-pages-with-https"></a>
       
@@ -658,7 +659,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="ciwks7d6v001pom2hsrzom0rg" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="ciwkslc7c0020r72hs9e20m3e" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-haproxy-to-optimize-shadowsocks-on-openwrt"></a>
       
@@ -740,7 +741,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="ciwks7d5k0008om2hex6i9qta" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="ciwkslc5u000er72hb36sm22i" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cc-defence-log"></a>
       
@@ -834,7 +835,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwks7d68000xom2hbnkpal2h" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwkslc6k0012r72hzna41yhl" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt"></a>
       
@@ -923,7 +924,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="ciwks7d67000uom2hyqmblzb9" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="ciwkslc69000rr72hkpzt8k2q" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-bypass-gfw-solution"></a>
       
@@ -979,7 +980,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="ciwks7d6o001hom2hig3dxhi7" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="ciwkslc6w001er72h6s6sdgxt" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tldr-man-page"></a>
       

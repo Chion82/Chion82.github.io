@@ -59,6 +59,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
     <div id="wrap">
       <header id="header">
   <script>
+    var JS_COOKIES_DOMAIN = '.chionlab.moe';
     var JsCookies = {
       // this gets a cookie and returns the cookies value, if no cookies it returns blank ""
       get: function(c_name) {
@@ -81,7 +82,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
         var exdate = new Date();
         if (expiredays)
           exdate.setDate(exdate.getDate() + expiredays);
-        document.cookie = c_name + "=" + escape(value) + "; path=/" + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + escape(value) + "; path=/" + "; domain=" + JS_COOKIES_DOMAIN + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
       },
 
       // this checks to see if a cookie exists, then returns true or false
@@ -306,7 +307,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="ciwks7d6s001mom2hoo14c0f0" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="ciwkslc7a001wr72hj7vb7i55" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tcp-keepalive-on-chrome"></a>
       

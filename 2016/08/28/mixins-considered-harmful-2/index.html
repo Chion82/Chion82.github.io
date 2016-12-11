@@ -61,6 +61,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
     <div id="wrap">
       <header id="header">
   <script>
+    var JS_COOKIES_DOMAIN = '.chionlab.moe';
     var JsCookies = {
       // this gets a cookie and returns the cookies value, if no cookies it returns blank ""
       get: function(c_name) {
@@ -83,7 +84,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
         var exdate = new Date();
         if (expiredays)
           exdate.setDate(exdate.getDate() + expiredays);
-        document.cookie = c_name + "=" + escape(value) + "; path=/" + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + escape(value) + "; path=/" + "; domain=" + JS_COOKIES_DOMAIN + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
       },
 
       // this checks to see if a cookie exists, then returns true or false
@@ -429,7 +430,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwks7d64000rom2hdzr05lhw" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwkslc63000nr72hwl9uedbi" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful-2"></a>
       

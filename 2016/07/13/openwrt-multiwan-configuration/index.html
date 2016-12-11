@@ -79,6 +79,7 @@ VLAN配置
     <div id="wrap">
       <header id="header">
   <script>
+    var JS_COOKIES_DOMAIN = '.chionlab.moe';
     var JsCookies = {
       // this gets a cookie and returns the cookies value, if no cookies it returns blank ""
       get: function(c_name) {
@@ -101,7 +102,7 @@ VLAN配置
         var exdate = new Date();
         if (expiredays)
           exdate.setDate(exdate.getDate() + expiredays);
-        document.cookie = c_name + "=" + escape(value) + "; path=/" + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + escape(value) + "; path=/" + "; domain=" + JS_COOKIES_DOMAIN + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
       },
 
       // this checks to see if a cookie exists, then returns true or false
@@ -324,7 +325,7 @@ VLAN配置
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="ciwks7d6a0010om2hm38pchrj" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="ciwkslc6i000zr72hahh0fzx8" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-multiwan-configuration"></a>
       

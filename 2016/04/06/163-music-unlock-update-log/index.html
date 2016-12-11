@@ -67,6 +67,7 @@
     <div id="wrap">
       <header id="header">
   <script>
+    var JS_COOKIES_DOMAIN = '.chionlab.moe';
     var JsCookies = {
       // this gets a cookie and returns the cookies value, if no cookies it returns blank ""
       get: function(c_name) {
@@ -89,7 +90,7 @@
         var exdate = new Date();
         if (expiredays)
           exdate.setDate(exdate.getDate() + expiredays);
-        document.cookie = c_name + "=" + escape(value) + "; path=/" + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + escape(value) + "; path=/" + "; domain=" + JS_COOKIES_DOMAIN + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
       },
 
       // this checks to see if a cookie exists, then returns true or false
@@ -296,7 +297,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="ciwks7d580002om2hrxkyvfgs" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="ciwkslc61000mr72h8kqu5r5l" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-163-music-unlock-update-log"></a>
       
