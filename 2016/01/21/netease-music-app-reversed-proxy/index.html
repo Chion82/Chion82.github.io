@@ -291,12 +291,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="ciwkwebaz000v4s4rcg5yttj8" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="ciwkwswd2000m8y4rzhtj4aee" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-netease-music-app-reversed-proxy"></a>
+        <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-netease-music-app-reversed-proxy">多说</a>
       
       
-        <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/#disqus_thread" class="article-comment-link">评论</a>
+        <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
@@ -479,9 +479,9 @@
     })();
     
   } else {
-    var disqusSection = document.querySelector('.disqus-comments-section');
-    if (disqusSection) {
-      disqusSection.style.display = 'none';
+    var disqusElements = document.querySelectorAll('.disqus-comments-section, .disqus-comment-link');
+    for (var i=0; i<disqusElements.length; i++) {
+      disqusElements[i].style.display = 'none';
     }
   }
 </script>

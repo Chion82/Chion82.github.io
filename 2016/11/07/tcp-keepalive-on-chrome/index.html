@@ -312,12 +312,12 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="ciwkwebbw00204s4rjppytqe5" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="ciwkwswe2001p8y4rf7ba6ygy" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tcp-keepalive-on-chrome"></a>
+        <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tcp-keepalive-on-chrome">多说</a>
       
       
-        <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#disqus_thread" class="article-comment-link">评论</a>
+        <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/network/">network</a></li></ul>
@@ -491,9 +491,9 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
     })();
     
   } else {
-    var disqusSection = document.querySelector('.disqus-comments-section');
-    if (disqusSection) {
-      disqusSection.style.display = 'none';
+    var disqusElements = document.querySelectorAll('.disqus-comments-section, .disqus-comment-link');
+    for (var i=0; i<disqusElements.length; i++) {
+      disqusElements[i].style.display = 'none';
     }
   }
 </script>

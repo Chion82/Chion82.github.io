@@ -293,12 +293,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwkwebam000g4s4r58z0sy4t" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwkwswcl00088y4rl8is5iq1" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-compile-nginx-on-osx"></a>
+        <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-compile-nginx-on-osx">多说</a>
       
       
-        <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/#disqus_thread" class="article-comment-link">评论</a>
+        <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OSX/">OSX</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backend/">backend</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li></ul>
@@ -481,9 +481,9 @@
     })();
     
   } else {
-    var disqusSection = document.querySelector('.disqus-comments-section');
-    if (disqusSection) {
-      disqusSection.style.display = 'none';
+    var disqusElements = document.querySelectorAll('.disqus-comments-section, .disqus-comment-link');
+    for (var i=0; i<disqusElements.length; i++) {
+      disqusElements[i].style.display = 'none';
     }
   }
 </script>

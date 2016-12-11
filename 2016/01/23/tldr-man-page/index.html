@@ -282,12 +282,12 @@ https://github.com/tldr-pages/tl">
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="ciwkwebbh001d4s4rly6gz5q6" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="ciwkwswdw001g8y4rcti2kgp6" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tldr-man-page"></a>
+        <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tldr-man-page">多说</a>
       
       
-        <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/#disqus_thread" class="article-comment-link">评论</a>
+        <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
@@ -470,9 +470,9 @@ https://github.com/tldr-pages/tl">
     })();
     
   } else {
-    var disqusSection = document.querySelector('.disqus-comments-section');
-    if (disqusSection) {
-      disqusSection.style.display = 'none';
+    var disqusElements = document.querySelectorAll('.disqus-comments-section, .disqus-comment-link');
+    for (var i=0; i<disqusElements.length; i++) {
+      disqusElements[i].style.display = 'none';
     }
   }
 </script>

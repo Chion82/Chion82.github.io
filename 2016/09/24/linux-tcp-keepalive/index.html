@@ -351,12 +351,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="ciwkwebaq000m4s4rzgs7uj4w" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="ciwkwswd5000p8y4rmaixt4ya" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-linux-tcp-keepalive"></a>
+        <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-linux-tcp-keepalive">多说</a>
       
       
-        <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#disqus_thread" class="article-comment-link">评论</a>
+        <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/network/">network</a></li></ul>
@@ -539,9 +539,9 @@
     })();
     
   } else {
-    var disqusSection = document.querySelector('.disqus-comments-section');
-    if (disqusSection) {
-      disqusSection.style.display = 'none';
+    var disqusElements = document.querySelectorAll('.disqus-comments-section, .disqus-comment-link');
+    for (var i=0; i<disqusElements.length; i++) {
+      disqusElements[i].style.display = 'none';
     }
   }
 </script>

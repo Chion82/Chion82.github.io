@@ -878,9 +878,9 @@
     
       <category term="nginx" scheme="http://blog.chionlab.moe/tags/nginx/"/>
     
-      <category term="backend" scheme="http://blog.chionlab.moe/tags/backend/"/>
-    
       <category term="OSX" scheme="http://blog.chionlab.moe/tags/OSX/"/>
+    
+      <category term="backend" scheme="http://blog.chionlab.moe/tags/backend/"/>
     
   </entry>
   

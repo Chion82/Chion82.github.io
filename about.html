@@ -380,12 +380,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/about.html" data-id="ciwkweb8w00004s4r8zzgfexu" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/about.html" data-id="ciwkwswb100018y4rzg0jvby9" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/about.html" class="article-duoshuo-link ds-thread-count" data-thread-key="page-undefined"></a>
+        <a href="http://blog.chionlab.moe/about.html" class="article-duoshuo-link ds-thread-count" data-thread-key="page-undefined">多说</a>
       
       
-        <a href="http://blog.chionlab.moe/about.html#disqus_thread" class="article-comment-link">评论</a>
+        <a href="http://blog.chionlab.moe/about.html#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
     </footer>
@@ -547,9 +547,9 @@
     })();
     
   } else {
-    var disqusSection = document.querySelector('.disqus-comments-section');
-    if (disqusSection) {
-      disqusSection.style.display = 'none';
+    var disqusElements = document.querySelectorAll('.disqus-comments-section, .disqus-comment-link');
+    for (var i=0; i<disqusElements.length; i++) {
+      disqusElements[i].style.display = 'none';
     }
   }
 </script>
