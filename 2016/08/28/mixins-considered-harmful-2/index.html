@@ -435,7 +435,7 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwku0fr4000p2d4rbuhb61d5" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="ciwku7b2m000q504rh5hpmnpo" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful-2"></a>
       
@@ -602,25 +602,27 @@ Migrating from MixinsLet’s make it clear that mixins are not technically depre
     
 <script>
   var disqus_shortname = 'chionlab';
-  
-  var disqus_url = 'http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/';
-  
-  (function(){
-    var dsq = document.createElement('script');
-    dsq.type = 'text/javascript';
-    dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-  
-  (function(){
-    var dsq = document.createElement('script');
-    dsq.type = 'text/javascript';
-    dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-  
+  if (window.location.hostname.indexOf('cn2') === -1) {
+    
+    var disqus_url = 'http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    
+  }
 </script>
 
 
