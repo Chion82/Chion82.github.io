@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.chionlab.moe/"/>
-  <updated>2016-11-14T14:01:16.000Z</updated>
+  <updated>2016-12-12T04:55:44.000Z</updated>
   <id>http://blog.chionlab.moe/</id>
   
   <author>
@@ -14,6 +14,46 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ChionLab 2016年底更新记录</title>
+    <link href="http://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/"/>
+    <id>http://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/</id>
+    <published>2016-12-12T03:05:29.000Z</published>
+    <updated>2016-12-12T04:55:44.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>早上好。本站从建立至今已将近一年，博主最近对小站进行了若干修改和调整，具体包括：</p>
+<ol>
+<li>新的样式主题 <em>Uzume</em> ，并保留原主题 <em>Miria</em> ，在站点顶部banner可切换主题。<ul>
+<li>新主题 <em>Uzume</em> 角色是 <em>天王星うずめ</em> （天王星涡芽），出自游戏 <em>新次元ゲイム　ネプテューヌVII</em> （新次元游戏 海王星VII，PSN港区译作 <em>新次元遊戲 戰機少女VII</em> ）。Banner题图为博主亲自合成所得。</li>
+<li>原主题 <em>Miria</em> 角色是 <em>赤城みりあ</em> （赤城米莉亚），出自游戏、动画和漫画 <em>アイドルマスター　シンデレラガールス</em> （偶像大师 灰姑娘女孩）系列。</li>
+</ul>
+</li>
+<li>针对境内访问用户，对网站作了以下调整优化：<ul>
+<li>新增CDN加速节点CN2( <a href="https://cn2.chionlab.moe" target="_blank" rel="external">https://cn2.chionlab.moe</a> )，保留原加速节点CloudFlare( <a href="https://blog.chionlab.moe">https://blog.chionlab.moe</a> )。对于境内和境外（或科学上网）用户，在访问本站时会自动切换。当然，你也可以在本站顶部手动切换CDN加速线路。</li>
+<li>针对境内用户无法访问Disqus的问题，新增多说评论模块。CN2节点默认屏蔽Disqus评论模块，只保留多说评论模块；原CloudFlare节点则同时保留Disqus和多说两个评论模块。问题：多说模块请求了第三方http资源，因此在访问本站文章时浏览器可能会报安全策略warning，但不影响体验。</li>
+<li>将Google Fonts的 <em>Source Code Pro</em> font face本地化，提高字体资源加载速度。</li>
+</ul>
+</li>
+</ol>
+<p>以上调整各处，除了CDN节点部署，均通过修改hexo和hexo主题源码完成，若有必要，以后将发表博文以提供修改思路和指点。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;早上好。本站从建立至今已将近一年，博主最近对小站进行了若干修改和调整，具体包括：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;新的样式主题 &lt;em&gt;Uzume&lt;/em&gt; ，并保留原主题 &lt;em&gt;Miria&lt;/em&gt; ，在站点顶部banner可切换主题。&lt;ul&gt;
+&lt;li&gt;新主题 &lt;em&gt;Uzu
+    
+    </summary>
+    
+      <category term="开发笔记" scheme="http://blog.chionlab.moe/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="front-end" scheme="http://blog.chionlab.moe/tags/front-end/"/>
+    
+  </entry>
   
   <entry>
     <title>TCP keepalive的探究 (2) : 浏览器的Keepalive机制</title>

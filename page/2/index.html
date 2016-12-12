@@ -247,6 +247,73 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-hello-old-driver" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/02/28/hello-old-driver/" class="article-date">
+  <time datetime="2016-02-28T05:14:53.000Z" itemprop="datePublished">2016-02-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/Python/">Python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/02/28/hello-old-driver/">你好，老司机：种子爬虫企划</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在老司机的安利之下，学会了从<a href="http://www.hacg.li" target="_blank" rel="external">琉璃神社</a>找各种神奇的资源。于是萌生了造这个轮子的欲望。国内这种福利站不知还能维持多久，所以将资源大量扒下来存档是有点卵用的。</p>
+<h2 id="GitHub-repo"><a href="#GitHub-repo" class="headerlink" title="GitHub repo"></a>GitHub repo</h2><p><a href="https://github.com/Chion82/hello-old-driver" target="_blank" rel="external">https://github.com/Chion82/hello-old-driver</a></p>
+<h2 id="开发笔记"><a href="#开发笔记" class="headerlink" title="开发笔记"></a>开发笔记</h2><p>为了兼容多个站点，我的爬虫脚本并没有针对某个特定的网站进行抓取逻辑定制，而是采取递归遍历网站全部页面+正则匹配磁力链hash的方式抓取整站的磁力链资源。磁力链的hash协议大多数时候是BTIH，hash值为40位的hex字符串，匹配的正则如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[^0-9a-fA-F]([0-9a-fA-F]&#123;40&#125;)[^0-9a-fA-F]</div></pre></td></tr></table></figure></p>
+<p>注意，为了保证hash串长度为40字节，在其前后应加上非hex的匹配，即<code>[^0-9a-fA-F]</code>。</p>
+<p>这样将可能导致一个问题，网站页面源码中可能还存在磁力链以外的SHA-1值，比如琉璃神社在每条用户评论后在一个标签属性内有40字节长的一段hash值，目前的解决方法是忽略HTML标签<code>&lt;&gt;</code>内的属性内容：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (ignore_html_label): <span class="comment">#为了增强扩展性，这类fix逻辑应该可控</span></div><div class="line">		result_text = re.sub(<span class="string">r'&lt;.*?&gt;'</span>, <span class="string">''</span>, result_text)</div></pre></td></tr></table></figure></p>
+<p>每个磁力链资源应当要有对应的标题以方便查找，这里以网页的标题作为资源标题，匹配正则如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;title&gt;(.+?)&lt;/title&gt;</div></pre></td></tr></table></figure></p>
+<p>经测试发现，每轮抓取结束后，抓取到的资源数量可能不一样，可能的原因是网站方对访问频次做了限制或者是本地网络质量问题，就算通过连接失败重试、服务器返回5XX后重试等方法也不能解决。于是决定：每次抓取不覆盖上次抓取的结果，而是保留上次的结果，并新增本次抓取到的、上次结果中没有的新磁力链资源。</p>
+<p>其他的一些必需属性：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cookie = <span class="string">''</span> <span class="comment">#每次请求需要带上的Cookie。由于琉璃神社目前不需要登录，暂为空串</span></div><div class="line">max_depth = <span class="number">40</span> <span class="comment">#递归最大深度，即从一个网页查找全部链接并依次往下递归访问，最大的深度为40</span></div><div class="line">viewed_urls = [] <span class="comment">#访问过的URL，避免重复访问</span></div><div class="line">found_magnets = [] <span class="comment">#查找出来的磁力链资源，避免重复抓取</span></div><div class="line">ignore_url_param = <span class="keyword">True</span> <span class="comment">#是否忽略URL中的参数，比如"index.html?xxx=11"将被替换为"index.html"</span></div><div class="line">ignore_html_label = <span class="keyword">True</span> <span class="comment">#是否忽略HTML标签内属性</span></div></pre></td></tr></table></figure></p>
+<p>需要定时执行抓取脚本以保证与原网站同步。写了一个shell脚本，<code>sync.sh</code>，作用如下：</p>
+<ul>
+<li>测试目标网站是否可访问</li>
+<li>复制上次的抓取结果<code>magnet_output</code>和<code>resource_list.json</code>到<code>archives</code>目录下存档，以当前时间重命名</li>
+<li>复制上次的抓取日志<code>lastsync.log</code>和<code>lasterror.log</code>到<code>log</code>目录下存档，以当前时间重命名</li>
+<li>运行Python抓取脚本，这将覆盖项目根目录下的上述抓取结果文件和抓取日志文件</li>
+<li>将本次的抓取结果梗概（是否成功、新增几条记录以及一些简单统计数据）添加到<code>README.md</code>中</li>
+<li>推送到GitHub</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="ciwlm6083000loy2hon2d2jfj" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-hello-old-driver">多说</a>
+      
+      
+        <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crawler/">crawler</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+
+
+  
     <article id="post-wechat-sns-reflect-classes" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/02/20/wechat-sns-reflect-classes/" class="article-date">
@@ -288,7 +355,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwlhnswm001ztt2h9e0wsfu3" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwlm6092001toy2hos1h423g" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-wechat-sns-reflect-classes">多说</a>
       
@@ -348,7 +415,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwlhnsv2000ett2h9wuda320" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwlm607z000hoy2hmglkbtkx" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-generate-thumbnails-with-nginx-image-filter">多说</a>
       
@@ -415,7 +482,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwlhnsv0000ctt2hdk240c31" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwlm607u000boy2hjfgpysts" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-compile-nginx-on-osx">多说</a>
       
@@ -491,7 +558,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwlhnswj001vtt2h93neang5" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwlm609c0029oy2hb0ratstn" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-pf-on-osx">多说</a>
       
@@ -574,7 +641,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwlhnsv7000itt2hkijuhszb" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwlm607y000foy2hqriceabp" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-github-pages-with-https">多说</a>
       
@@ -667,7 +734,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="ciwlhnswe001ott2h0lse3rej" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="ciwlm60960021oy2hjly75gfz" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-haproxy-to-optimize-shadowsocks-on-openwrt">多说</a>
       
@@ -749,7 +816,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="ciwlhnsv4000htt2hiiwl1siw" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="ciwlm6082000koy2hutxrpc4w" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cc-defence-log">多说</a>
       
@@ -843,7 +910,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwlhnsvm000stt2hbvcp9agm" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwlm608g0015oy2h0tgzxczv" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt">多说</a>
       
@@ -932,7 +999,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="ciwlhnsvq000ytt2h2z247nqu" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="ciwlm608d0010oy2hsua2ntlg" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-bypass-gfw-solution">多说</a>
       
@@ -941,62 +1008,6 @@
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-  
-    <article id="post-tldr-man-page" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/01/23/tldr-man-page/" class="article-date">
-  <time datetime="2016-01-23T07:48:33.000Z" itemprop="datePublished">2016-01-23</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/23/tldr-man-page/">tldr - 懒人的man page</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>其实我是十分不愿意在紧张开发时为了一个小工具翻看man page的，直到我从GitHub上找到这个工具。tldr即too long don’t read，提供简化版的man page，每页page只有非常简短的说明，十分适合懒人查询和情急时快速检索。当然，这个工具提供的page覆盖率还不够高，还有劳各位去发pull request。</p>
-<p><a href="https://github.com/tldr-pages/tldr" target="_blank" rel="external">https://github.com/tldr-pages/tldr</a></p>
-<h2 id="tl-dr"><a href="#tl-dr" class="headerlink" title="tl;dr"></a>tl;dr</h2><p>安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># npm install -g tldr</div></pre></td></tr></table></figure></p>
-<p>使用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ tldr aria2c</div></pre></td></tr></table></figure></p>
-<p>Done!</p>
-<p>最后提一下，时间充裕时还是尽量去阅读完整版的man page！</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="ciwlhnsw6001ftt2hewff2f0y" class="article-share-link">分享</a>
-      
-        <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tldr-man-page">多说</a>
-      
-      
-        <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
 
     </footer>
   </div>
@@ -1041,7 +1052,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 13.33px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 13.33px;">crawler</a> <a href="/tags/front-end/" style="font-size: 15px;">front-end</a> <a href="/tags/hack/" style="font-size: 18.33px;">hack</a> <a href="/tags/linux/" style="font-size: 18.33px;">linux</a> <a href="/tags/maintenance/" style="font-size: 20px;">maintenance</a> <a href="/tags/network/" style="font-size: 11.67px;">network</a> <a href="/tags/nginx/" style="font-size: 13.33px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 15px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 16.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 13.33px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 13.33px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16.67px;">front-end</a> <a href="/tags/hack/" style="font-size: 18.33px;">hack</a> <a href="/tags/linux/" style="font-size: 18.33px;">linux</a> <a href="/tags/maintenance/" style="font-size: 20px;">maintenance</a> <a href="/tags/network/" style="font-size: 11.67px;">network</a> <a href="/tags/nginx/" style="font-size: 13.33px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 15px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 16.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -1051,7 +1062,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -1062,6 +1073,10 @@
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
+          </li>
         
           <li>
             <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
@@ -1077,10 +1092,6 @@
         
           <li>
             <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
-          </li>
-        
-          <li>
-            <a href="/2016/07/13/openwrt-multiwan-configuration/">OpenWRT下双WAN配置</a>
           </li>
         
       </ul>
