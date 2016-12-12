@@ -227,6 +227,9 @@
         })
       } else {
         JsCookies.set('domain', 'blog', 30);
+        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+        }
       }
     }
     (function(){
@@ -302,7 +305,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="ciwkwswcb00038y4rfycc72w8" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="ciwlhnsun0003tt2h5roh7whv" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-163-music-unlock-update-log">多说</a>
       

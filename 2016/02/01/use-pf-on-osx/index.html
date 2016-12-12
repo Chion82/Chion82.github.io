@@ -215,6 +215,9 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
         })
       } else {
         JsCookies.set('domain', 'blog', 30);
+        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+        }
       }
     }
     (function(){
@@ -302,7 +305,7 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwkwswe7001x8y4r8ej6v2hs" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwlhnswj001vtt2h93neang5" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-pf-on-osx">多说</a>
       

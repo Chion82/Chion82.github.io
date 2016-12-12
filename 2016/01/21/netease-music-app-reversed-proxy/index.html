@@ -217,6 +217,9 @@
         })
       } else {
         JsCookies.set('domain', 'blog', 30);
+        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+        }
       }
     }
     (function(){
@@ -291,7 +294,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="ciwkwswd2000m8y4rzhtj4aee" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="ciwlhnsvh000qtt2hgl9a4r9g" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-netease-music-app-reversed-proxy">多说</a>
       

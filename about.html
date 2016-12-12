@@ -289,6 +289,9 @@
         })
       } else {
         JsCookies.set('domain', 'blog', 30);
+        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+        }
       }
     }
     (function(){
@@ -380,7 +383,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/about.html" data-id="ciwkwswb100018y4rzg0jvby9" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/about.html" data-id="ciwlhnstd0000tt2hjfmebsl9" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/about.html" class="article-duoshuo-link ds-thread-count" data-thread-key="page-undefined">多说</a>
       

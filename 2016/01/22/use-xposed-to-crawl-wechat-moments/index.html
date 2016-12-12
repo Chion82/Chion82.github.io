@@ -218,6 +218,9 @@
         })
       } else {
         JsCookies.set('domain', 'blog', 30);
+        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+        }
       }
     }
     (function(){
@@ -298,7 +301,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="ciwkwsweb00218y4r0alkcq3l" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="ciwlhnswh001stt2h1o2qrjw2" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-xposed-to-crawl-wechat-moments">多说</a>
       

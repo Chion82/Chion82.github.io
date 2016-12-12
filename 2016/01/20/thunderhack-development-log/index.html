@@ -212,6 +212,9 @@
         })
       } else {
         JsCookies.set('domain', 'blog', 30);
+        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+        }
       }
     }
     (function(){
@@ -307,7 +310,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="ciwkwswdz001i8y4rwgd972be" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="ciwlhnswc001ltt2hdsl5o688" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-thunderhack-development-log">多说</a>
       
