@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.chionlab.moe/"/>
-  <updated>2016-12-12T04:55:44.000Z</updated>
+  <updated>2016-12-14T15:18:24.000Z</updated>
   <id>http://blog.chionlab.moe/</id>
   
   <author>
@@ -14,6 +14,207 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>tinc VPN+策略路由：Linux下更好的科学上网方式</title>
+    <link href="http://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/"/>
+    <id>http://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/</id>
+    <published>2016-12-12T05:31:59.000Z</published>
+    <updated>2016-12-14T15:18:24.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>tinc是一个<a href="https://www.tinc-vpn.org/" target="_blank" rel="external">基于网状网络的VPN软件</a>，使用tinc架设VPN，对于远程办公、文件传输等需求都是十分方便的。<br>而作为VPN，我们同样可以通过redirect gateway的方式来实现科学上网。本文将介绍通过使用tinc VPN和配置策略路由的方式，实现Linux平台下的科学上网（国内请求不走代理，国外请求走代理）。</p>
+<p>本文教程以Arch Linux和OpenWRT为例，配置思路同样适用于其他Linux发行版。</p>
+<p>相比于<a href="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/">使用shadowsocks进行科学上网</a>，tinc+策略路由有以下优势：</p>
+<ul>
+<li>VPN是工作在IP层（网络层）的，因此可以实现对IP层packet进行代理，比如基于ICMP的ping和traceroute命令；而shadowsocks只能代理传输层的TCP和UDP请求。</li>
+<li>tincd进程和服务器间的通信是基于UDP的（对于屏蔽UDP的ISP，tinc会自动failover到TCP），而该socket数量是一直固定的，对于本地发出的需要代理的连接（无论是IP层还是传输层），可实现多路复用，大大提高性能。而shadowsocks对于每一个本地TCP连接，均需要向服务器建立一次新的TCP连接，速度十分有限。</li>
+<li>shadowsocks服务器有可能因为同时打开太多的TCP连接而拒绝请求，需要几分钟才能恢复。这种拒绝有可能是在ASP的防火墙上发生的，修改vps的内核参数如<code>file-max</code>等也不能解决。博主的VPS服务器上的shadowsocks服务每隔几天就会遇到一次这样的情况。而tinc因为基于多路复用，则没有这个问题。</li>
+</ul>
+<h2 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h2><p>要架设可用于科学上网的tinc服务，你需要拥有：</p>
+<ul>
+<li>一台境外的tinc服务器。你可能需要自行搭建一台tinc服务器，要求：tun/tap设备可用，操作系统为Linux发行版。</li>
+<li>一台本地的Linux机器，可以是你的PC、软路由，或者是一台OpenWRT路由器，同样要求tun/tap可用。</li>
+<li>确认服务器和本地机器上已安装iptables, iproute2, ipset。</li>
+<li>本文非傻瓜教程，无法涵盖全部Linux发行版的操作，你需要熟悉自己所使用的发行版，如service，systemd等基本操作，遇到问题要知道如何排查。</li>
+</ul>
+<h2 id="tinc安装及配置"><a href="#tinc安装及配置" class="headerlink" title="tinc安装及配置"></a>tinc安装及配置</h2><p>你可以参考<a href="https://wiki.archlinux.org/index.php/Tinc" target="_blank" rel="external">Arch Linux wiki</a>来安装和配置tinc。这里博主简要介绍快速部署方法。</p>
+<ol>
+<li><p>在服务器和本地机器上安装tinc。</p>
+<h3 id="Arch-Linux"><a href="#Arch-Linux" class="headerlink" title="Arch Linux:"></a>Arch Linux:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># pacman -Syu</div><div class="line"># pacman -S tinc</div></pre></td></tr></table></figure>
+<h3 id="OpenWRT"><a href="#OpenWRT" class="headerlink" title="OpenWRT:"></a>OpenWRT:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># opkg update</div><div class="line"># opkg install tinc</div></pre></td></tr></table></figure>
+</li>
+<li><p>在服务器和本地机器上创建tinc配置文件夹。请替换<code>myvpn</code>为你喜欢的vpn名称。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># mkdir -p /etc/tinc/myvpn</div><div class="line"># mkdir /etc/tinc/myvpn/hosts</div></pre></td></tr></table></figure>
+</li>
+<li><p>服务端配置文件（在服务器上操作）：<br>你可以将<code>alpha</code>替换为自己喜欢的服务器标识名，下同。<br>/etc/tinc/<em>myvpn</em>/tinc.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Name = alpha</div><div class="line">Device = /dev/net/tun</div></pre></td></tr></table></figure>
+<p>/etc/tinc/<em>myvpn</em>/tinc-up</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line">ip link set $INTERFACE up</div><div class="line">ip addr add  192.168.100.1/32 dev $INTERFACE</div><div class="line">ip route add 192.168.100.0/24 dev $INTERFACE</div></pre></td></tr></table></figure>
+<p>/etc/tinc/<em>myvpn</em>/tinc-down</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line">ip route del 192.168.100.0/24 dev $INTERFACE</div><div class="line">ip addr del 192.168.100.1/32 dev $INTERFACE</div><div class="line">ip link set $INTERFACE down</div></pre></td></tr></table></figure>
+<p>添加脚本执行权限：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># chmod +x /etc/tinc/myvpn/tinc-up</div><div class="line"># chmod +x /etc/tinc/myvpn/tinc-down</div></pre></td></tr></table></figure>
+</li>
+<li><p>本地机配置文件（在本地机器上操作）：<br>你可以将<code>beta</code>替换为自己喜欢的客户端标识名，下同。<br>/etc/tinc/<em>myvpn</em>/tinc.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Name = beta</div><div class="line">Device = /dev/net/tun</div><div class="line">ConnectTo = alpha</div></pre></td></tr></table></figure>
+<p>/etc/tinc/<em>myvpn</em>/tinc-up</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line">ip link set $INTERFACE up</div><div class="line">ip addr add  192.168.100.100/32 dev $INTERFACE</div><div class="line">ip route add 192.168.100.0/24 dev $INTERFACE</div></pre></td></tr></table></figure>
+<p>/etc/tinc/<em>myvpn</em>/tinc-down</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line">ip route del 192.168.100.0/24 dev $INTERFACE</div><div class="line">ip addr del 192.168.100.100/32 dev $INTERFACE</div><div class="line">ip link set $INTERFACE down</div></pre></td></tr></table></figure>
+<p>添加脚本执行权限：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># chmod +x /etc/tinc/myvpn/tinc-up</div><div class="line"># chmod +x /etc/tinc/myvpn/tinc-down</div></pre></td></tr></table></figure>
+</li>
+<li><p>在服务器上建立host配置文件并生成密钥：<br>/etc/tinc/<em>myvpn</em>/hosts/<em>alpha</em> 请将<code>10.0.0.1</code>替换为服务器的公网IP。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Address = 10.0.0.1</div><div class="line">Port = 655</div><div class="line">Subnet = 0.0.0.0/0</div></pre></td></tr></table></figure>
+<p>生成密钥：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># tincd -n myvpn -K</div></pre></td></tr></table></figure>
+</li>
+<li><p>在本地机器上建立host配置文件并生成密钥：<br>/etc/tinc/<em>myvpn</em>/hosts/<em>beta</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Port = 655</div><div class="line">Subnet = 192.168.100.100/32</div></pre></td></tr></table></figure>
+<p>生成密钥：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># tincd -n myvpn -K</div></pre></td></tr></table></figure>
+</li>
+<li><p>在服务器和本地机上交换host配置文件：<br>复制服务器上的<code>/etc/tinc/myvpn/hosts/alpha</code>到本地机器的<code>/etc/tinc/myvpn/hosts/alpha</code>。<br>复制本地机器上的<code>/etc/tinc/myvpn/hosts/beta</code>到服务器上的<code>/etc/tinc/myvpn/hosts/beta</code>。</p>
+</li>
+<li><p>在服务器和本地机上启动tinc服务：（先启动服务器上的）</p>
+<h3 id="Arch-Linux和其他基于systemd管理的linux发行版"><a href="#Arch-Linux和其他基于systemd管理的linux发行版" class="headerlink" title="Arch Linux和其他基于systemd管理的linux发行版:"></a>Arch Linux和其他基于systemd管理的linux发行版:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># systemctl start tinc@myvpn.service</div></pre></td></tr></table></figure>
+<h3 id="OpenWRT和其他发行版："><a href="#OpenWRT和其他发行版：" class="headerlink" title="OpenWRT和其他发行版："></a>OpenWRT和其他发行版：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># tincd -n myvpn</div></pre></td></tr></table></figure>
+</li>
+<li><p>测试VPN是否正常：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ ifconfig #是否找到了myvpn接口？分配的IPv4地址是否正确？</div><div class="line">$ ping 192.168.100.1 #ping服务器</div><div class="line">$ ping 192.168.100.100 #ping客户端</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="配置服务器路由规则"><a href="#配置服务器路由规则" class="headerlink" title="配置服务器路由规则"></a>配置服务器路由规则</h2><p>以下操作在tinc服务器上进行：</p>
+<ol>
+<li><p>开启ip_forward：</p>
+<h3 id="Arch-Linux："><a href="#Arch-Linux：" class="headerlink" title="Arch Linux："></a>Arch Linux：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># echo &apos;net.ipv4.ip_forward=1&apos; &gt; /etc/sysctl.d/99-ipforword.conf</div><div class="line"># sysctl --system</div></pre></td></tr></table></figure>
+<h3 id="其他Linux发行版："><a href="#其他Linux发行版：" class="headerlink" title="其他Linux发行版："></a>其他Linux发行版：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/sysctl.conf</div></pre></td></tr></table></figure>
+<p>将<code>net.ipv4.ip_forward=0</code>修改为<code>net.ipv4.ip_forward=1</code>。如果文件为空或没有这行，则添加一行<code>net.ipv4.ip_forward=1</code>即可。<br>随后运行这条命令使配置生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># sysctl -p</div></pre></td></tr></table></figure>
+</li>
+<li><p>开启masquerade：<br>首先通过<code>ifconfig</code>命令（Arch Linux上使用<code>ip addr</code>），找出外网IP对应的接口名称。这里假设外网接口是<code>eth0</code>。<br>运行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># iptables -t nat -A POSTROUTING -o eth0 -s 192.168.100.0/24 -j MASQUERADE</div></pre></td></tr></table></figure>
+<p>你可以保存当前的iptables配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># iptables-save &gt; /etc/iptables/iptables.rules</div></pre></td></tr></table></figure>
+<p>在Arch Linux上，需要开启<code>iptables.service</code>来实现重启后保留配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># systemctl enable iptables.service</div></pre></td></tr></table></figure>
+<p>在CentOS6上，需要开启<code>iptables</code>服务来实现重启后保留配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># chkconfig iptables on</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="配置策略路由"><a href="#配置策略路由" class="headerlink" title="配置策略路由"></a>配置策略路由</h2><p>确认VPN架设成功，客户端和服务端能够互相ping通后，我们可以进行策略路由的配置了。<br>为了方便各位配置，博主已经写好了配置脚本。</p>
+<p>以下操作在本地机器上进行：</p>
+<ol>
+<li><p>下载国内IP段文件，保存至<code>/etc/chn_route.list</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># wget https://raw.githubusercontent.com/Chion82/soft-router/master/tinc_proxy/chn_route.list -O /etc/chn_route.list</div></pre></td></tr></table></figure>
+</li>
+<li><p>下载策略路由初始化和停止脚本，保存至<code>/usr/bin/</code>目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># cd /usr/bin</div><div class="line"># wget https://raw.githubusercontent.com/Chion82/soft-router/master/tinc_proxy/init_tinc_proxy -O init_tinc_proxy</div><div class="line"># wget https://raw.githubusercontent.com/Chion82/soft-router/master/tinc_proxy/stop_tinc_proxy -O stop_tinc_proxy</div><div class="line"># chmod +x init_tinc_proxy</div><div class="line"># chmod +x stop_tinc_proxy</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改启动脚本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /usr/bin/init_tinc_proxy</div></pre></td></tr></table></figure>
+<p>将第2行<code>VPN_SERVER=XX.XX.XX.XX</code>的<code>XX.XX.XX.XX</code>修改为tinc服务器的外网IP地址。<br>将第5行<code>VPN_INTERFACE=chionvpn</code>的<code>chionvpn</code>修改为<code>myvpn</code>，或者是刚才你自定义的vpn名称。<br>如果你的Linux发行版不是Arch Linux，请删除最后这两行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#Set rp_filter</div><div class="line">echo 2 &gt; /proc/sys/net/ipv4/conf/$VPN_INTERFACE/rp_filter</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改停止脚本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /usr/bin/stop_tinc_proxy</div></pre></td></tr></table></figure>
+<p>将第2行<code>VPN_INTERFACE=chionvpn</code>的<code>chionvpn</code>修改为<code>myvpn</code>，或者是刚才你自定义的vpn名称。<br>如果你的Linux发行版不是Arch Linux，请删除第7和第8行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#Restore rp_filter</div><div class="line">echo 1 &gt; /proc/sys/net/ipv4/conf/$VPN_INTERFACE/rp_filter</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改<code>tinc-up</code>文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/tinc/myvpn/tinc-up</div></pre></td></tr></table></figure>
+<p>在最后一行添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/usr/bin/init_tinc_proxy &amp;</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改<code>tinc-down</code>文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/tinc/myvpn/tinc-down</div></pre></td></tr></table></figure>
+<p>在第一行<code>#!/bin/sh</code><br>下方插入一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/usr/bin/stop_tinc_proxy</div></pre></td></tr></table></figure>
+</li>
+<li><p>重启tinc来测试配置是否正确：</p>
+<h3 id="Arch-Linux-1"><a href="#Arch-Linux-1" class="headerlink" title="Arch Linux:"></a>Arch Linux:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># systemctl restart tinc@myvpn.service</div></pre></td></tr></table></figure>
+<h3 id="其他Linux发行版：-1"><a href="#其他Linux发行版：-1" class="headerlink" title="其他Linux发行版："></a>其他Linux发行版：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># tincd -n myvpn -k</div><div class="line"># tincd -n myvpn</div></pre></td></tr></table></figure>
+<p>进行测试:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ping 172.217.27.132</div></pre></td></tr></table></figure>
+<p>如果能够ping通，说明以上配置正确。</p>
+</li>
+</ol>
+<h2 id="配置ChinaDNS和dnsmasq"><a href="#配置ChinaDNS和dnsmasq" class="headerlink" title="配置ChinaDNS和dnsmasq"></a>配置ChinaDNS和dnsmasq</h2><p>至此，我们的VPN和策略路由已经配置完成。为了避免国内DNS污染，我们需要使用<a href="https://github.com/shadowsocks/ChinaDNS" target="_blank" rel="external">ChinaDNS</a>。ChinaDNS的配置方法与之前的<a href="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/">OpenWRT科学上网</a>类似，唯一不同处是，这里的国外上游DNS服务器我们可以直接填写<code>8.8.8.8</code>，而不需要shadowsocks的<code>ss-tunnel</code>隧道。</p>
+<p>以下操作在本地机器上进行：</p>
+<ol>
+<li><p>安装并配置ChinaDNS</p>
+<h3 id="Arch-Linux-2"><a href="#Arch-Linux-2" class="headerlink" title="Arch Linux:"></a>Arch Linux:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># yaourt -S chinadns</div><div class="line"># cp /etc/chn_route.list /etc/chnroute.txt</div><div class="line"># system start chinadns.service</div></pre></td></tr></table></figure>
+<h3 id="OpenWRT-1"><a href="#OpenWRT-1" class="headerlink" title="OpenWRT:"></a>OpenWRT:</h3><p>参照<a href="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/#安装ChinaDNS">OpenWRT科学上网 #安装ChinaDNS</a>来安装ChinaDNS，然后执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># cp /etc/chn_route.list /etc/chinadns_chnroute.txt</div></pre></td></tr></table></figure>
+<p>进入OpenWRT管理网页，进入services-&gt;ChinaDNS，勾选<code>Enable</code>，中国路由表(CHNRoute File)填<code>/etc/chinadns_chnroute.txt</code>，设置<code>Upstream Servers</code>为：<code>114.114.114.114,8.8.8.8</code>。</p>
+</li>
+<li><p>配置dnsmasq</p>
+<h3 id="Arch-Linux：-1"><a href="#Arch-Linux：-1" class="headerlink" title="Arch Linux："></a>Arch Linux：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># pacman -S dnsmasq</div></pre></td></tr></table></figure>
+<p>修改<code>/etc/dnsmasq.conf</code>，清空文件并填入以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">listen-address=127.0.0.1  #如果机器(如软路由)绑定了静态IP，请在这里加上静态IP，以逗号分割</div><div class="line"></div><div class="line">no-resolv</div><div class="line">server=127.0.0.1#5353</div></pre></td></tr></table></figure>
+<p>启动dnsmasq：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># systemctl start dnsmasq.service</div></pre></td></tr></table></figure>
+<p>修改本机的DNS配置，使其指向<code>127.0.0.1</code>。<br>如果你的网络配置文件管理器是<code>netctl</code>，在对应的配置文件(位于<code>/etc/netctl/</code>下)中设置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DNS=(&apos;127.0.0.1&apos;)</div></pre></td></tr></table></figure>
+<h3 id="OpenWRT："><a href="#OpenWRT：" class="headerlink" title="OpenWRT："></a>OpenWRT：</h3><p>进入网络(Network)-&gt;DHCP and DNS。<br>将DNS转发(DNS forwardings)设置为<code>127.0.0.1#5353</code>。<br>还要记得勾选“忽略解析文件”(ignore resolve file)。</p>
+</li>
+<li><p>测试<br>现在应该能够ping通谷歌域名了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ dig www.google.com</div><div class="line">$ ping www.google.com</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="配置自启动"><a href="#配置自启动" class="headerlink" title="配置自启动"></a>配置自启动</h2><p>如果需要在机器启动时自动开启科学上网，可按照以下步骤进行：</p>
+<ol>
+<li><p>自启动tinc服务，在服务器和本地机器上操作：</p>
+<h3 id="Arch-Linux-3"><a href="#Arch-Linux-3" class="headerlink" title="Arch Linux:"></a>Arch Linux:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># systemctl enable tinc@myvpn.service</div></pre></td></tr></table></figure>
+<h3 id="其他Linux发行版：-2"><a href="#其他Linux发行版：-2" class="headerlink" title="其他Linux发行版："></a>其他Linux发行版：</h3><p>在 <code>/etc/rc.local</code> 脚本文件最后添加一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tincd -n myvpn</div></pre></td></tr></table></figure>
+<p>当然，更好的方法是编写一个init服务脚本（位于<code>/etc/init.d/</code>）。</p>
+</li>
+<li><p>自启动ChinaDNS服务，在本地机上操作：</p>
+<h3 id="Arch-Linux-4"><a href="#Arch-Linux-4" class="headerlink" title="Arch Linux:"></a>Arch Linux:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># systemctl enable chinadns.service</div><div class="line"># systemctl enable dnsmasq.service</div></pre></td></tr></table></figure>
+<h3 id="OpenWRT-2"><a href="#OpenWRT-2" class="headerlink" title="OpenWRT:"></a>OpenWRT:</h3><p>不需要特别设置，ChinaDNS和dnsmasq服务在安装后默认是自启动的。</p>
+</li>
+</ol>
+<p>至此，全部配置已经完成了，你现在可以上youtube看大新闻了。</p>
+<h2 id="策略路由原理及常见问题"><a href="#策略路由原理及常见问题" class="headerlink" title="策略路由原理及常见问题"></a>策略路由原理及常见问题</h2><ol>
+<li><p><code>init_tinc_proxy</code>这个脚本都做了些什么？</p>
+<ul>
+<li>首先，读取<code>/etc/chn_route.list</code>文件，这个文件的内容是国内IPv4的CIDR地址段。创建一个ipset集合<code>chn_route</code>，将这些国内地址段写入该集合。</li>
+<li><p>添加一个路由表，id为<code>200</code>，该路由表接受全部IP段（<code>0.0.0.0/0</code>，或<code>default</code>），经由接口<code>myvpn</code>，网关（下一跳）是VPN服务器<code>192.168.100.1</code>。即执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># ip route add default via 192.168.100.1 dev myvpn tabel 200</div></pre></td></tr></table></figure>
+</li>
+<li><p>添加一个路由规则，将MARK为<code>200</code>的IP报使用id为<code>200</code>的路由表进行路由。即执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># ip rule add fwmark 200 table 200</div></pre></td></tr></table></figure>
+</li>
+<li><p>在iptables的mangle表增加一个自定义链<code>tinc_proxy</code>，并在该链中添加如下规则：<br>目的地址在<code>BYPASS</code>指定的例外IP段中的packet，采取<code>RETURN</code>处理；<br>目的地址在<code>chn_route</code>集合中的packet，采取<code>RETURN</code>处理；<br>恢复CONNMARK的值到MARK（CONNMARK：用于跟踪一个连接的标记值）；<br>对MARK的值为<code>0</code>的packet，设置其MARK为<code>200</code>；<br>将MARK的值保存到CONNMARK；</p>
+</li>
+<li>在mangle表的<code>PREROUTING</code>和<code>OUTPUT</code>链中插入自定义链<code>tinc_proxy</code></li>
+<li>在nat表的<code>POSTROUTING</code>链中，对出口接口为<code>myvpn</code>的packet，采取<code>MASQUERADE</code>处理。</li>
+</ul>
+</li>
+<li><p>为什么在Arch Linux下，需要将内核参数<code>/proc/sys/net/ipv4/conf/$VPN_INTERFACE/rp_filter</code>设为<code>2</code>？<br><code>rp_filter</code>是<a href="http://tldp.org/HOWTO/Adv-Routing-HOWTO/lartc.kernel.rpf.html" target="_blank" rel="external">Reverse Path Filtering (反向路径过滤)</a>，其原理是：<br>内核对目的地址为本机的每个IP报文，先检查其来源地址，然后根据本机路由表，查找到该来源地址的路由（即反向路径查找），若查找到的路由对应的接口与该报文实际到达所经过的接口不相符，则抛弃该包。显然，这对基于fwmark的策略路由是不适用的，因此需要关闭反向路径过滤功能。<br>Arch Linux下默认使用严格的反向路径过滤策略，需要将该值设置为<code>2</code>。<br>而其他发行版，只需要将该值保持为默认的<code>0</code>即可。</p>
+</li>
+<li><p>tinc VPN架设成功后，服务器和客户端能够互相ping通，但是无法经由服务器科学上网？<br>请逐步排查，特别注意服务器的tinc host配置文件中，<code>Subnet</code>是否正确设置为<code>0.0.0.0</code>。<br>参考<a href="https://www.tinc-vpn.org/examples/redirect-gateway/" target="_blank" rel="external">Example: redirecting the default gateway to a host on the VPN</a>将全部流量都经过VPN，看看能否正常访问外网。</p>
+</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;tinc是一个&lt;a href=&quot;https://www.tinc-vpn.org/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;基于网状网络的VPN软件&lt;/a&gt;，使用tinc架设VPN，对于远程办公、文件传输等需求都是十分方便的。&lt;br&gt;而作为VPN，我
+    
+    </summary>
+    
+      <category term="学习笔记" scheme="http://blog.chionlab.moe/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+      <category term="linux" scheme="http://blog.chionlab.moe/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/linux/"/>
+    
+    
+      <category term="linux" scheme="http://blog.chionlab.moe/tags/linux/"/>
+    
+      <category term="openwrt" scheme="http://blog.chionlab.moe/tags/openwrt/"/>
+    
+  </entry>
   
   <entry>
     <title>ChionLab 2016年底更新记录</title>

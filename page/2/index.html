@@ -247,6 +247,77 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-react-server-side-rendering" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/03/react-server-side-rendering/" class="article-date">
+  <time datetime="2016-03-03T12:11:17.000Z" itemprop="datePublished">2016-03-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/前端/">前端</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/03/react-server-side-rendering/">自译：如何使用服务端渲染加速React APP首屏加载</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文：<a href="https://www.terlici.com/2015/03/18/fast-react-loading-server-rendering.html" target="_blank" rel="external">How to build React apps that load quickly using server side rendering (by Stefan Fidanov)</a></p>
+<p>使用客户端框架（译者注：此处指大多数在浏览器端运行的前端MV*框架）可快速开发用户交互丰富、性能高效的web app，前端开发者都非常喜欢使用该类框架。<br>不幸的是，客户端框架也有缺点，其中最主要的问题是首屏加载速度。<br>客户端首先从服务器接收少量的HTML代码，但是之后却需要接收大量的JavaScript代码。<br>然后，它们（指前端框架）需要向服务器请求数据，等待收到数据，进行必要的数据处理，并最终渲染到用户的浏览器上。<br>相比之下，传统的web做法是，全部数据由服务端进行渲染，当服务端向用户首次递交HTML时，用户端浏览器就收到了渲染完成的页面了。<br>再者，大多数情况下，web服务器的渲染速度要快于客户端的渲染。所以，（传统web）的首屏渲染是非常快速的。</p>
+<h2 id="React的解决方案"><a href="#React的解决方案" class="headerlink" title="React的解决方案"></a>React的解决方案</h2><p>很自然的，你会想同时拥有上述两者（分别指：使用了MV*框架的web app、传统的web站点）的全部优点。快速的首屏加载、高度的交互性和快速的响应。React可以帮助你同时做到这几点。<br>React是这样做到的：首先，它可以在服务端渲染任意的组件（Component），包括这些组件的数据，这样渲染得到的结果是一些HTML代码，这些HTML代码在这之后可以直接发送到浏览器。<br>当这些HTML在用户浏览器上被显示出来时，React会在本地（这里的本地指用户浏览器）进行计算。它的智能算法将进行判断并得出：React即将要在浏览器端动态渲染出来的结果，跟当前已经被显示出来的页面一样。<br>在这之后，除了添加必要的事件处理，React不会对页面做任何的修改。<br>那么为什么这样会更快呢？我们不是在做几乎跟客户端一样的事情吗？<br>是的。但仅仅是“几乎”而已。<br>首先，当服务器响应浏览器请求时，用户马上就能看到整个页面了。所以页面响应速度更快了。<br>其次，因为React能够判断出无需再对DOM做修改，它就不会再去碰DOM。修改DOM是前端渲染中最慢的部分。<br>再者，这样可以节省请求次数。因为所有数据已经被渲染所以React不需要再向服务器请求。</p>
+<p><strong>那么有没有可能：当页面加载时，页面已经显示出来但是用户不能对其进行交互，因为这时事件处理尚未被添加？</strong><br>理论上这种情况是有可能发生的。但是因为用了服务端渲染，我们就避免了所有的高开销操作，而且这样不但加速了页面响应速度，添加事件处理的速度也会变得很快。<br>所以，你的应用将总是可交互的，并且用户不会察觉到有什么问题。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>光说无用，我们来看看如何在代码中实现。我们的第一个示例是非常简单的。我们要显示一个”hello”消息，并且点击后会有提示。<br>我们的示例将使用NodeJS作为服务端部分，不过这里的一切都可以应用在其他平台，比如PHP, Ruby, Python, Java或者.NET。</p>
+<p>我们需要以下Node模块：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install babel react react-dom express jade</div></pre></td></tr></table></figure></p>
+<p>我们将使用<code>express</code>和<code>jade</code>来做一个示例服务器。<br><code>react</code>和<code>react-dom</code>包可提供React组件的服务端渲染。<br><code>babel</code>包允许我们通过node直接加载JSX模块，比如<code>require(&#39;some-component.jsx&#39;)</code>或者<code>require(&#39;some-component.js&#39;)</code>。<br><code>babel</code>实际上更加强大。现在你可以用ES6支持。<br>我们的应用只有3个文件，文件结构如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public/components.js</div><div class="line">views/index.jade</div><div class="line">app.js</div></pre></td></tr></table></figure></p>
+<p><code>components.js</code>包含了我们的React组件；<code>index.jade</code>是网站的基本模板文件，将会加载全部JavaScript；<code>app.js</code>是node服务器。<br>让我们来看看<code>index.jade</code>里面有什么内容：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">doctype</div><div class="line">html</div><div class="line">  head</div><div class="line">    title React Server Side Rendering Example</div><div class="line">  body</div><div class="line">    div(id='react-root')!= react</div><div class="line"></div><div class="line">    script(src='https://fb.me/react-0.14.0.js')</div><div class="line">    script(src='https://fb.me/react-dom-0.14.0.js')</div><div class="line">    script(src='https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js')</div><div class="line"></div><div class="line">    script(src='/components.js', type='text/babel')</div></pre></td></tr></table></figure></p>
+<p><code>div(id=&#39;react-root&#39;)!= react</code>是最关键的部分。它的作用是作为React根组件的容器。另外，<code>react</code>变量的值是服务端渲染React组件后得到的HTML。<br>前两个引用进来的JavaScript文件是React本身，如果你想要在组件里面使用JSX，还需要引用一个Babel。<br>最后一个引用的文件是具体的组件。我们要把type设成<code>text/babel</code>好让Babel来处理这个文件。<br>这将提供一个基本的HTML结构，并加载全部的JavaScript和你需要的React组件。<br>来看看这个简单的服务器：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)</div><div class="line">  , app = express()</div><div class="line">  , React = <span class="built_in">require</span>(<span class="string">'react'</span>)</div><div class="line">  , ReactDOM = <span class="built_in">require</span>(<span class="string">'react-dom/server'</span>)</div><div class="line">  , components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div><div class="line"></div><div class="line"></div><div class="line">app.engine(<span class="string">'jade'</span>, <span class="built_in">require</span>(<span class="string">'jade'</span>).__express)</div><div class="line">app.set(<span class="string">'view engine'</span>, <span class="string">'jade'</span>)</div><div class="line"></div><div class="line">app.use(express.static(__dirname + <span class="string">'/public'</span>))</div><div class="line"></div><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    <span class="attr">react</span>: ReactDOM.renderToString(HelloMessage(&#123;<span class="attr">name</span>: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'Listening on port 3000...'</span>)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这部分代码中，大部分和一个普通的express应用程序没有多大区别。但是其中有些行需要注意。<br>第一行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div></pre></td></tr></table></figure></p>
+<p>加载Babel到你的依赖。这么做，你可以直接导入(<code>require()</code>)由JSX组成的React组件，它们会被自动翻译为JavaScript，就像后面的两行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div></pre></td></tr></table></figure></p>
+<p>在上面的代码中，第一行导入JSX编写的React组件。然后，由<code>React.createFactory</code>生成一个函数，该函数可以创建<code>HelloMessage</code>的组件。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    <span class="attr">react</span>: ReactDOM.renderToString(HelloMessage(&#123;<span class="attr">name</span>: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>上面这里就是渲染React组件的代码，并且渲染包含该组件的页面然后发送至浏览器。<br>首先，使用值为<code>John</code>的<code>name</code>属性创建一个新的<code>HelloMessage</code>组件，然后使用<code>React.renderToString</code>将这个组件渲染为HTML。<br>这里需要注意的是，组件仅仅被渲染(rendered)，而没有被挂载(mounted)，所以 <strong>所有关于挂载的方法都不会被调用</strong> 。<br>在创建组件之后，将组件的HTML传递到index模版。<br>我们的组件看起来是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isNode = <span class="keyword">typeof</span> <span class="built_in">module</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">module</span>.exports</div><div class="line">  , React = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.React</div><div class="line">  , ReactDOM = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.ReactDOM</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createClass(&#123;</div><div class="line">  <span class="attr">handleClick</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    alert(<span class="string">'You clicked!'</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  <span class="attr">render</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onClick</span>=<span class="string">&#123;this.handleClick&#125;</span>&gt;</span>Hello &#123;this.props.name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div><div class="line">  &#125;</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="keyword">if</span> (isNode) &#123;</div><div class="line">  exports.HelloMessage = HelloMessage</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  ReactDOM.render(<span class="xml"><span class="tag">&lt;<span class="name">HelloMessage</span> <span class="attr">name</span>=<span class="string">"John"</span> /&gt;</span>, document.getElementById('react-root'))</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>你可以看见，这跟一般的由JSX编写的React组件没有什么不同，除了开头和结尾。这里就是你要让组件能同时在浏览器和Node端运行所需要注意的地方。</p>
+<h2 id="高级示例：加载服务端数据"><a href="#高级示例：加载服务端数据" class="headerlink" title="高级示例：加载服务端数据"></a>高级示例：加载服务端数据</h2><p>真正的Web app做的事情通常远不止你看见的这些。它们经常需要跟服务器交互并从服务器加载数据。<br>但是，我们不希望这在服务端渲染时发生。<br>我们来对这个示例程序做一些小修改。首先，模版文件需要引用jQuery，在这里它的唯一作用是从服务端请求数据。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">doctype</div><div class="line">html</div><div class="line">  head</div><div class="line">    title React Server Side Rendering Example</div><div class="line">  body</div><div class="line">    div(id='react-root')!= react</div><div class="line"></div><div class="line">    script(src='https://fb.me/react-0.14.0.js')</div><div class="line">    script(src='https://fb.me/react-dom-0.14.0.js')</div><div class="line">    script(src='https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js')</div><div class="line">    script(src='http://code.jquery.com/jquery-2.1.3.js')</div><div class="line"></div><div class="line">    script(src='/components.js', type='text/babel')</div></pre></td></tr></table></figure></p>
+<p>我们的服务器现在需要增加一个请求路由。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'babel/register'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)</div><div class="line">  , app = express()</div><div class="line">  , React = <span class="built_in">require</span>(<span class="string">'react'</span>)</div><div class="line">  , ReactDOM = <span class="built_in">require</span>(<span class="string">'react-dom/server'</span>)</div><div class="line">  , components = <span class="built_in">require</span>(<span class="string">'./public/components.js'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createFactory(components.HelloMessage)</div><div class="line"></div><div class="line"></div><div class="line">app.engine(<span class="string">'jade'</span>, <span class="built_in">require</span>(<span class="string">'jade'</span>).__express)</div><div class="line">app.set(<span class="string">'view engine'</span>, <span class="string">'jade'</span>)</div><div class="line"></div><div class="line">app.use(express.static(__dirname + <span class="string">'/public'</span>))</div><div class="line"></div><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.render(<span class="string">'index'</span>, &#123;</div><div class="line">    <span class="attr">react</span>: React.renderToString(HelloMessage(&#123;<span class="attr">name</span>: <span class="string">"John"</span>&#125;))</div><div class="line">  &#125;)</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.send(<span class="string">"Paul, "</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().toString())</div><div class="line">&#125;)</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'Listening on port 3000...'</span>)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这里跟之前的例子唯一的不同之处在于这三行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">app.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line">  res.send(<span class="string">"Paul, "</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().toString())</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>这三行代码的作用是，当<code>/name</code>被请求时，返回名字<code>Paul</code>和当前时间。<br>来看看这整个应用最有趣和最重要的部分，即React组件：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isNode = <span class="keyword">typeof</span> <span class="built_in">module</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">module</span>.exports</div><div class="line">  , React = isNode ? <span class="built_in">require</span>(<span class="string">'react'</span>) : <span class="built_in">window</span>.React</div><div class="line">  , ReactDOM = isNode ? <span class="built_in">require</span>(<span class="string">'react-dom'</span>) : <span class="built_in">window</span>.ReactDOM</div><div class="line"></div><div class="line"><span class="keyword">var</span> HelloMessage = React.createClass(&#123;</div><div class="line">  <span class="attr">getInitialState</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> &#123;&#125;</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  <span class="attr">loadServerData</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    $.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.isMounted()) &#123;</div><div class="line">        <span class="keyword">this</span>.setState(&#123;<span class="attr">name</span>: result&#125;)</div><div class="line">      &#125;</div><div class="line">    &#125;.bind(<span class="keyword">this</span>))</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  <span class="attr">componentDidMount</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.intervalID = setInterval(<span class="keyword">this</span>.loadServerData, <span class="number">3000</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  <span class="attr">componentWillUnmount</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    clearInterval(<span class="keyword">this</span>.intervalID)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  <span class="attr">handleClick</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    alert(<span class="string">'You clicked!'</span>)</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  <span class="attr">render</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> name = <span class="keyword">this</span>.state.name ? <span class="keyword">this</span>.state.name : <span class="keyword">this</span>.props.name</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onClick</span>=<span class="string">&#123;this.handleClick&#125;</span>&gt;</span>Hello &#123;name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div><div class="line">  &#125;</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="keyword">if</span> (isNode) &#123;</div><div class="line">  exports.HelloMessage = HelloMessage</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  ReactDOM.render(<span class="xml"><span class="tag">&lt;<span class="name">HelloMessage</span> <span class="attr">name</span>=<span class="string">"John"</span> /&gt;</span>, document.getElementById('react-root'))</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们只添加了这4个方法，其他和之前的例子相同：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">getInitialState: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> &#123;&#125;</div><div class="line">&#125;,</div><div class="line"></div><div class="line"><span class="attr">loadServerData</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  $.get(<span class="string">'/name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isMounted()) &#123;</div><div class="line">      <span class="keyword">this</span>.setState(&#123;<span class="attr">name</span>: result&#125;)</div><div class="line">    &#125;</div><div class="line">  &#125;.bind(<span class="keyword">this</span>))</div><div class="line">&#125;,</div><div class="line"></div><div class="line"><span class="attr">componentDidMount</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.intervalID = setInterval(<span class="keyword">this</span>.loadServerData, <span class="number">3000</span>)</div><div class="line">&#125;,</div><div class="line"></div><div class="line"><span class="attr">componentWillUnmount</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  clearInterval(<span class="keyword">this</span>.intervalID)</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>当组件被挂载后，每隔3秒它会向服务器请求数据<code>/name</code>并且显示出来。<br><code>componentDidMount</code>和<code>componentWillUnmount</code>在组件被渲染时是不会被调用的，它们只有在组件被挂载时才会被调用。<br>所以这两个方法在服务端渲染时不会被调用，<code>loadServerData</code>方法也不会被调用。<br>这三个方法只有当组件被挂载时才会被执行，而这只会发生在浏览器端。<br>由此可见，想要从整体中分离出只在浏览器运行的那部分，并且保持代码的复用是很简单的。</p>
+<h2 id="在这之后？"><a href="#在这之后？" class="headerlink" title="在这之后？"></a>在这之后？</h2><p>你已经学会了如何借助服务端渲染创建一个能被快速加载的React应用程序。但是，我的这个示例只是针对NodeJS服务器。<br>如果你在使用其他技术（比如PHP, .NET, Ruby, Python或者Java），你一样可以利用React服务端渲染的优点，这将会是你下一步要研究的方向。<br>另外，我直接在浏览器端使用了JSX，这将多亏于Babel，但是这也会降低性能。在生产环境中，在将JSX提供给浏览器之前先将之转换为JavaScript会更快。<br>我相信你一定可以找到你最喜欢的开发语言和Web框架下的类似解决方案。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="ciwp39mmb001o762hshhxrx1c" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-react-server-side-rendering">多说</a>
+      
+      
+        <a href="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/front-end/">front-end</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+
+
+  
     <article id="post-hello-old-driver" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/02/28/hello-old-driver/" class="article-date">
@@ -294,7 +365,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="ciwmea19m000muc2hqyll7qqq" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="ciwp39mli000p762hcgpjlpno" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-hello-old-driver">多说</a>
       
@@ -355,7 +426,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwmea1ax0020uc2hz2s1y4ek" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwp39mmv002c762hx9i4t0qr" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-wechat-sns-reflect-classes">多说</a>
       
@@ -415,7 +486,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwmea19g000huc2hnultz1ei" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwp39mlb000g762hijpj4c2j" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-generate-thumbnails-with-nginx-image-filter">多说</a>
       
@@ -482,7 +553,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwmea1950008uc2hsgmkp79b" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwp39mla000f762hywi6dqa6" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-compile-nginx-on-osx">多说</a>
       
@@ -558,7 +629,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwmea1ar001xuc2hjz29kkfd" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwp39mms0027762h0qudhw6b" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-pf-on-osx">多说</a>
       
@@ -641,7 +712,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwmea19l000luc2hboi4whrn" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwp39mlg000l762h2hjfoft8" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-github-pages-with-https">多说</a>
       
@@ -734,7 +805,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="ciwmea1aq001uuc2hw9a5w18r" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="ciwp39mmh001w762hlt0g5vll" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-haproxy-to-optimize-shadowsocks-on-openwrt">多说</a>
       
@@ -816,7 +887,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="ciwmea19d000euc2hck9ywl7d" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="ciwp39ml6000b762h9717eo02" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cc-defence-log">多说</a>
       
@@ -910,101 +981,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwmea1a60016uc2ha8u1btx7" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwp39mm1001d762hgsieqz1b" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt">多说</a>
       
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-  
-    <article id="post-openwrt-bypass-gfw-solution" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/01/23/openwrt-bypass-gfw-solution/" class="article-date">
-  <time datetime="2016-01-23T08:07:53.000Z" itemprop="datePublished">2016-01-23</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/23/openwrt-bypass-gfw-solution/">OpenWRT路由器上的ShadowSocks+ChinaDNS搭梯子方案</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在路由器上运行ShadowSocks科学上网是最为优雅的方案。本文将介绍其安装和配置步骤。<br>首先为智能路由器刷上OpenWRT，博主推荐<a href="http://downloads.openwrt.org.cn/PandoraBox/" target="_blank" rel="external">Pandorabox</a>修改版。本文将实现：连接上路由器的客户端当访问国内主机时，直接连接，而访问国外主机时，自动代理。</p>
-<h2 id="安装ShadowSocks"><a href="#安装ShadowSocks" class="headerlink" title="安装ShadowSocks"></a>安装ShadowSocks</h2><ol>
-<li><p>因为本文讨论的是SS+ChinaDNS的翻墙方案，对于部分已集成SS+domain list的固件版本，需要先删除已安装的SS及相关工具。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#ssh连接上路由器后运行</div><div class="line">$ opkg list_installed | grep shadowsocks #查询已安装的ss和相关工具</div><div class="line"># opkg remove shadowsocks-* #删除之</div></pre></td></tr></table></figure>
-</li>
-<li><p>下载安装shadowsocks-libev-spec<br><a href="http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/</a><br>经作者测试，最新版在极贰最新OpenWRT固件上会出现iptables规则失效的情况，建议使用<code>shadowsocks-libev-spec_2.3.0-1_XXXX</code>版本。<br>以MT7620系列为例，在路由器上运行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># opkg update</div><div class="line"># cd /tmp</div><div class="line"># wget http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/2.3.0-3ff06a6/ramips/shadowsocks-libev-spec_2.3.0-1_ramips_24kec.ipk  #如果不是ramips平台，请根据路由器ARCH选择对应ipk</div><div class="line"># opkg install shadowsocks-libev-spec_2.3.0-1_ramips_24kec.ipk</div></pre></td></tr></table></figure>
-</li>
-<li><p>下载安装luci-app-shadowsocks-spec<br>luci-app提供ss的图形化配置界面。<br><a href="http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/</a><br>如果<code>shadowsocks-libev-spec</code>使用的版本是本文推荐的<code>2.3.0</code>，请下载<code>luci-app-shadowsocks-spec_1.3.2-1_all.ipk</code>。路由器上运行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># wget http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/luci-app-shadowsocks-spec_1.3.2-1_all.ipk</div><div class="line"># opkg install luci-app-shadowsocks-spec_1.3.2-1_all.ipk</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="安装ChinaDNS"><a href="#安装ChinaDNS" class="headerlink" title="安装ChinaDNS"></a>安装ChinaDNS</h2><p>ChinaDNS用于解决国内DNS污染问题，同时可加速国内网站的访问。其原理如下：<br>提供至少一个国内DNS服务器和一个国外DNS服务器，ChinaDNS收到来自用户的DNS请求后，同时向这两个服务器发DNS请求。如果从国内DNS服务器返回的解析结果为国外IP，则选择国外DNS服务器的解析结果，否则选择国内DNS的解析结果，最后返回给用户。<br><a href="http://sourceforge.net/projects/openwrt-dist/files/chinadns/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/chinadns/</a></p>
-<ol>
-<li><p>ChinaDNS</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ wget http://sourceforge.net/projects/openwrt-dist/files/chinadns/1.3.2-d3e75dd/ChinaDNS_1.3.2-3_ramips_24kec.ipk</div><div class="line"># opkg install ChinaDNS_1.3.2-3_ramips_24kec.ipk</div></pre></td></tr></table></figure>
-</li>
-<li><p>luci-app-ChinaDNS<br><a href="http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ wget http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/luci-app-chinadns_1.3.4-1_all.ipk</div><div class="line"># opkg install luci-app-chinadns_1.3.4-1_all.ipk</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="配置ShadowSocks"><a href="#配置ShadowSocks" class="headerlink" title="配置ShadowSocks"></a>配置ShadowSocks</h2><ol>
-<li><p>创建国内IP段列表，用于忽略国内目标主机。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># mkdir /etc/shadowsocks</div><div class="line"># wget -O- &apos;http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest&apos; | awk -F\| &apos;/CN\|ipv4/ &#123; printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) &#125;&apos; &gt; /etc/shadowsocks/ignore.list</div></pre></td></tr></table></figure>
-</li>
-<li><p>使用luci-app配置ss<br>进入路由器管理web页面，用root登录，进入服务(Services)-&gt;ShadowSocks。<br>勾选启用Shadowsocks，输入ss服务器信息（服务器IP、端口、密码、加密方式）。<br>代理方法(Proxy method)选择忽略列表(Ignore list)，并在–custom–中填入<code>/etc/shadowsocks/ignore.list</code>。代理协议(Proxy protocol)选择<code>TCP+UDP</code>。<br>开启UDP隧道，UDP本地端口5300，目的地址<code>8.8.8.8:53</code>。UDP隧道用于加密DNS查询包，稍后将会用到。<br><img src="/images/openwrt-ss-1.png" alt=""></p>
-</li>
-<li>保存并应用(Save and Apply)</li>
-</ol>
-<h2 id="配置ChinaDNS"><a href="#配置ChinaDNS" class="headerlink" title="配置ChinaDNS"></a>配置ChinaDNS</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget -O- &apos;http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest&apos; | awk -F\| &apos;/CN\|ipv4/ &#123; printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) &#125;&apos; &gt; /etc/chinadns_chnroute.txt</div></pre></td></tr></table></figure>
-<p>在路由器web管理页面，进入服务(Services)-&gt;ChinaDNS。<br>勾选启用ChinaDNS，启用DNS压缩指针。<br>本地端口写5353，中国路由表(CHNRoute File)填<code>/etc/chinadns_chnroute.txt</code>。<br>上游DNS服务器填<code>114.114.114.114,127.0.0.1:5300</code>。（可将114.114.114.114改成当前ISP提供的DNS服务器IP）<br>这里将ss的UDP隧道作为ChinaDNS的国外DNS上游源。<br>保存并应用</p>
-<h2 id="配置路由器DNS-Dnsmasq"><a href="#配置路由器DNS-Dnsmasq" class="headerlink" title="配置路由器DNS(Dnsmasq)"></a>配置路由器DNS(Dnsmasq)</h2><p>进入网络(Network)-&gt;DHCP and DNS。<br>将DNS转发(DNS forwardings)设置为<code>127.0.0.1#5353</code>。这将使得路由器将DNS请求经由dnsmasq全部转发至ChinaDNS处理。<br>这样设置后，从内网主机端发出的国外DNS请求将发送至：dnsmasq-&gt;ChinaDNS-&gt;ss-tunnel-&gt;ss服务器-&gt;8.8.8.8，<br>国内DNS请求则：dnsmasq-&gt;ChinaDNS-&gt;114.114.114.114<br>还要记得勾选“忽略解析文件”(ignore resolve file)。</p>
-<p>至此，路由器上的梯子已经搭建完毕，如不出意外，你已经可以进youtube了。<br>但是，受路由器到ss服务器的链路质量影响，可能会出现不稳定的情况。例如某些ISP下会出现境外UDP流量丢包、多TCP并发连接容易建立失败等情况。博主将在下篇文章中介绍优化方案。</p>
-<h2 id="关于shadowsocks-libev-spec的原理"><a href="#关于shadowsocks-libev-spec的原理" class="headerlink" title="关于shadowsocks-libev-spec的原理"></a>关于shadowsocks-libev-spec的原理</h2><p>通过分析ss的启动脚本，初步确定ss-libev-spec是以以下步骤实现自动翻墙的。</p>
-<ol>
-<li>运行<code>/usr/bin/ss-rules</code>，设置在ipset中建立一个列表<code>ss_spec_wan_ac</code>，列表中存放了<code>/etc/shadowsocks/ignore.list</code>中的IP段（即为需要忽略的国内IP段），然后设置iptables，在<code>nat</code>表的<code>OUTPUT</code>链中将目标地址<code>match-set ss_spec_wan_ac</code>的包采取<code>RETURN</code>处理。然后再在这条规则后增加一条，将全部包<code>REDIRECT</code>到<code>127.0.0.1:1080</code></li>
-<li>运行<code>/usr/bin/ss-redir</code>，监听本地端口<code>1080</code>，负责将收到的包经由ss，加密socks代理至ss服务器。</li>
-<li>运行<code>/usr/bin/ss-tunnel</code>，经由ss服务器建立加密的UDP隧道，隧道一端为本地监听端口<code>5300</code>，另一端为<code>8.8.8.8:53</code>。</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="ciwmea19y000xuc2hz2n93l1f" class="article-share-link">分享</a>
-      
-        <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-bypass-gfw-solution">多说</a>
-      
-      
-        <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
@@ -1052,7 +1034,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 13.33px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 13.33px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16.67px;">front-end</a> <a href="/tags/hack/" style="font-size: 18.33px;">hack</a> <a href="/tags/linux/" style="font-size: 18.33px;">linux</a> <a href="/tags/maintenance/" style="font-size: 20px;">maintenance</a> <a href="/tags/network/" style="font-size: 11.67px;">network</a> <a href="/tags/nginx/" style="font-size: 13.33px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 15px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 16.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 13.33px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 13.33px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16.67px;">front-end</a> <a href="/tags/hack/" style="font-size: 18.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 20px;">maintenance</a> <a href="/tags/network/" style="font-size: 11.67px;">network</a> <a href="/tags/nginx/" style="font-size: 13.33px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 16.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -1075,6 +1057,10 @@
       <ul>
         
           <li>
+            <a href="/2016/12/12/better-way-to-bypass-gfw-with-tinc/">tinc VPN+策略路由：Linux下更好的科学上网方式</a>
+          </li>
+        
+          <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
           </li>
         
@@ -1088,10 +1074,6 @@
         
           <li>
             <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
-          </li>
-        
-          <li>
-            <a href="/2016/07/23/mixins-considered-harmful/">mixins是有害的（Mixins Considered Harmful）［上篇］</a>
           </li>
         
       </ul>
