@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>再谈React同构应用：服务端下复用Redux Effects的实践 | ChionLab  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="同构 (universal/isomorphic) React应用旨在服务端（或者是网关层、中途岛层）和客户端（浏览器端）尽可能地复用UI组件的代码，以提高项目的可维护性。当同构应用引入以 Redux 为首的数据流管理、以 react-router 为主的SPA前端路由后，同构应用将变得复杂：我们需要在服务端和客户端之间同步状态（store）和路由信息，并且尽可能地复用这些数据逻辑（如reduce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="再谈React同构应用：服务端下复用Redux Effects的实践">
+<meta property="og:url" content="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/index.html">
+<meta property="og:site_name" content="ChionLab">
+<meta property="og:description" content="同构 (universal/isomorphic) React应用旨在服务端（或者是网关层、中途岛层）和客户端（浏览器端）尽可能地复用UI组件的代码，以提高项目的可维护性。当同构应用引入以 Redux 为首的数据流管理、以 react-router 为主的SPA前端路由后，同构应用将变得复杂：我们需要在服务端和客户端之间同步状态（store）和路由信息，并且尽可能地复用这些数据逻辑（如reduce">
+<meta property="og:updated_time" content="2016-12-22T15:22:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="再谈React同构应用：服务端下复用Redux Effects的实践">
+<meta name="twitter:description" content="同构 (universal/isomorphic) React应用旨在服务端（或者是网关层、中途岛层）和客户端（浏览器端）尽可能地复用UI组件的代码，以提高项目的可维护性。当同构应用引入以 Redux 为首的数据流管理、以 react-router 为主的SPA前端路由后，同构应用将变得复杂：我们需要在服务端和客户端之间同步状态（store）和路由信息，并且尽可能地复用这些数据逻辑（如reduce">
+  
+    <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+  
+  <link href="/stylesheets/googlefonts.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .article-duoshuo-link {
+      float: right;
+      margin-left: 20px;
+    }
+    .article-duoshuo-link:before {
+      content: "\f086";
+      font-family: "FontAwesome";
+      padding-right: 8px;
+    }
+    .jc-bs3-container {
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+  <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
+  <script src="/scripts/jquery-2.2.0.min.js"></script>
+  <script src="/scripts/jquery-confirm.min.js"></script>
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <script>
+    var JS_COOKIES_DOMAIN = '.chionlab.moe';
+    var JsCookies = {
+      // this gets a cookie and returns the cookies value, if no cookies it returns blank ""
+      get: function(c_name) {
+        if (document.cookie.length > 0) {
+          var c_start = document.cookie.indexOf(c_name + "=");
+          if (c_start != -1) {
+            c_start = c_start + c_name.length + 1;
+            var c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) {
+              c_end = document.cookie.length;
+            }
+            return unescape(document.cookie.substring(c_start, c_end));
+          }
+        }
+        return "";
+      },
+
+      // this sets a cookie with your given ("cookie name", "cookie value", "good for x days")
+      set: function(c_name, value, expiredays) {
+        var exdate = new Date();
+        if (expiredays)
+          exdate.setDate(exdate.getDate() + expiredays);
+        document.cookie = c_name + "=" + escape(value) + "; path=/" + "; domain=" + JS_COOKIES_DOMAIN + ((expiredays == undefined) ? "" : "; expires=" + exdate.toUTCString());
+      },
+
+      // this checks to see if a cookie exists, then returns true or false
+      check: function(c_name) {
+        c_name = JsCookies.get(c_name);
+        if (c_name != null && c_name != "") {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+    };
+  </script>
+
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChionLab</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎来到Chion82的未来道具研究所 ( ゜- ゜)つロ 乾杯~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">主页</a>
+        
+          <a class="main-nav-link" href="/archives/">归档</a>
+        
+          <a class="main-nav-link" href="https://github.com/Chion82">GitHub</a>
+        
+          <a class="main-nav-link" href="/about.html">About Me</a>
+        
+        <a class="main-nav-link nav-link-switch-cdn" href="//cn2.chionlab.moe" data-domain="cn2">CN2加速</a>
+        <a class="main-nav-link nav-link-switch-cdn" href="//blog.chionlab.moe" data-domain="blog">CF加速</a>
+
+        
+          <div style="clear: both;"></div>
+          <style>
+            .switch-theme-btn {
+              opacity: 0.8 !important;
+            }
+
+            .switch-theme-btn:hover {
+              opacity: 1.0 !important;
+            }
+          </style>
+          <div>
+            
+              <a class="main-nav-link switch-theme-btn"
+                title="uzume" href="#" style="float: left;margin-right: -10px;"
+                data-css-url="/css/style.css"
+                data-theme-name="uzume">
+                <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
+                  <img style="width: 100%; height: 100%;" src="/images/theme_uzume.png" />
+                </div>
+              </a>
+            
+              <a class="main-nav-link switch-theme-btn"
+                title="miria" href="#" style="float: left;margin-right: -10px;"
+                data-css-url="/stylesheets/theme_miria.css"
+                data-theme-name="miria">
+                <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
+                  <img style="width: 100%; height: 100%;" src="/images/theme_miria.png" />
+                </div>
+              </a>
+            
+          </div>
+          <script>
+            (function(){
+
+              function switchThemeCSS(themeName, cssUrl) {
+                document.querySelector('head').querySelectorAll('link[rel=stylesheet]')[1].href = cssUrl;
+              }
+
+              var switchThemeBtns = document.querySelectorAll('.switch-theme-btn');
+              for (var i=0; i<switchThemeBtns.length; i++) {
+                var switchThemeBtn = switchThemeBtns[i];
+                (function(switchThemeBtn) {
+                  switchThemeBtn.addEventListener('click', function(){
+                    switchThemeCSS(switchThemeBtn.dataset.themeName, switchThemeBtn.dataset.cssUrl);
+                    JsCookies.set('theme', switchThemeBtn.dataset.themeName, 30);
+                  });
+                })(switchThemeBtn);
+              }
+
+              var initTheme = JsCookies.get('theme');
+              if (initTheme) {
+                var cssUrl = document.querySelector(".switch-theme-btn[data-theme-name='" + initTheme + "']").dataset.cssUrl;
+                switchThemeCSS(initTheme, cssUrl);
+              }
+
+            })();
+          </script>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+      </div>
+    </div>
+  </div>
+  <script>
+    function getGeolocation(geoInfo) {
+      var rootDomain = 'chionlab.moe';
+      if (geoInfo.country_code === 'CN') {
+        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
+          JsCookies.set('domain', 'cn2', 30);
+          return;
+        }
+        $.confirm({
+          title: '线路优化建议',
+          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
+          buttons: {
+            '好的': function() {
+              JsCookies.set('domain', 'cn2', 30);
+              window.location.href = '//' + 'cn2' + '.' + rootDomain + window.location.pathname;
+            },
+            '不用了': function() {
+              JsCookies.set('domain', 'blog', 30);
+            }
+          }
+        })
+      } else {
+        JsCookies.set('domain', 'blog', 30);
+        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+        }
+      }
+    }
+    (function(){
+      var rootDomain = 'chionlab.moe';
+
+      if (!JsCookies.check('domain')) {
+        var geoLocationScript = document.createElement('script');
+        geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
+        document.head.appendChild(geoLocationScript);
+      } else {
+        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+          window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
+        }
+      }
+
+      var switchBtns = document.querySelectorAll('.nav-link-switch-cdn');
+      for (var i=0; i<switchBtns.length; i++) {
+        (function(switchBtn){
+          if (switchBtn.dataset.domain === JsCookies.get('domain')) {
+            switchBtn.style.display = 'none';
+          }
+          switchBtn.addEventListener('click', function(ev) {
+            JsCookies.set('domain', switchBtn.dataset.domain);
+          });
+        })(switchBtns[i]);
+      }
+    })();
+  </script>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-universal-react-app-reuse-effects-on-server-side" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/12/21/universal-react-app-reuse-effects-on-server-side/" class="article-date">
+  <time datetime="2016-12-21T10:07:32.000Z" itemprop="datePublished">2016-12-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/前端/">前端</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      再谈React同构应用：服务端下复用Redux Effects的实践
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>同构 (universal/isomorphic) React应用旨在服务端（或者是网关层、中途岛层）和客户端（浏览器端）尽可能地复用UI组件的代码，以提高项目的可维护性。当同构应用引入以 <a href="https://github.com/reactjs/redux" target="_blank" rel="external">Redux</a> 为首的数据流管理、以 <a href="https://github.com/ReactTraining/react-router" target="_blank" rel="external">react-router</a> 为主的SPA前端路由后，同构应用将变得复杂：我们需要在服务端和客户端之间同步状态（store）和路由信息，并且尽可能地复用这些数据逻辑（如reducers）和路由配置。关于如何搭建这样的一个项目框架，你可以阅读 <a href="https://blog.tableflip.io/server-side-rendering-with-react-and-redux/" target="_blank" rel="external">Server Side Rendering with React and Redux</a>。</p>
+<p>本文假设你已经熟悉如何搭建一个 React + Redux + react-router 的同构应用，我们来讨论Redux副作用（side effects，后面简称effects）在服务端复用的逐步尝试和实践。</p>
+<h2 id="目前的典型场景"><a href="#目前的典型场景" class="headerlink" title="目前的典型场景"></a>目前的典型场景</h2><p>目前大多数React同构脚手架均不在服务端复用effects，而是通过直接调用Service模块的方式来加载数据，这使得我们可以直接获知异步任务何时完成，并在回调函数中直接执行我们的渲染逻辑。在渲染逻辑中，因为页面初始数据已经取得，从创建store到调用<code>store.getState()</code>来初始化渲染模板都是同步的，没有任何坑点，它看起来是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">APIService.getTodos().then(<span class="function">(<span class="params">initialData</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> store = configureStore(makeInitialState(initialData));</div><div class="line">  <span class="keyword">const</span> html = ReactDOMServer.renderToString( <span class="comment">/* ... */</span> );</div><div class="line">  <span class="keyword">const</span> state = store.getState()</div><div class="line">  renderFullPage(html, state);</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<h3 id="例：universal-react-starter-kit"><a href="#例：universal-react-starter-kit" class="headerlink" title="例：universal-react-starter-kit"></a>例：universal-react-starter-kit</h3><p>以国内比较流行的脚手架 <a href="https://github.com/bodyno/universal-react-starter-kit" target="_blank" rel="external">bodyno/universal-react-starter-kit</a> 为例，其渲染部分的关键代码是这样的：<br><em>server/main.js</em><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> initialState = <span class="keyword">await</span> router(ctx)</div><div class="line"><span class="keyword">const</span> store = createStore(initialState, memoryHistory)</div><div class="line"><span class="comment">/* ... */</span></div><div class="line">match(&#123;history, routes, <span class="attr">location</span>: ctx.req.url&#125;, <span class="keyword">async</span> (err, redirect, props) =&gt; &#123;</div><div class="line">  <span class="comment">/* ... */</span></div><div class="line">  <span class="keyword">let</span> layout = &#123;</div><div class="line">      <span class="comment">/* ... */</span></div><div class="line">      &#123;<span class="attr">type</span>: <span class="string">'text/javascript'</span>, <span class="attr">innerHTML</span>: <span class="string">`___INITIAL_STATE__ = <span class="subst">$&#123;<span class="built_in">JSON</span>.stringify(store.getState())&#125;</span>`</span>&#125;,</div><div class="line">      <span class="comment">/* ... */</span></div><div class="line">    ]&#125;</div><div class="line">  <span class="comment">/* ... */</span></div><div class="line">  content = renderToString(</div><div class="line">    <span class="xml"><span class="tag">&lt;<span class="name">AppContainer</span> <span class="attr">layout</span>=<span class="string">&#123;layout&#125;</span> /&gt;</span></span></div><div class="line">  );</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>其中 <code>await router(ctx)</code>的<code>router</code>部分代码如下：<br><em>server/router.js</em><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params">ctx</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</div><div class="line">    <span class="comment">/* ... */</span></div><div class="line">    axios.get(<span class="string">'https://api.github.com/zen'</span>).then(<span class="function">(<span class="params">&#123;data&#125;</span>) =&gt;</span> &#123;</div><div class="line">      resolve(&#123;<span class="attr">zen</span>: &#123; <span class="attr">text</span>: [&#123;<span class="attr">text</span>: data&#125;]&#125; &#125;)</div><div class="line">    &#125;)</div><div class="line">  &#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>await router(ctx)</code>在此处就是一次Service API调用。先不论这个<code>router</code>是否名不符实（可能因为是脚手架的原因。router.js应该是给开发者填入代码来实现对应不同路由调用不同的Service），这个脚手架的渲染逻辑跟上文的示例大同小异——直接调用Service模块异步取得初始数据，在回调（await）中通过全同步的方式用初始数据产生store并<code>getState()</code>，然后调用<code>renderToString()</code>渲染。</p>
+<p>在服务端通过“直捅Service”的方式来获取页面初始数据，是最直接、最简单的方法。当然我们在客户端绝对不会这么做，在客户端我们会设计好同步的actions和reducers，并通过触发effects来实现异步数据获取。为了使我们的服务端代码更优雅、维护性更强、代码复用度更高，我们希望在服务端能够复用这些actions、reducers和effects。</p>
+<h2 id="使用redux-thunk的场景"><a href="#使用redux-thunk的场景" class="headerlink" title="使用redux-thunk的场景"></a>使用redux-thunk的场景</h2><p>在服务端执行一个effect是很简单的，我们只需要调用在服务端和客户端间共享的<code>configureStore()</code>函数来创建一个空的store（这时你将拥有effects所必须的middleware），然后调用<code>store.dispatch()</code>来触发一个绑定了effects的action即可。难点是：程序如何得知一个异步effects已经执行完成？这样我们才能在effects完成后调用<code>store.getState()</code>来取得带初始数据的state。<br>如果你的项目所使用的effects是 <a href="https://github.com/gaearon/redux-thunk" target="_blank" rel="external">redux-thunk</a>，你可以很容易地在服务端复用它们：你只需要在thunk函数中返回一个promise即可——而这是官方建议的标准写法。这样，<code>store.dispatch()</code>可以直接返回这个promise。<br>你的async thunk action creator看起来是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">fetchTodos</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">dispatch</span>) </span>&#123;</div><div class="line">    dispatch(&#123; <span class="attr">type</span>: <span class="string">'todos/get'</span> &#125;);</div><div class="line">    <span class="keyword">return</span> APIService.getTodos()</div><div class="line">      .then(<span class="function"><span class="params">payload</span> =&gt;</span> dispatch(&#123;</div><div class="line">        <span class="attr">type</span>: <span class="string">'todos/get/success'</span>,</div><div class="line">        payload,</div><div class="line">      &#125;));</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>APIService看起来是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> APIService = &#123;</div><div class="line">  <span class="attr">getTodos</span>: <span class="function"><span class="params">()</span> =&gt;</span> fetch(<span class="string">'/api/todos'</span>).then(<span class="function"><span class="params">response</span> =&gt;</span> response.json()),</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这样，在服务端的渲染逻辑，你可以这样写：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> store = configureStore(&#123;&#125;);</div><div class="line">store.dispatch(&#123; <span class="attr">type</span>: <span class="string">'todos/get'</span> &#125;)</div><div class="line">  .then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">    <span class="keyword">const</span> html = ReactDOMServer.renderToString( <span class="comment">/* ... */</span> );</div><div class="line">    <span class="keyword">const</span> state = store.getState()</div><div class="line">    renderFullPage(html, state);</div><div class="line">  &#125;);</div></pre></td></tr></table></figure></p>
+<p>另外，还有 <a href="https://github.com/acdlite/redux-promise" target="_blank" rel="external">redux-promise</a> 的effects解决方案。在服务端复用方面，redux-promise和redux-thunk极为相似，因为使用redux-promise同样可以通过<code>store.dispatch()</code>获得异步任务的promise。<br>唯一的不同之处是，当使用redux-promise时，async action creator看起来是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">getTodos</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> &#123;</div><div class="line">    <span class="attr">type</span>: <span class="string">'todos/get'</span>,</div><div class="line">    <span class="attr">payload</span>: APIService.getTodos(), <span class="comment">//action.payload是一个promise</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="例：react-redux-universal-hot-example"><a href="#例：react-redux-universal-hot-example" class="headerlink" title="例：react-redux-universal-hot-example"></a>例：react-redux-universal-hot-example</h3><p>让我们来看看GitHub上stars最多的Universal React脚手架 <a href="https://github.com/erikras/react-redux-universal-hot-example" target="_blank" rel="external">erikras/react-redux-universal-hot-example</a> 是怎么解决的。<br>这个脚手架使用了 <a href="https://github.com/Rezonans/redux-async-connect" target="_blank" rel="external">redux-async-connect</a> middleware，这使得我们可以绑定一个promise给每一个container，并在服务端使用它提供的<code>loadOnServer()</code>方法获得待渲染的container的异步任务及其promise。<br><em>src/containers/App/App.js</em><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">@asyncConnect([&#123;</div><div class="line">  <span class="attr">promise</span>: <span class="function">(<span class="params">&#123;store: &#123;dispatch, getState&#125;&#125;</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">const</span> promises = [];</div><div class="line">    <span class="keyword">if</span> (!isInfoLoaded(getState())) &#123;</div><div class="line">      promises.push(dispatch(loadInfo()));</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (!isAuthLoaded(getState())) &#123;</div><div class="line">      promises.push(dispatch(loadAuth()));</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="built_in">Promise</span>.all(promises);</div><div class="line">  &#125;</div><div class="line">&#125;])</div><div class="line">@connect(</div><div class="line">  <span class="function"><span class="params">state</span> =&gt;</span> (&#123;<span class="attr">user</span>: state.auth.user&#125;),</div><div class="line">  &#123;logout, <span class="attr">pushState</span>: push&#125;)</div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">  <span class="comment">/* ... */</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><em>src/server.js</em><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">loadOnServer(&#123;...renderProps, store, <span class="attr">helpers</span>: &#123;client&#125;&#125;).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> component = (</div><div class="line">    &lt;Provider store=&#123;store&#125; key="provider"&gt;</div><div class="line">      &lt;ReduxAsyncConnect &#123;...renderProps&#125; /&gt;</div><div class="line">    &lt;/Provider&gt;</div><div class="line">  );</div><div class="line">  res.status(200);</div><div class="line">  global.navigator = &#123;userAgent: req.headers['user-agent']&#125;;</div><div class="line">  res.send('&lt;!doctype html&gt;\n' +</div><div class="line">    ReactDOM.renderToString(&lt;Html assets=&#123;webpackIsomorphicTools.assets()&#125; component=&#123;component&#125; store=&#123;store&#125;/&gt;));</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>从上面的代码中，我们看到：</p>
+<ul>
+<li>作者使用redux-async-connect将container和一个promise绑定，这个promise执行多个<code>dispatch()</code>调用，当它们返回的promise都resolve时才resolve自身。</li>
+<li>服务端通过调用已经绑定的<code>loadOnServer()</code>方法得到上述的这个promise，从而可以直接在<code>.then()</code>中填写该promise执行完成后的同步渲染逻辑。</li>
+<li>之所以能够这么做，还是依赖于redux-thunk的<code>store.dispatch()</code>调用能够返回异步任务对应的promise。</li>
+</ul>
+<h2 id="使用redux-saga的场景"><a href="#使用redux-saga的场景" class="headerlink" title="使用redux-saga的场景"></a>使用redux-saga的场景</h2><p>然而，对于业务逻辑逐渐复杂的Web APP，redux-thunk或许不能满足复杂的数据流场景。现在国内最流行的Effects方案莫过于  <a href="https://github.com/yelouafi/redux-saga" target="_blank" rel="external">redux-saga</a> 了。</p>
+<p>redux-saga使得异步effects完全脱离于原生Redux数据流，没有Async Action creator（你甚至不需要多余的Action Creator）。Saga effects更像是运行于另一个线程的一组任务（除了Web Worker外目前客户端JavaScript还没有真正意义上的多线程），这些任务可以监听特定的action，并在不直接影响Redux数据流的前提下执行异步操作。</p>
+<p>因为redux-saga的这些优点，使得它可以实现更复杂的异步数据流，保留更纯净的原生Redux流，这非常优雅。而正因如此，它不会对<code>store.dispatch()</code>的返回值做任何更改——这意味着，在服务端我们不能指望仅仅通过<code>store.dispatch()</code>就能获知我们的初始数据何时到达。</p>
+<p>这时我想到了参考已有的、使用redux-saga的同构脚手架。</p>
+<h3 id="dva提供的同构脚手架"><a href="#dva提供的同构脚手架" class="headerlink" title="dva提供的同构脚手架"></a>dva提供的同构脚手架</h3><p><a href="https://github.com/dvajs/dva" target="_blank" rel="external">dva</a> ——蚂蚁金服推出的一个轻量级框架，基于redux、redux-saga和react-router，让你能够使用类似 <a href="http://elm-lang.org" target="_blank" rel="external">elm-lang</a> 的声明性风格来组织你的代码。</p>
+<p>dva官方提供的同构脚手架是 <a href="https://github.com/sorrycc/dva-boilerplate-isomorphic" target="_blank" rel="external">sorrycc/dva-boilerplate-isomorphic</a> 。让我们来看看它是怎么解决saga在服务端下的渲染的。<br><em>server/ssrMiddleware.js</em><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> &#123; fetchList &#125; <span class="keyword">from</span> <span class="string">'../common/services/user'</span>;</div><div class="line"><span class="comment">// ...</span></div><div class="line">fetchList()</div><div class="line">  .then(<span class="function">(<span class="params">&#123; err, data &#125;</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">const</span> initialState = &#123; <span class="attr">user</span>: data &#125;;</div><div class="line">    <span class="keyword">const</span> app = createApp(&#123;</div><div class="line">      <span class="attr">history</span>: createMemoryHistory(),</div><div class="line">      initialState,</div><div class="line">    &#125;, <span class="comment">/* isServer */</span><span class="literal">true</span>);</div><div class="line">    <span class="keyword">const</span> html = renderToString(app.start()(&#123; renderProps &#125;));</div><div class="line">    res.end(renderFullPage(html, initialState));</div><div class="line">  &#125;);</div></pre></td></tr></table></figure></p>
+<p><em>common/services/user.js</em><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> request <span class="keyword">from</span> <span class="string">'../utils/request'</span>;</div><div class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">fetchList</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> request(<span class="string">'/api/users'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>看到这里，相信大家都明白了。是的，dva在这里的服务端逻辑是“直捅Service”的。嗯，这不愧是一个很好的解决方法！</p>
+<p>Are you kidding me? 这不是回到我们一开始就摒弃的方法吗。是的，dva的官方脚手架并没有解决我们的问题。<br>（顺便一提，dva因为过于强调 <strong>declarative</strong> 和 <strong>lightweight</strong>，而一定程度上束缚了redux-saga的灵活性，博主甚至觉得，dva没有必要采用saga的effects，thunk足矣。此处不再展开。）</p>
+<h3 id="官方建议的runSaga"><a href="#官方建议的runSaga" class="headerlink" title="官方建议的runSaga()"></a>官方建议的runSaga()</h3><p>事实上，对于redux-saga的服务端渲染问题，早就有关于这个的讨论，参考 <a href="https://github.com/yelouafi/redux-saga/issues/13" target="_blank" rel="external">issue #13</a> 。而redux-saga已添加了 <a href="http://yelouafi.github.io/redux-saga/docs/api/index.html#runsagaiterator-options" target="_blank" rel="external">runSaga()</a> 方法来实现在服务端复用saga effects。</p>
+<p><code>runSaga()</code>接收一个<code>saga</code>对象和必须的store输入输出方法（<code>subscribe()</code>和<code>dispatch()</code>等），允许在store上下文之外执行一个saga任务，并返回一个<code>Task</code>实例对象。返回的<code>Task</code>对象中的<code>done</code>属性是一个promise对象的引用，该promise在传入的saga任务执行完成后resolve。</p>
+<p>假设我们有这样的一个saga effect：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span>* <span class="title">getTodos</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> payload = <span class="keyword">yield</span> call(APIService.getTodos);</div><div class="line">  <span class="keyword">yield</span> put(&#123; <span class="attr">type</span>: <span class="string">'todos/get/success'</span>, payload &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>由于我们可以获得store上下文和<code>sagaMiddleware</code>，在这里我们可以直接使用<code>sagaMiddleware.run()</code>来代替<code>runSaga()</code>。<code>sagaMiddleware.run()</code>同样返回对应这个saga任务的<code>Task</code>对象。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> sagaMiddleware = createSagaMiddleware();</div><div class="line"><span class="keyword">const</span> store = createStore(rootReducer, initialState, compose(applyMiddleware(sagaMiddleware)));</div><div class="line"><span class="keyword">const</span> task = sagaMiddleware.run(getTodos);</div><div class="line">task.done.then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> html = ReactDOMServer.renderToString(<span class="comment">/* ... */</span>);</div><div class="line">  <span class="keyword">const</span> state = store.getState();</div><div class="line">  renderFullPage(html, state);</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>至此，我们貌似已经能够比较完美地在服务端复用saga effects了。</p>
+<h3 id="更为复杂的saga"><a href="#更为复杂的saga" class="headerlink" title="更为复杂的saga"></a>更为复杂的saga</h3><p>如果我们的saga比较复杂呢？比如像这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span>* <span class="title">loginFlow</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</div><div class="line">    <span class="keyword">yield</span> take(<span class="string">'user/login'</span>);</div><div class="line">    <span class="keyword">const</span> payload = <span class="keyword">yield</span> call(APIService.login);</div><div class="line">    <span class="keyword">yield</span> put(&#123; <span class="attr">type</span>: <span class="string">'user/login/success'</span>, payload &#125;);</div><div class="line">    <span class="keyword">yield</span> take(<span class="string">'user/logout'</span>);</div><div class="line">    <span class="keyword">yield</span> call(APIService.logout);</div><div class="line">    <span class="keyword">yield</span> put(&#123; <span class="attr">type</span>: <span class="string">'user/logout/success'</span> &#125;);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个task是一个典型的infinite saga flow，也是redux-saga相对于其他effects所独有的特性：我们可以随心所欲地定义“看起来是阻塞”的数据流任务，来解决复杂的业务场景，而无需担心阻塞任务会对UI线程造成影响。<br>这样的死循环saga数据流在客户端用起来是很高效优雅的，但到了服务端，这将造成严重的问题——这个saga永远不会结束，因此<code>task.done.then()</code>永远不会被回调，我们无法知道我们所需的数据什么时候加载完成。</p>
+<p>对于更为普遍的情况，我们是这样定义saga任务的，比如使用蚂蚁的 <a href="https://github.com/ant-design/antd-init" target="_blank" rel="external">ant-design/antd-init</a> 脚手架：<br><em>src/sagas/todos.js</em> 中定义了todos的saga：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span>* <span class="title">getTodos</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> &#123; jsonResult &#125; = <span class="keyword">yield</span> call(getAll);</div><div class="line">  <span class="keyword">if</span> (jsonResult.data) &#123;</div><div class="line">    <span class="keyword">yield</span> put(&#123;</div><div class="line">      <span class="attr">type</span>: <span class="string">'todos/get/success'</span>,</div><div class="line">      <span class="attr">payload</span>: jsonResult.data,</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span>* <span class="title">watchTodosGet</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">yield</span> takeLatest(<span class="string">'todos/get'</span>, getTodos)</div><div class="line">&#125;</div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span>* (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">yield</span> fork(watchTodosGet);</div><div class="line">  <span class="keyword">yield</span> put(&#123; <span class="attr">type</span>: <span class="string">'todos/get'</span>, &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><em>src/sagas/index.js</em> 负责组合全部model的saga（通过<code>fork()</code>调用），并导出一个<code>rootSaga</code>：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> context = <span class="built_in">require</span>.context(<span class="string">'./'</span>, <span class="literal">false</span>, /\.js$/);</div><div class="line"><span class="keyword">const</span> keys = context.keys().filter(<span class="function"><span class="params">item</span> =&gt;</span> item !== <span class="string">'./index.js'</span> &amp;&amp; item !== <span class="string">'./SagaManager.js'</span>);</div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span>* <span class="title">root</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; keys.length; i ++) &#123;</div><div class="line">    <span class="keyword">yield</span> fork(context(keys[i]));</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>请注意这里的<code>takeLatest()</code>调用。<code>takeLatest()</code>是redux-saga的一个helper方法，而不是effect方法。参考 <a href="http://yelouafi.github.io/redux-saga/docs/api/index.html#takelatestpattern-saga-args" target="_blank" rel="external">redux-saga API文档中的takeLatest</a>，我们可以看到<code>takeLatest()</code>是这样实现的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span>* <span class="title">takeLatest</span>(<span class="params">pattern, saga, ...args</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> task = <span class="keyword">yield</span> fork(<span class="function"><span class="keyword">function</span>* (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">let</span> lastTask</div><div class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</div><div class="line">      <span class="keyword">const</span> action = <span class="keyword">yield</span> take(pattern)</div><div class="line">      <span class="keyword">if</span> (lastTask)</div><div class="line">        <span class="keyword">yield</span> cancel(lastTask)</div><div class="line">      lastTask = <span class="keyword">yield</span> fork(saga, ...args.concat(action))</div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line">  <span class="keyword">return</span> task</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>所以，当我们在saga中进行了一次<code>yield takeLatest()</code>之后，实际上是<code>fork()</code>出了一个带死循环数据流的另一个saga，而这个死循环的saga当然是永远不会结束的，除非它被我们人为<code>cancel()</code>。<br>还有一个问题是关于redux-saga的fork模型：被<code>fork()</code>出来的子saga与其父saga有怎样的生命周期关联？<a href="http://yelouafi.github.io/redux-saga/docs/advanced/ForkModel.html" target="_blank" rel="external">redux-saga的官方文档</a> 给了我们最好的回答：</p>
+<blockquote>
+<p>In fact, attached forks shares the same semantics with the parallel Effect:</p>
+<ul>
+<li>We’re executing tasks in parallel</li>
+<li>The parent will terminate after all launched tasks terminate</li>
+</ul>
+</blockquote>
+<p>意思是，父saga只有当其所有<code>fork()</code>出来的子saga都结束后才会结束（这和操作系统的fork模型是类似的）。这意味着，因为其子saga中带有死循环流，我们的<code>rootSaga</code>也是永远不会自发结束的。这样的话，我们就 <strong>不能</strong> 这么写：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> task = sagaMiddleware.run(rootSaga);</div><div class="line">store.dispatch(&#123; <span class="attr">type</span>: <span class="string">'todos/get'</span> &#125;);</div><div class="line">task.done.then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="comment">// 这里的代码不会被执行</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>我们只能够直接<code>run()</code>不带死循环流的saga来获得初始数据，像这样：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> task = sagaMiddleware.run(getTodos);</div><div class="line">task.done.then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> html = ReactDOMServer.renderToString(<span class="comment">/* ... */</span>);</div><div class="line">  <span class="keyword">const</span> state = store.getState();</div><div class="line">  renderFullPage(html, state);</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>这跟我们刚才提到的官方建议的方法没有任何区别。在服务端我们需要规避那些包含死循环流的saga，如<code>watchTodosGet</code>。</p>
+<p>这将导致客户端和服务端出现大量的 <strong>异构</strong> ：在客户端，我们直接执行<code>rootSaga</code>，通过<code>dispatch()</code>特定的action来获取数据并同步到state；而在服务端，我们需要找到并执行可以获取到数据并且不带死循环的saga，如<code>getTodos</code>。</p>
+<h3 id="使用redux-wait-for-action来搭救"><a href="#使用redux-wait-for-action来搭救" class="headerlink" title="使用redux-wait-for-action来搭救"></a>使用redux-wait-for-action来搭救</h3><p>为了将 <strong>同构</strong> 进行到底，博主写了一个Redux middleware来解决这个问题： <a href="https://github.com/Chion82/redux-wait-for-action" target="_blank" rel="external">redux-wait-for-action</a> 。这个代码不到80行的middleware主要实现了：在dispatch一个action时，同时指定另外一个我们期望收到的action，<code>store.dispatch()</code>返回一个promise，当这个我们期望的action到达时，该promise将resolve。<br>这样，在服务端我们可以这么写：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">store.dispatch(&#123;</div><div class="line">  <span class="attr">type</span>: <span class="string">'todos/get'</span>,</div><div class="line">  [ WAIT_FOR_ACTION ]: <span class="string">'todos/get/success'</span>,</div><div class="line">&#125;).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> html = ReactDOMServer.renderToString(<span class="comment">/* ... */</span>);</div><div class="line">  <span class="keyword">const</span> state = store.getState();</div><div class="line">  renderFullPage(html, state);</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>在上面的示例代码中，我们在<code>dispatch()</code>一个action时，在这个action中增加了一个属性<code>WAIT_FOR_ACTION</code>（<code>WAIT_FOR_ACTION</code>是一个从<code>redux-wait-for-action</code>导入的ES6 Symbol对象，因此你不需担心这会污染你的action），该属性指定了另一个我们所期望的action <code>todos/get/success</code>。这个<code>store.dispatch()</code>调用返回一个promise，当action <code>todos/get/success</code>到达时，这个promise将resolve，因此我们可以在它的<code>.then()</code>中填写我们的渲染逻辑——因为这时我们所需的数据已经准备好。</p>
+<p>由于redux-wait-for-action是基于等待action的，它将适用于近乎全部的effects方案（当然，对于redux-thunk和redux-promise则没有这个必要），当以后有更为流行的effects方案时，我们仍然可以使用这个middleware。<br>关于更具体的使用方法，大家可以参考 <a href="https://github.com/Chion82/redux-wait-for-action" target="_blank" rel="external">README for redux-wait-for-action</a> 。</p>
+<h2 id="更优雅地组织同构应用"><a href="#更优雅地组织同构应用" class="headerlink" title="更优雅地组织同构应用"></a>更优雅地组织同构应用</h2><p>以上示例都是基于在服务端进行路由判断并决策执行哪个effects的，当我们的数据模型变得多时，服务端代码将变得复杂。比如：该dispatch <code>todos/get</code>还是<code>profile/get</code>？我们需要对<code>req.url</code>进行一一判断。</p>
+<p>借助react-router的<code>match()</code>方法，我们能够得到对应路由下的container组件，如果我们能在每个路由下的container组件中定义一个<code>fetchData()</code>方法来dispatch合适的action，我们就可以大大简化服务端的代码，并且可以同时在服务端和客户端都使用它来加载页面数据。</p>
+<p>在每个路由节点对应的container的代码中，添加一个<code>fetchData()</code> <strong>静态</strong> 方法：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">TodosContainer</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">  <span class="keyword">static</span> fetchData(dispatch) &#123;</div><div class="line">    <span class="keyword">return</span> dispatch(&#123;</div><div class="line">      <span class="attr">type</span>: <span class="string">'todos/get'</span>,</div><div class="line">      [ WAIT_FOR_ACTION ]: <span class="string">'todos/get/success'</span>,</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">  componentDidMount() &#123;</div><div class="line">    <span class="comment">// 这个钩子方法仅会在客户端被调用</span></div><div class="line">    TodosContainer.fetchData(<span class="keyword">this</span>.props.dispatch);</div><div class="line">  &#125;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在服务端渲染代码中，我们定义一个<code>getReduxPromise()</code>函数，这个函数抽出当前路由下对应的container组件，并调用其中的<code>fetchData()</code>方法，从而得到一个promise。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">match(&#123;history, routes, <span class="attr">location</span>: req.url&#125;, (error, redirectLocation, renderProps) =&gt; &#123;</div><div class="line">  <span class="comment">/* 前面这里需要处理redirectLocation、error和renderProps为null的情况 */</span></div><div class="line">  <span class="comment">/* ... */</span></div><div class="line">  <span class="keyword">const</span> getReduxPromise = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">    <span class="keyword">const</span> component = renderProps.components[renderProps.components.length - <span class="number">1</span>].WrappedComponent;</div><div class="line">    <span class="keyword">const</span> promise = component.fetchData ?</div><div class="line">      component.fetchData(store.dispatch) :</div><div class="line">      <span class="built_in">Promise</span>.resolve();</div><div class="line">    <span class="keyword">return</span> promise;</div><div class="line">  &#125;;</div><div class="line">  getReduxPromise().then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">    <span class="keyword">const</span> initStateString = <span class="built_in">JSON</span>.stringify(store.getState());</div><div class="line">    <span class="keyword">const</span> html = ReactDOMServer.renderToString(</div><div class="line">      <span class="xml"><span class="tag">&lt;<span class="name">Provider</span> <span class="attr">store</span>=<span class="string">&#123;store&#125;</span>&gt;</span></span></div><div class="line">        &#123; <span class="tag">&lt;<span class="name">RouterContext</span> &#123;<span class="attr">...renderProps</span>&#125;/&gt;</span> &#125;</div><div class="line">      <span class="tag">&lt;/<span class="name">Provider</span>&gt;</span></div><div class="line">    );</div><div class="line">    res.status(200).send(renderFullPage(html, initStateString));</div><div class="line">  &#125;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>遇到需要传递cookie或参数的情况，我们可以稍微修改一下<code>fetchData()</code>：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> fetchData(dispatch, query, cookies) &#123;</div><div class="line">  <span class="keyword">return</span> dispatch(&#123;</div><div class="line">    <span class="attr">type</span>: <span class="string">'todos/get'</span>,</div><div class="line">    [ WAIT_FOR_ACTION ]: <span class="string">'todos/get/success'</span>,</div><div class="line">    query, cookies,</div><div class="line">  &#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在服务端调用<code>fetchData()</code>时：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">component.fetchData(store.dispatch, req.query, req.cookies);</div></pre></td></tr></table></figure></p>
+<p>由于客户端一般不需要在XHR中显式加cookie，因此我们在客户端调用<code>fetchData()</code>时忽略<code>cookies</code>参数即可，并在<code>APIService</code>模块中做适当的判断。</p>
+<p>另外，为了节省篇幅和便于理解，以上各处示例代码中均没有异常处理部分（或被去除）。在实际项目中，请务必在effects中添加<code>try-catch</code>逻辑，并在promise的处理部分添加<code>.catch()</code>异常处理方法。</p>
+<h2 id="博主的脚手架"><a href="#博主的脚手架" class="headerlink" title="博主的脚手架"></a>博主的脚手架</h2><p>为了在实践中更好地理解以上所提到的最优化方案，博主写了这个脚手架，同时便于大家快速搭建同构React应用：<br><a href="https://github.com/Chion82/react-redux-universal-minimal" target="_blank" rel="external">react-redux-universal-minimal</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cix0j2lm1001zes2hndn1scho" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-universal-react-app-reuse-effects-on-server-side">多说</a>
+      
+      
+        <a href="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/front-end/">front-end</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/12/12/better-way-to-bypass-gfw-with-tinc/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">tinc VPN+策略路由：Linux下更好的科学上网方式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments" class="disqus-comments-section">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+<section id="comments">
+  <!-- 多说评论框 start -->
+  <div class="ds-thread" data-thread-key="post-universal-react-app-reuse-effects-on-server-side" data-title="再谈React同构应用：服务端下复用Redux Effects的实践" data-url="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/"></div>
+  <!-- 多说评论框 end -->
+</section>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OSX/">OSX</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/前端/">前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/后端/">后端</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/">开发笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发笔记/安卓/">安卓</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/逆向/">逆向</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/项目总结/">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OSX/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backend/">backend</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crawler/">crawler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/front-end/">front-end</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hack/">hack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/project/">project</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/router/">router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 13.33px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 18.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 20px;">maintenance</a> <a href="/tags/network/" style="font-size: 11.67px;">network</a> <a href="/tags/nginx/" style="font-size: 13.33px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 16.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近发表</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/12/21/universal-react-app-reuse-effects-on-server-side/">再谈React同构应用：服务端下复用Redux Effects的实践</a>
+          </li>
+        
+          <li>
+            <a href="/2016/12/12/better-way-to-bypass-gfw-with-tinc/">tinc VPN+策略路由：Linux下更好的科学上网方式</a>
+          </li>
+        
+          <li>
+            <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/24/linux-tcp-keepalive/">TCP keepalive的探究 (1) : NAT和保活机制</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">友链</h3>
+  <div class="widget">
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+  </div>
+</div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Chion Tang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">主页</a>
+  
+    <a href="/archives/" class="mobile-nav-link">归档</a>
+  
+    <a href="https://github.com/Chion82" class="mobile-nav-link">GitHub</a>
+  
+    <a href="/about.html" class="mobile-nav-link">About Me</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'chionlab';
+  if (window.location.hostname.indexOf('cn2') === -1) {
+    
+    var disqus_url = 'http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    
+  } else {
+    var disqusElements = document.querySelectorAll('.disqus-comments-section, .disqus-comment-link');
+    for (var i=0; i<disqusElements.length; i++) {
+      disqusElements[i].style.display = 'none';
+    }
+  }
+</script>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:'chionlab'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -247,6 +247,84 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-WeChatMomentStat-update-log" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/31/WeChatMomentStat-update-log/" class="article-date">
+  <time datetime="2016-03-31T02:32:52.000Z" itemprop="datePublished">2016-03-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/安卓/">安卓</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/31/WeChatMomentStat-update-log/">WeChatMomentStat：微信朋友圈导出工具开发记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="GitHub-repo"><a href="#GitHub-repo" class="headerlink" title="GitHub repo"></a>GitHub repo</h2><p><a href="https://github.com/Chion82/WeChatMomentStat-Android" target="_blank" rel="external">https://github.com/Chion82/WeChatMomentStat-Android</a></p>
+<h2 id="关于WeChatMomentStat-Android"><a href="#关于WeChatMomentStat-Android" class="headerlink" title="关于WeChatMomentStat-Android"></a>关于WeChatMomentStat-Android</h2><p>博主之前开发过<a href="https://github.com/Chion82/WeChatMomentExport" target="_blank" rel="external">WeChatMomentExport</a>，借助Xposed实现了导出微信朋友圈数据。该项目在GitHub上获得了不少Star，被应用平台收录之后也有几千的下载量，可见这个需求是存在的。但是，对于WeChatMomentExport，还存在以下问题：  </p>
+<ul>
+<li>作为Xposed模块，必需依赖Xposed才能运行  </li>
+<li>因为数据抓取方式为hook，故用户需要在微信朋友圈页面手动下滑加载</li>
+<li>微信版本每更新一次会导致源码被重新混淆，相应的本项目也需要更新钩子逻辑</li>
+<li>项目的定位是将导出数据作为开发者二次开发所需的数据源，但从酷安网的用户评论看，普通用户不能理解需求</li>
+</ul>
+<p>对于上述问题，博主考虑了以下相应对策：</p>
+<ul>
+<li>从<a href="https://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/">上次的逆向分析结果</a>看，只要想办法调用到这几个类（以下称为parser），就可以解析微信SQLite缓存中的blob数据，这样就不需要借助Xposed的hook了，也能实现一键导出</li>
+<li>考虑到blob格式不会经常变更，因此可在项目中整合parser，这样本项目就无需经常更新</li>
+<li>博主在开发WeChatMomentExport之后随手写的<a href="https://github.com/Chion82/WeChatMomentStat" target="_blank" rel="external">朋友圈数据统计脚本</a>也获得了少量star，因此认为，对于普通用户，生成这样的简易统计数据更有吸引性</li>
+</ul>
+<p>于是，决定整合WeChatMomentExport和统计脚本，做一个功能稍完善的工具。</p>
+<h2 id="几个技术难点"><a href="#几个技术难点" class="headerlink" title="几个技术难点"></a>几个技术难点</h2><p>要做这样的一个独立的APP，而不是一个Xposed模块，需要解决以下问题：</p>
+<ol>
+<li>如何在APP中整合parser？parser的逻辑代码被混淆在微信的dex中，直接分析其算法难度太大。</li>
+<li>如何越权获得微信的SQLite缓存数据？</li>
+<li>如何确保从SQLite缓存中取得的朋友圈数据足够齐全？</li>
+</ol>
+<p>经过查阅各种文档和亲自实验，还是找到了解决方案。</p>
+<h2 id="使用DexClassLoader直接加载微信apk中的parser"><a href="#使用DexClassLoader直接加载微信apk中的parser" class="headerlink" title="使用DexClassLoader直接加载微信apk中的parser"></a>使用DexClassLoader直接加载微信apk中的parser</h2><p>DexClassLoader可直接解析apk中的classes.dex，并从中取得所需类，通过java反射，可以获得所需的parser方法。因此，无需再分析parser算法，而是直接调用就可以了。<br>通过DexClassLoader取得parser方法的关键代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">DexClassLoader cl = <span class="keyword">new</span> DexClassLoader(</div><div class="line">                    apkFile.getAbsolutePath(),  <span class="comment">//apkFile为微信apk文件</span></div><div class="line">                    context.getDir(<span class="string">"outdex"</span>, <span class="number">0</span>).getAbsolutePath(),</div><div class="line">                    <span class="keyword">null</span>,</div><div class="line">                    ClassLoader.getSystemClassLoader());</div><div class="line"></div><div class="line">Class SnsDetailParser = cl.loadClass(<span class="string">"com.tencent.mm.plugin.sns.f.i"</span>);</div><div class="line">Class SnsDetail = cl.loadClass(<span class="string">"com.tencent.mm.protocal.b.atp"</span>);</div><div class="line">Class SnsObject = cl.loadClass(<span class="string">"com.tencent.mm.protocal.b.aqi"</span>);</div><div class="line"><span class="comment">//之后只需使用java反射即可取得所需方法</span></div></pre></td></tr></table></figure></p>
+<p>还需要提供一个微信的apk文件。因此将微信apk放在assets中，首次运行本工具的时候释放到外部存储中。</p>
+<h2 id="通过su调用，拷贝微信的SQLite数据库文件"><a href="#通过su调用，拷贝微信的SQLite数据库文件" class="headerlink" title="通过su调用，拷贝微信的SQLite数据库文件"></a>通过su调用，拷贝微信的SQLite数据库文件</h2><p>需要越权操作的话，获取root权限是很难避免的。通过调用su，可以复制出微信的SQLite数据库文件到本工具可读写的目录下。<br>微信朋友圈的SQLite文件在<code>/data/data/com.tencent.mm/MicroMsg/XXXXXXXXXXXXX/SnsMicroMsg.db</code>。其中，<code>XXXXXXXXXXXXX</code>是微信生成的hash值，每台设备上都可能不一样。由于在Android的shell中没有<code>find</code>或类似的命令，需要复制出这个<code>SnsMicroMsg.db</code>还得费一点功夫。最终，博主采用<code>ls</code>列目录并循环尝试<code>cp</code>的方法强行取得<code>SnsMicroMsg.db</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">copySnsDB</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">    String dataDir = Environment.getDataDirectory().getAbsolutePath();</div><div class="line">    String destDir = Config.EXT_DIR;</div><div class="line">    Process su = Runtime.getRuntime().exec(<span class="string">"su"</span>);</div><div class="line">    DataOutputStream outputStream = <span class="keyword">new</span> DataOutputStream(su.getOutputStream());</div><div class="line">    outputStream.writeBytes(<span class="string">"mount -o remount,rw "</span> + dataDir + <span class="string">"\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"cd "</span> + dataDir + <span class="string">"/data/"</span> + Config.WECHAT_PACKAGE + <span class="string">"/MicroMsg\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"ls | while read line; do cp $&#123;line&#125;/SnsMicroMsg.db "</span> + destDir + <span class="string">"/ ; done \n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"sleep 1\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"chmod 777 "</span> + destDir + <span class="string">"/SnsMicroMsg.db\n"</span>);</div><div class="line">    outputStream.writeBytes(<span class="string">"exit\n"</span>);</div><div class="line">    outputStream.flush();</div><div class="line">    outputStream.close();</div><div class="line">    Thread.sleep(<span class="number">1000</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其中，还需要修改db文件的权限为<code>777</code>，否则工具无权读取数据库。另外，<code>sleep</code>是为了避免稍后偶然性出现的读取数据库失败的情况（可能文件复制不完整或未被去锁？）。</p>
+<h2 id="关于SQLite中数据完整性的问题"><a href="#关于SQLite中数据完整性的问题" class="headerlink" title="关于SQLite中数据完整性的问题"></a>关于SQLite中数据完整性的问题</h2><p>经过测试，微信的SQLite数据库中缓存了几乎所有加载过的朋友圈，理论上应当不会漏数据。</p>
+<h2 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h2><p>本来这个app计划于2月中旬就写出来的，由于博主不是安卓开发者，没有系统地学过安卓开发，当时还不知道有<code>DexClassLoader</code>，写的第一个demo用的依然是Xposed，但是不同于WeChatMomentExport，这里用Xposed仅仅是为了取得那几个parser的类而已。2月底开学后，通过各种渠道了解到了<code>DexClassLoader</code>，才有现在的这个思路。<br>博主现在读大二，这学期开学后课程比较紧张，再者在工作室外包项目的压力下（团队管理问题，还有涉及的利益问题出现冲突的时候，处理起来非常棘手），一时失去了搞开源轮子的动力，甚至连续一个月都没有更新博客，于是才导致了这个项目拖到现在才基本完成。<br>看到了GitHub上的项目star和follower每隔几天就多一个，本站也陆续有网友来评论，每日UV也保持在100以上，就重拾了动力去继续折腾。<br>非常感谢前来光临本站和GitHub profile的各位！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="cix0j2lk50008es2ha7jukn67" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-WeChatMomentStat-update-log">多说</a>
+      
+      
+        <a href="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hack/">hack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/wechat/">wechat</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+
+
+  
     <article id="post-react-server-side-rendering" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/03/03/react-server-side-rendering/" class="article-date">
@@ -298,7 +376,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="ciwp39mmb001o762hshhxrx1c" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" data-id="cix0j2llo001ies2hids3njgf" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/03/03/react-server-side-rendering/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-react-server-side-rendering">多说</a>
       
@@ -365,7 +443,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="ciwp39mli000p762hcgpjlpno" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="cix0j2lks000qes2hyetijxkx" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-hello-old-driver">多说</a>
       
@@ -426,7 +504,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="ciwp39mmv002c762hx9i4t0qr" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" data-id="cix0j2lmg002ees2hcvo4e2oa" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/20/wechat-sns-reflect-classes/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-wechat-sns-reflect-classes">多说</a>
       
@@ -486,7 +564,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="ciwp39mlb000g762hijpj4c2j" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="cix0j2lki000ies2h9ypogv9p" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-generate-thumbnails-with-nginx-image-filter">多说</a>
       
@@ -553,7 +631,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="ciwp39mla000f762hywi6dqa6" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" data-id="cix0j2lkg000hes2hhem8ibq6" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/02/compile-nginx-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-compile-nginx-on-osx">多说</a>
       
@@ -629,7 +707,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="ciwp39mms0027762h0qudhw6b" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="cix0j2llz001wes2h7fq4jdwj" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-pf-on-osx">多说</a>
       
@@ -712,7 +790,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="ciwp39mlg000l762h2hjfoft8" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="cix0j2lkl000nes2hxwdu1osv" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/28/github-pages-with-https/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-github-pages-with-https">多说</a>
       
@@ -805,7 +883,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="ciwp39mmh001w762hlt0g5vll" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="cix0j2lm40021es2hbor3ed6w" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-haproxy-to-optimize-shadowsocks-on-openwrt">多说</a>
       
@@ -887,7 +965,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="ciwp39ml6000b762h9717eo02" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="cix0j2lk30007es2hqltcz2sx" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cc-defence-log">多说</a>
       
@@ -896,100 +974,6 @@
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-  
-    <article id="post-optimize-shadowsocks-on-openwrt" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-date">
-  <time datetime="2016-01-26T17:45:48.000Z" itemprop="datePublished">2016-01-27</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/27/optimize-shadowsocks-on-openwrt/">OpenWRT自动科学上网的问题及优化</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在<a href="/2016/01/23/openwrt-bypass-gfw-solution/">OpenWRT路由器配置ShadowSocks+ChinaDNS</a>虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：</p>
-<ul>
-<li>ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）</li>
-<li>链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在<code>SYN_SENT</code>，最终导致超时</li>
-<li>ChinaDNS长时间运行后可能出现的解析不正常的情况，表现为始终返回国外DNS结果，导致国内网站访问缓慢<br>针对以上问题，作者琢磨出一些优化方法。</li>
-</ul>
-<h2 id="优化UDP稳定性"><a href="#优化UDP稳定性" class="headerlink" title="优化UDP稳定性"></a>优化UDP稳定性</h2><p>由于ISP封杀境外UDP包，那么UDP只可以走境内。那么可以将一台境内服务器作为UDP跳板。TCP包直接发到境外的ss服务器，UDP包则经过境内的跳板服务器中转到ss服务器。跳板服务器可以选择阿里云、腾讯云等，带宽不需要太大，1M都完全够了，主要是用来中转DNS查询包。作者用的是腾讯云的1元／月的学生优惠。</p>
-<p>一、在UDP跳板服务器上进行以下配置以实现中转。</p>
-<ol>
-<li><p>开启内核的ip_forward</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/sysctl.conf</div></pre></td></tr></table></figure>
-<p>将<code>net.ipv4.ip_forward=0</code>修改为<code>net.ipv4.ip_forward=1</code>。如果文件为空，则添加一行<code>net.ipv4.ip_forward=1</code>即可。<br>运行这条命令即时生效：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># sysctl -p</div></pre></td></tr></table></figure>
-</li>
-<li><p>用iptables实现TCP+UDP中转</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># iptables -t nat -A PREROUTING -p tcp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A PREROUTING -p ucp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A POSTROUTING -j MASQUERADE</div><div class="line"># service iptables save #永久保存修改</div></pre></td></tr></table></figure>
-<p>其中，<code>X.X.X.X:X</code>为ss服务器IP和端口，<code>[PORT]</code>为跳板服务器上用于中转的监听端口（为了方便，可以和ss服务器的端口相同）。</p>
-</li>
-</ol>
-<p>二、修改OpenWRT上的配置</p>
-<ol>
-<li><p>ssh连接上路由器，建立一个跳板服务器的ss配置:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># cp /var/etc/shadowsocks.json /root/shadowsocks_udp.json #复制当前的ss配置文件</div><div class="line"># vim /root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
-<p>然后修改<code>/root/shadowsocks_udp.json</code>，将远程服务器IP改为跳板服务器的IP，远程端口改为跳板服务器的监听端口（即刚才的<code>[PORT]</code>）</p>
-</li>
-<li><p>然后需要修改shadowsocks的启动脚本，让ss隧道使用跳板服务器的配置文件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/init.d/shadowsocks</div></pre></td></tr></table></figure>
-<p>在<code>CONFIG_FILE=/var/etc/shadowsocks.json</code>下增加一行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UDP_CONFIG_FILE=/root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
-<p>找到：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
-<p>将其修改为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $UDP_CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
-<p>保存后重启shadowsocks</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># /etc/init.d/shadowsocks restart</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="优化TCP稳定性"><a href="#优化TCP稳定性" class="headerlink" title="优化TCP稳定性"></a>优化TCP稳定性</h2><ol>
-<li>最好的方法是选择链路质量好的服务器作为ss服务器，比如香港的vps，将不容易出现多并发TCP连接无法建立的情况。</li>
-<li>如果不能选择更换ss服务器，可在ss服务器上同时监听多个端口，同时在路由器上使用haproxy进行负载均衡，把ss服务器的多个端口加入到upstream列表中，由于haproxy超时自动更换upstream的特性，可大大降低连接失败的概率。详细操作方法作者将在下篇博文中介绍。</li>
-</ol>
-<h2 id="ChinaDNS偶然解析不正常的解决"><a href="#ChinaDNS偶然解析不正常的解决" class="headerlink" title="ChinaDNS偶然解析不正常的解决"></a>ChinaDNS偶然解析不正常的解决</h2><p>尚不明确为何ChinaDNS长时间运行后偶然地可能会始终返回国外DNS结果（重启ChinaDNS即恢复），作者之前尝试<a href="https://github.com/Chion82/ChinaDNS" target="_blank" rel="external">修改了一下ChinaDNS</a>，将判断某个IP是否为国内IP的逻辑修改为借助ipset来判断，但是作者没有测试过其稳定性。<br>本文介绍的解决方法很无脑，即定时重启ChinaDNS。使用cron，在每天的零时重启一次ChinaDNS。经作者测试，这招确实有效。<br>在路由器上运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># crontab -e</div></pre></td></tr></table></figure></p>
-<p>添加一行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 0 * * * /etc/init.d/chinadns restart</div></pre></td></tr></table></figure></p>
-<p>保存并重启路由器生效。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="ciwp39mm1001d762hgsieqz1b" class="article-share-link">分享</a>
-      
-        <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt">多说</a>
-      
-      
-        <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
 
     </footer>
   </div>
@@ -1034,7 +1018,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 13.33px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 13.33px;">crawler</a> <a href="/tags/front-end/" style="font-size: 16.67px;">front-end</a> <a href="/tags/hack/" style="font-size: 18.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 20px;">maintenance</a> <a href="/tags/network/" style="font-size: 11.67px;">network</a> <a href="/tags/nginx/" style="font-size: 13.33px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 16.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 13.33px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 18.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 20px;">maintenance</a> <a href="/tags/network/" style="font-size: 11.67px;">network</a> <a href="/tags/nginx/" style="font-size: 13.33px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 16.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -1057,6 +1041,10 @@
       <ul>
         
           <li>
+            <a href="/2016/12/21/universal-react-app-reuse-effects-on-server-side/">再谈React同构应用：服务端下复用Redux Effects的实践</a>
+          </li>
+        
+          <li>
             <a href="/2016/12/12/better-way-to-bypass-gfw-with-tinc/">tinc VPN+策略路由：Linux下更好的科学上网方式</a>
           </li>
         
@@ -1070,10 +1058,6 @@
         
           <li>
             <a href="/2016/09/24/linux-tcp-keepalive/">TCP keepalive的探究 (1) : NAT和保活机制</a>
-          </li>
-        
-          <li>
-            <a href="/2016/08/28/mixins-considered-harmful-2/">mixins是有害的（Mixins Considered Harmful）［下篇］</a>
           </li>
         
       </ul>
