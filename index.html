@@ -323,7 +323,8 @@
 <p>我们只能够直接<code>run()</code>不带死循环流的saga来获得初始数据，像这样：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> task = sagaMiddleware.run(getTodos);</div><div class="line">task.done.then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> html = ReactDOMServer.renderToString(<span class="comment">/* ... */</span>);</div><div class="line">  <span class="keyword">const</span> state = store.getState();</div><div class="line">  renderFullPage(html, state);</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
 <p>这跟我们刚才提到的官方建议的方法没有任何区别。在服务端我们需要规避那些包含死循环流的saga，如<code>watchTodosGet</code>。</p>
 <p>这将导致客户端和服务端出现大量的 <strong>异构</strong> ：在客户端，我们直接执行<code>rootSaga</code>，通过<code>dispatch()</code>特定的action来获取数据并同步到state；而在服务端，我们需要找到并执行可以获取到数据并且不带死循环的saga，如<code>getTodos</code>。</p>
-<h3 id="使用redux-wait-for-action来搭救"><a href="#使用redux-wait-for-action来搭救" class="headerlink" title="使用redux-wait-for-action来搭救"></a>使用redux-wait-for-action来搭救</h3><p>为了将 <strong>同构</strong> 进行到底，博主写了一个Redux middleware来解决这个问题： <a href="https://github.com/Chion82/redux-wait-for-action" target="_blank" rel="external">redux-wait-for-action</a> 。这个代码不到80行的middleware主要实现了：在dispatch一个action时，同时指定另外一个我们期望收到的action，<code>store.dispatch()</code>返回一个promise，当这个我们期望的action到达时，该promise将resolve。<br>这样，在服务端我们可以这么写：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">store.dispatch(&#123;</div><div class="line">  <span class="attr">type</span>: <span class="string">'todos/get'</span>,</div><div class="line">  [ WAIT_FOR_ACTION ]: <span class="string">'todos/get/success'</span>,</div><div class="line">&#125;).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> html = ReactDOMServer.renderToString(<span class="comment">/* ... */</span>);</div><div class="line">  <span class="keyword">const</span> state = store.getState();</div><div class="line">  renderFullPage(html, state);</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<h3 id="使用redux-wait-for-action来搭救"><a href="#使用redux-wait-for-action来搭救" class="headerlink" title="使用redux-wait-for-action来搭救"></a>使用redux-wait-for-action来搭救</h3><p>为了将 <strong>同构</strong> 进行到底，博主写了一个Redux middleware来解决这个问题： <a href="https://github.com/Chion82/redux-wait-for-action" target="_blank" rel="external">redux-wait-for-action</a> 。这个代码不到80行的middleware主要实现了：在dispatch一个action时，同时指定另外一个我们期望收到的action，<code>store.dispatch()</code>返回一个promise，当这个我们期望的action到达时，该promise将resolve。<br>这样，我们可以在服务端复用<code>rootSaga</code>而不需要关心这个<code>rootSaga</code>何时结束。同时，在服务端创建的<code>store</code>，其生命周期将在http响应完成后结束，我们甚至不需要手动<code>cancel()</code>这个看似不会自发结束的<code>rootSaga</code>——交给GC来杀死它们就行了。<br>我们不妨写一个在客户端和服务端通用的<code>configureStore()</code>方法来创建我们的<code>store</code>，并且执行我们的<code>rootSaga</code>：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> configureStore = <span class="function">(<span class="params">initialState</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> sagaMiddleware = createSagaMiddleware();</div><div class="line">  <span class="keyword">let</span> enhancer = compose(</div><div class="line">    applyMiddleware(sagaMiddleware),</div><div class="line">    applyMiddleware(createReduxWaitForMiddleware()),</div><div class="line">  );</div><div class="line">  <span class="keyword">const</span> store = createStore(rootReducer, initialState, enhancer);</div><div class="line">  sagaMiddleware.run(rootSaga);</div><div class="line">  <span class="keyword">return</span> store;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>在服务端渲染逻辑中，我们只需要直接<code>dispatch()</code>这个action即可——这和在客户端获取数据的方式完全相同：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> store = configureStore(&#123;&#125;);</div><div class="line">store.dispatch(&#123;</div><div class="line">  <span class="attr">type</span>: <span class="string">'todos/get'</span>,</div><div class="line">  [ WAIT_FOR_ACTION ]: <span class="string">'todos/get/success'</span>,</div><div class="line">&#125;).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> html = ReactDOMServer.renderToString(<span class="comment">/* ... */</span>);</div><div class="line">  <span class="keyword">const</span> state = store.getState();</div><div class="line">  renderFullPage(html, state);</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
 <p>在上面的示例代码中，我们在<code>dispatch()</code>一个action时，在这个action中增加了一个属性<code>WAIT_FOR_ACTION</code>（<code>WAIT_FOR_ACTION</code>是一个从<code>redux-wait-for-action</code>导入的ES6 Symbol对象，因此你不需担心这会污染你的action），该属性指定了另一个我们所期望的action <code>todos/get/success</code>。这个<code>store.dispatch()</code>调用返回一个promise，当action <code>todos/get/success</code>到达时，这个promise将resolve，因此我们可以在它的<code>.then()</code>中填写我们的渲染逻辑——因为这时我们所需的数据已经准备好。</p>
 <p>由于redux-wait-for-action是基于等待action的，它将适用于近乎全部的effects方案（当然，对于redux-thunk和redux-promise则没有这个必要），当以后有更为流行的effects方案时，我们仍然可以使用这个middleware。<br>关于更具体的使用方法，大家可以参考 <a href="https://github.com/Chion82/redux-wait-for-action" target="_blank" rel="external">README for redux-wait-for-action</a> 。</p>
 <h2 id="更优雅地组织同构应用"><a href="#更优雅地组织同构应用" class="headerlink" title="更优雅地组织同构应用"></a>更优雅地组织同构应用</h2><p>以上示例都是基于在服务端进行路由判断并决策执行哪个effects的，当我们的数据模型变得多时，服务端代码将变得复杂。比如：该dispatch <code>todos/get</code>还是<code>profile/get</code>？我们需要对<code>req.url</code>进行一一判断。</p>
@@ -339,7 +340,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cix0j2lm1001zes2hndn1scho" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cix0qaphj001mfu2hikmxy5pn" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-universal-react-app-reuse-effects-on-server-side">多说</a>
       
@@ -564,7 +565,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/" data-id="cix0j2lka000ces2hrs6fj9zi" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/" data-id="cix0qapga0008fu2hmtlh4kuf" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-better-way-to-bypass-gfw-with-tinc">多说</a>
       
@@ -629,7 +630,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cix0j2lkc000ees2h3nwt7dsj" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cix0qapgk000jfu2hvo48ceyh" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-chionlab-updates-dec-2016">多说</a>
       
@@ -711,7 +712,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cix0j2llv001tes2hnz1hn490" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cix0qapho001tfu2hmjzhedg3" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tcp-keepalive-on-chrome">多说</a>
       
@@ -833,7 +834,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cix0j2lkw000res2h4cqypz1k" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cix0qaph10011fu2hzjpwfejy" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-linux-tcp-keepalive">多说</a>
       
@@ -1036,7 +1037,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cix0j2ll50011es2hsyi5exze" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cix0qapgx000xfu2hsrctwifb" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful-2">多说</a>
       
@@ -1143,7 +1144,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cix0j2lkz000ues2hp467xsdu" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cix0qapgv000vfu2hvux8wsss" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful">多说</a>
       
@@ -1223,7 +1224,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cix0j2llt001qes2hsp2jac8y" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cix0qapgz000zfu2he35gkjqv" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-multiwan-configuration">多说</a>
       
@@ -1324,7 +1325,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cix0j2lkk000mes2hw2pybtqi" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cix0qapgg000efu2h2qfnh5jc" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cron-job-locale-issues">多说</a>
       
@@ -1388,7 +1389,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="cix0j2ljx0003es2h02fcn8n5" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" data-id="cix0qapg70006fu2hy1dbj7bp" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/06/163-music-unlock-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-163-music-unlock-update-log">多说</a>
       
