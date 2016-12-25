@@ -321,7 +321,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cix0qaph60019fu2h0ur9wpua" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cix4insyz0016p72hp21p7m8y" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt">多说</a>
       
@@ -368,11 +368,14 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>在路由器上运行ShadowSocks科学上网是最为优雅的方案。本文将介绍其安装和配置步骤。<br>首先为智能路由器刷上OpenWRT，博主推荐<a href="http://downloads.openwrt.org.cn/PandoraBox/" target="_blank" rel="external">Pandorabox</a>修改版。本文将实现：连接上路由器的客户端当访问国内主机时，直接连接，而访问国外主机时，自动代理。</p>
+<blockquote>
+<p>2016.12.25更新：<br>openwrt shadowsocks作者已不在SourceForge上更新，大家可以直接到Github Release下载预编译包（感谢Blessing Studio博主提醒）：<br><a href="https://github.com/shadowsocks/openwrt-shadowsocks/releases" target="_blank" rel="external">https://github.com/shadowsocks/openwrt-shadowsocks/releases</a><br>另外可以参考博主最新的 <a href="https://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/">tinc VPN策略路由</a> ，使用更优雅的方式科学上网</p>
+</blockquote>
 <h2 id="安装ShadowSocks"><a href="#安装ShadowSocks" class="headerlink" title="安装ShadowSocks"></a>安装ShadowSocks</h2><ol>
 <li><p>因为本文讨论的是SS+ChinaDNS的翻墙方案，对于部分已集成SS+domain list的固件版本，需要先删除已安装的SS及相关工具。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#ssh连接上路由器后运行</div><div class="line">$ opkg list_installed | grep shadowsocks #查询已安装的ss和相关工具</div><div class="line"># opkg remove shadowsocks-* #删除之</div></pre></td></tr></table></figure>
 </li>
-<li><p>下载安装shadowsocks-libev-spec<br><a href="http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/</a><br>经作者测试，最新版在极贰最新OpenWRT固件上会出现iptables规则失效的情况，建议使用<code>shadowsocks-libev-spec_2.3.0-1_XXXX</code>版本。<br>以MT7620系列为例，在路由器上运行：</p>
+<li><p>下载安装shadowsocks-libev-spec<br><a href="https://github.com/shadowsocks/openwrt-shadowsocks/releases" target="_blank" rel="external">https://github.com/shadowsocks/openwrt-shadowsocks/releases</a><br>经作者测试，最新版在极贰最新OpenWRT固件上会出现iptables规则失效的情况，建议使用<code>shadowsocks-libev-spec_2.3.0-1_XXXX</code>版本。<br>以MT7620系列为例，在路由器上运行：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># opkg update</div><div class="line"># cd /tmp</div><div class="line"># wget http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/2.3.0-3ff06a6/ramips/shadowsocks-libev-spec_2.3.0-1_ramips_24kec.ipk  #如果不是ramips平台，请根据路由器ARCH选择对应ipk</div><div class="line"># opkg install shadowsocks-libev-spec_2.3.0-1_ramips_24kec.ipk</div></pre></td></tr></table></figure>
 </li>
 <li><p>下载安装luci-app-shadowsocks-spec<br>luci-app提供ss的图形化配置界面。<br><a href="http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/" target="_blank" rel="external">http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/</a><br>如果<code>shadowsocks-libev-spec</code>使用的版本是本文推荐的<code>2.3.0</code>，请下载<code>luci-app-shadowsocks-spec_1.3.2-1_all.ipk</code>。路由器上运行：</p>
@@ -410,7 +413,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cix0qapgs000tfu2hgml2kyip" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cix4insyv000yp72hm2dd7y0x" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-bypass-gfw-solution">多说</a>
       
@@ -466,7 +469,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cix0qaphy0025fu2hqh2k1tl0" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cix4inszl0020p72hlggsrc8l" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tldr-man-page">多说</a>
       
@@ -535,7 +538,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cix0qaphz0028fu2hqt86cs24" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cix4inszt0027p72hb832n9j9" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-xposed-to-crawl-wechat-moments">多说</a>
       
@@ -597,7 +600,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cix0qaphb001cfu2hweqzzafg" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cix4insza001jp72hoabhmft5" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-python2.7-on-centos6">多说</a>
       
@@ -660,7 +663,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="cix0qaphh001ifu2h67suq254" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" data-id="cix4insyq000tp72hsyt5jug9" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/21/netease-music-app-reversed-proxy/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-netease-music-app-reversed-proxy">多说</a>
       
@@ -744,7 +747,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="cix0qaphl001pfu2hlzbhxitn" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" data-id="cix4inszf001pp72hgq33cg2u" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/thunderhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-thunderhack-development-log">多说</a>
       
@@ -821,7 +824,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cix0qaph20014fu2hhg1h8wrd" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cix4insyy0013p72h9ojo1ib3" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-pixivhack-development-log">多说</a>
       
@@ -922,7 +925,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cix0qapg20003fu2h3r0gdmxa" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cix4insy00003p72hlr4kwt09" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Using-Gulp-to-Simplify-Front-end-Development-Workflow">多说</a>
       
@@ -994,7 +997,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cix0qapfy0002fu2h6pxjl7lk" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cix4insxu0002p72hc28u5qpb" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Project-Conclusion-of-m-21dianping-com">多说</a>
       
@@ -1103,6 +1106,7 @@
     <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
     <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
     <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a>
+    <a href="https://blessing.studio" target="_blank">Blessing Studio</a>
   </div>
 </div>
 
