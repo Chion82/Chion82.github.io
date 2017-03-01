@@ -299,8 +299,7 @@
 <h3 id="dva提供的同构脚手架"><a href="#dva提供的同构脚手架" class="headerlink" title="dva提供的同构脚手架"></a>dva提供的同构脚手架</h3><p><a href="https://github.com/dvajs/dva" target="_blank" rel="external">dva</a> ——蚂蚁金服推出的一个轻量级框架，基于redux、redux-saga和react-router，让你能够使用类似 <a href="http://elm-lang.org" target="_blank" rel="external">elm-lang</a> 的声明性风格来组织你的代码。</p>
 <p>dva官方提供的同构脚手架是 <a href="https://github.com/sorrycc/dva-boilerplate-isomorphic" target="_blank" rel="external">sorrycc/dva-boilerplate-isomorphic</a> 。让我们来看看它是怎么解决saga在服务端下的渲染的。<br><em>server/ssrMiddleware.js</em><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> &#123; fetchList &#125; <span class="keyword">from</span> <span class="string">'../common/services/user'</span>;</div><div class="line"><span class="comment">// ...</span></div><div class="line">fetchList()</div><div class="line">  .then(<span class="function">(<span class="params">&#123; err, data &#125;</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">const</span> initialState = &#123; <span class="attr">user</span>: data &#125;;</div><div class="line">    <span class="keyword">const</span> app = createApp(&#123;</div><div class="line">      <span class="attr">history</span>: createMemoryHistory(),</div><div class="line">      initialState,</div><div class="line">    &#125;, <span class="comment">/* isServer */</span><span class="literal">true</span>);</div><div class="line">    <span class="keyword">const</span> html = renderToString(app.start()(&#123; renderProps &#125;));</div><div class="line">    res.end(renderFullPage(html, initialState));</div><div class="line">  &#125;);</div></pre></td></tr></table></figure></p>
 <p><em>common/services/user.js</em><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> request <span class="keyword">from</span> <span class="string">'../utils/request'</span>;</div><div class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">fetchList</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> request(<span class="string">'/api/users'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>看到这里，相信大家都明白了。是的，dva在这里的服务端逻辑是“直捅Service”的。嗯，这不愧是一个很好的解决方法！</p>
-<p>Are you kidding me? 这不是回到我们一开始就摒弃的方法吗。是的，dva的官方脚手架并没有解决我们的问题。<br>（顺便一提，dva因为过于强调 <strong>declarative</strong> 和 <strong>lightweight</strong>，而一定程度上束缚了redux-saga的灵活性，博主甚至觉得，dva没有必要采用saga的effects，thunk足矣。此处不再展开。）</p>
+<p>看到这里，相信大家都明白了。dva在这里的服务端逻辑是“直捅Service”的。dva的官方脚手架并没有解决我们的问题。</p>
 <h3 id="官方建议的runSaga"><a href="#官方建议的runSaga" class="headerlink" title="官方建议的runSaga()"></a>官方建议的runSaga()</h3><p>事实上，对于redux-saga的服务端渲染问题，早就有关于这个的讨论，参考 <a href="https://github.com/yelouafi/redux-saga/issues/13" target="_blank" rel="external">issue #13</a> 。而redux-saga已添加了 <a href="http://yelouafi.github.io/redux-saga/docs/api/index.html#runsagaiterator-options" target="_blank" rel="external">runSaga()</a> 方法来实现在服务端复用saga effects。</p>
 <p><code>runSaga()</code>接收一个<code>saga</code>对象和必须的store输入输出方法（<code>subscribe()</code>和<code>dispatch()</code>等），允许在store上下文之外执行一个saga任务，并返回一个<code>Task</code>实例对象。返回的<code>Task</code>对象中的<code>done</code>属性是一个promise对象的引用，该promise在传入的saga任务执行完成后resolve。</p>
 <p>假设我们有这样的一个saga effect：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span>* <span class="title">getTodos</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> payload = <span class="keyword">yield</span> call(APIService.getTodos);</div><div class="line">  <span class="keyword">yield</span> put(&#123; <span class="attr">type</span>: <span class="string">'todos/get/success'</span>, payload &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
@@ -340,7 +339,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cizfjonwb001ql32hu0miicxl" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cizr2pjhu002rwy2h3fr0k0xd" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-universal-react-app-reuse-effects-on-server-side">多说</a>
       
@@ -565,7 +564,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/" data-id="cizfjonuz0008l32h2oz9eged" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/" data-id="cizr2pjfg0007wy2h1oyd0yc1" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-better-way-to-bypass-gfw-with-tinc">多说</a>
       
@@ -630,7 +629,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cizfjonv5000cl32hvww27f0y" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cizr2pjfn000cwy2hgqioa4zq" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-chionlab-updates-dec-2016">多说</a>
       
@@ -712,7 +711,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cizfjonw7001il32h1x176tss" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cizr2pjhx002uwy2h1cmsomjw" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tcp-keepalive-on-chrome">多说</a>
       
@@ -834,7 +833,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cizfjonvj000tl32htabwutzw" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cizr2pjh40021wy2hyqnla1tz" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-linux-tcp-keepalive">多说</a>
       
@@ -1037,7 +1036,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cizfjonvo000zl32hga4kdrj3" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cizr2pjgz001twy2h4x8np252" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful-2">多说</a>
       
@@ -1144,7 +1143,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cizfjonvt0015l32hhiee5gu2" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cizr2pjh1001xwy2ho42z1c3f" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful">多说</a>
       
@@ -1224,7 +1223,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cizfjonvm000wl32huzc3sqcn" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cizr2pjha0025wy2hy2oblsdy" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-multiwan-configuration">多说</a>
       
@@ -1325,7 +1324,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cizfjonva000il32hh5m182zx" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cizr2pjgr001kwy2hk7x4xlq5" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cron-job-locale-issues">多说</a>
       
@@ -1403,7 +1402,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="cizfjonuw0006l32hk3xyoiuf" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" data-id="cizr2pjf60003wy2hbfv8y9tj" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/03/31/WeChatMomentStat-update-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-WeChatMomentStat-update-log">多说</a>
       
