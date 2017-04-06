@@ -247,6 +247,100 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-optimize-shadowsocks-on-openwrt" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-date">
+  <time datetime="2016-01-26T17:45:48.000Z" itemprop="datePublished">2016-01-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/27/optimize-shadowsocks-on-openwrt/">OpenWRT自动科学上网的问题及优化</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在<a href="/2016/01/23/openwrt-bypass-gfw-solution/">OpenWRT路由器配置ShadowSocks+ChinaDNS</a>虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：</p>
+<ul>
+<li>ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）</li>
+<li>链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在<code>SYN_SENT</code>，最终导致超时</li>
+<li>ChinaDNS长时间运行后可能出现的解析不正常的情况，表现为始终返回国外DNS结果，导致国内网站访问缓慢<br>针对以上问题，作者琢磨出一些优化方法。</li>
+</ul>
+<h2 id="优化UDP稳定性"><a href="#优化UDP稳定性" class="headerlink" title="优化UDP稳定性"></a>优化UDP稳定性</h2><p>由于ISP封杀境外UDP包，那么UDP只可以走境内。那么可以将一台境内服务器作为UDP跳板。TCP包直接发到境外的ss服务器，UDP包则经过境内的跳板服务器中转到ss服务器。跳板服务器可以选择阿里云、腾讯云等，带宽不需要太大，1M都完全够了，主要是用来中转DNS查询包。作者用的是腾讯云的1元／月的学生优惠。</p>
+<p>一、在UDP跳板服务器上进行以下配置以实现中转。</p>
+<ol>
+<li><p>开启内核的ip_forward</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/sysctl.conf</div></pre></td></tr></table></figure>
+<p>将<code>net.ipv4.ip_forward=0</code>修改为<code>net.ipv4.ip_forward=1</code>。如果文件为空，则添加一行<code>net.ipv4.ip_forward=1</code>即可。<br>运行这条命令即时生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># sysctl -p</div></pre></td></tr></table></figure>
+</li>
+<li><p>用iptables实现TCP+UDP中转</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># iptables -t nat -A PREROUTING -p tcp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A PREROUTING -p ucp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A POSTROUTING -j MASQUERADE</div><div class="line"># service iptables save #永久保存修改</div></pre></td></tr></table></figure>
+<p>其中，<code>X.X.X.X:X</code>为ss服务器IP和端口，<code>[PORT]</code>为跳板服务器上用于中转的监听端口（为了方便，可以和ss服务器的端口相同）。</p>
+</li>
+</ol>
+<p>二、修改OpenWRT上的配置</p>
+<ol>
+<li><p>ssh连接上路由器，建立一个跳板服务器的ss配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># cp /var/etc/shadowsocks.json /root/shadowsocks_udp.json #复制当前的ss配置文件</div><div class="line"># vim /root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
+<p>然后修改<code>/root/shadowsocks_udp.json</code>，将远程服务器IP改为跳板服务器的IP，远程端口改为跳板服务器的监听端口（即刚才的<code>[PORT]</code>）</p>
+</li>
+<li><p>然后需要修改shadowsocks的启动脚本，让ss隧道使用跳板服务器的配置文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/init.d/shadowsocks</div></pre></td></tr></table></figure>
+<p>在<code>CONFIG_FILE=/var/etc/shadowsocks.json</code>下增加一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UDP_CONFIG_FILE=/root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
+<p>找到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
+<p>将其修改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $UDP_CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
+<p>保存后重启shadowsocks</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># /etc/init.d/shadowsocks restart</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="优化TCP稳定性"><a href="#优化TCP稳定性" class="headerlink" title="优化TCP稳定性"></a>优化TCP稳定性</h2><ol>
+<li>最好的方法是选择链路质量好的服务器作为ss服务器，比如香港的vps，将不容易出现多并发TCP连接无法建立的情况。</li>
+<li>如果不能选择更换ss服务器，可在ss服务器上同时监听多个端口，同时在路由器上使用haproxy进行负载均衡，把ss服务器的多个端口加入到upstream列表中，由于haproxy超时自动更换upstream的特性，可大大降低连接失败的概率。详细操作方法作者将在下篇博文中介绍。</li>
+</ol>
+<h2 id="ChinaDNS偶然解析不正常的解决"><a href="#ChinaDNS偶然解析不正常的解决" class="headerlink" title="ChinaDNS偶然解析不正常的解决"></a>ChinaDNS偶然解析不正常的解决</h2><p>尚不明确为何ChinaDNS长时间运行后偶然地可能会始终返回国外DNS结果（重启ChinaDNS即恢复），作者之前尝试<a href="https://github.com/Chion82/ChinaDNS" target="_blank" rel="external">修改了一下ChinaDNS</a>，将判断某个IP是否为国内IP的逻辑修改为借助ipset来判断，但是作者没有测试过其稳定性。<br>本文介绍的解决方法很无脑，即定时重启ChinaDNS。使用cron，在每天的零时重启一次ChinaDNS。经作者测试，这招确实有效。<br>在路由器上运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># crontab -e</div></pre></td></tr></table></figure></p>
+<p>添加一行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 0 * * * /etc/init.d/chinadns restart</div></pre></td></tr></table></figure></p>
+<p>保存并重启路由器生效。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cj15x9ghz000uoy2hid4jf38e" class="article-share-link">分享</a>
+      
+        <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt">多说</a>
+      
+      
+        <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+
+
+  
     <article id="post-openwrt-bypass-gfw-solution" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/01/23/openwrt-bypass-gfw-solution/" class="article-date">
@@ -319,7 +413,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cizyintsk000spn2hdrow66lg" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cj15x9gic0015oy2he9sf01vv" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-bypass-gfw-solution">多说</a>
       
@@ -375,7 +469,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cizyintt6001ipn2h69dfd0u7" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cj15x9gim001hoy2hhvzexupu" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tldr-man-page">多说</a>
       
@@ -444,7 +538,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cizyinttd001vpn2hw63jf6oe" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cj15x9giu001uoy2hugezhr42" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-xposed-to-crawl-wechat-moments">多说</a>
       
@@ -506,7 +600,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cizyintsz001cpn2hsp7w8nxx" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cj15x9gin001ioy2hpi1x8q2z" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-python2.7-on-centos6">多说</a>
       
@@ -583,7 +677,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cizyintsu0016pn2h42s64uum" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cj15x9gi80012oy2hbjqcr9j0" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-pixivhack-development-log">多说</a>
       
@@ -684,7 +778,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cizyintrx0006pn2hwouuoy8k" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cj15x9gh70006oy2ht5gx7lte" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Using-Gulp-to-Simplify-Front-end-Development-Workflow">多说</a>
       
@@ -756,7 +850,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cizyintrp0002pn2hoo7uw5e1" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cj15x9ghn000hoy2h3ynpm8av" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Project-Conclusion-of-m-21dianping-com">多说</a>
       
@@ -819,7 +913,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -830,6 +924,10 @@
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：解决ISP封锁UDP 重新实现kcptun的一次尝试</a>
+          </li>
         
           <li>
             <a href="/2016/12/21/universal-react-app-reuse-effects-on-server-side/">再谈React同构应用：服务端下复用Redux Effects的实践</a>
@@ -847,10 +945,6 @@
             <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
-          <li>
-            <a href="/2016/09/24/linux-tcp-keepalive/">TCP keepalive的探究 (1) : NAT和保活机制</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -860,12 +954,13 @@
     <div class="widget-wrap">
   <h3 class="widget-title">友链</h3>
   <div class="widget">
-    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br/>
-    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br/>
-    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br/>
-    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br/>
+    <a href="https://www.starduster.me" target="_blank">星尘独奏曲</a><br />
+    <a href="http://www.zhouchao.me" target="_blank">chao's blog</a><br />
+    <a href="http://ilazycat.com" target="_blank">小黑猫菊苣的猫窝</a><br />
+    <a href="https://loli.be" target="_blank">Mashiro's Blog</a><br />
     <a href="https://bismarck.moe" target="_blank">雨宫千鹤的博客</a><br />
-    <a href="https://blessing.studio" target="_blank">Blessing Studio</a>
+    <a href="https://blessing.studio" target="_blank">Blessing Studio</a><br />
+    <a href="https://wwww.lvmoo.com" target="_blank">凯の秘密基地</a>
   </div>
 </div>
 

@@ -3,45 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>OpenWRT下双WAN配置 | ChionLab  </title>
+  <title>归档: 2017/4 | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="晚上好。博主前段时间因沉迷CGSS和PS4游戏，长时间未更新博客，实在不好。现在正值暑假，博主在公司实习，今晚趁未加班，写一篇早就想写的openwrt路由器干货。
-本文讲述如何在openwrt家用智能路由器上配置双WAN带宽叠加。
-前提条件
-两条或更多的宽带，或者是支持单线多拨的宽带。
-已经安装MWAN3及luci图形化配置界面（Pandorabox固件默认已安装）。
-
-VLAN配置
-什么是VLA">
-<meta property="og:type" content="article">
-<meta property="og:title" content="OpenWRT下双WAN配置">
-<meta property="og:url" content="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/index.html">
+  <meta name="description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ChionLab">
+<meta property="og:url" content="http://blog.chionlab.moe/archives/2017/04/index.html">
 <meta property="og:site_name" content="ChionLab">
-<meta property="og:description" content="晚上好。博主前段时间因沉迷CGSS和PS4游戏，长时间未更新博客，实在不好。现在正值暑假，博主在公司实习，今晚趁未加班，写一篇早就想写的openwrt路由器干货。
-本文讲述如何在openwrt家用智能路由器上配置双WAN带宽叠加。
-前提条件
-两条或更多的宽带，或者是支持单线多拨的宽带。
-已经安装MWAN3及luci图形化配置界面（Pandorabox固件默认已安装）。
-
-VLAN配置
-什么是VLA">
-<meta property="og:image" content="http://blog.chionlab.moe/images/openwrt-switch-1.png">
-<meta property="og:image" content="http://blog.chionlab.moe/images/openwrt-switch-2.png">
-<meta property="og:image" content="http://blog.chionlab.moe/images/openwrt-interface-1.png">
-<meta property="og:image" content="http://blog.chionlab.moe/images/openwrt-interface-2.png">
-<meta property="og:image" content="http://blog.chionlab.moe/images/openwrt-mwan-1.png">
-<meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
+<meta property="og:description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="OpenWRT下双WAN配置">
-<meta name="twitter:description" content="晚上好。博主前段时间因沉迷CGSS和PS4游戏，长时间未更新博客，实在不好。现在正值暑假，博主在公司实习，今晚趁未加班，写一篇早就想写的openwrt路由器干货。
-本文讲述如何在openwrt家用智能路由器上配置双WAN带宽叠加。
-前提条件
-两条或更多的宽带，或者是支持单线多拨的宽带。
-已经安装MWAN3及luci图形化配置界面（Pandorabox固件默认已安装）。
-
-VLAN配置
-什么是VLA">
-<meta name="twitter:image" content="http://blog.chionlab.moe/images/openwrt-switch-1.png">
+<meta name="twitter:title" content="ChionLab">
+<meta name="twitter:description" content="Chion82(Chion Tang)的技术博客，分享御宅开发者的点点滴滴">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -273,116 +245,39 @@ VLAN配置
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-openwrt-multiwan-configuration" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/07/13/openwrt-multiwan-configuration/" class="article-date">
-  <time datetime="2016-07-13T14:24:37.000Z" itemprop="datePublished">2016-07-13</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+        <section id="main">
   
-    <h1 class="article-title" itemprop="name">
-      OpenWRT下双WAN配置
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2017" class="archive-year">2017</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2017/04/06/kcptun-with-fake-tcp/" class="archive-article-date">
+  <time datetime="2017-04-06T04:43:56.000Z" itemprop="datePublished">Apr 6</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：解决ISP封锁UDP 重新实现kcptun的一次尝试</a>
     </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>晚上好。博主前段时间因沉迷CGSS和PS4游戏，长时间未更新博客，实在不好。现在正值暑假，博主在公司实习，今晚趁未加班，写一篇早就想写的openwrt路由器干货。</p>
-<p>本文讲述如何在openwrt家用智能路由器上配置双WAN带宽叠加。</p>
-<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><ul>
-<li>两条或更多的宽带，或者是支持单线多拨的宽带。</li>
-<li>已经安装MWAN3及luci图形化配置界面（Pandorabox固件默认已安装）。</li>
-</ul>
-<h2 id="VLAN配置"><a href="#VLAN配置" class="headerlink" title="VLAN配置"></a>VLAN配置</h2><blockquote>
-<p>什么是VLAN？VLAN是在同一物理局域网内用于划分若干个不同广播域（子网）的技术，子网内的主机可以互相通信，不同子网的主机之间不可互相通信。<br>什么是VLAN ID？用于标识每个VLAN子网的ID。<br>为什么要划分VLAN？在OpenWRT下，接口是根据VLAN划分的，每个逻辑接口（interface）可对应一个VLAN ID作为物理接口，这将在后面的步骤中体现出来。</p>
-</blockquote>
-<p>在openwrt的web配置页面上，进入 网络-&gt;交换机 (Network-&gt;Switch)。<br>默认情况下，已经分配的VLAN应该有1个或者2个。<br>通过插拔网线的方法，将配置页上的端口和路由器的物理RJ45接口对应上来。<br>在小米路由器mini上，默认分配如下两个vlan：<br><img src="/images/openwrt-switch-1.png" alt=""><br>其中，VLAN1用作LAN，连接了除端口4以外的所有物理端口；VLAN2是默认的WAN，只连接端口4。（此处端口4即为小米路由器mini上的蓝色WAN RJ45物理端口）<br>注意，端口状态“不关联”(untagged)，即该端口作为本VLAN成员，进行二层交换；若选择“关联”(tagged)，端口之间通信无二层交换，而是冲突广播（hub方式）。</p>
-<p>选择一个端口作为第二个WAN口的端口，在现有的VLAN配置中将其设置为“关”，然后新建一个VLAN，将该端口设置为“不关联”，其他端口设置为“关”，CPU设置为“关联”。注意，小米路由器mini有一个特殊的端口7，按照原有的两个VLAN，将其设置为“关联”即可。<br>如图，博主选择端口1来作为第二个WAN端口，在VLAN1中将其设置为“关”，并在新建的VLAN3中设置其为“不关联”。<br><img src="/images/openwrt-switch-2.png" alt=""><br>保存即可。</p>
-<h2 id="新建WAN接口"><a href="#新建WAN接口" class="headerlink" title="新建WAN接口"></a>新建WAN接口</h2><p>进入 网络-&gt;接口，将当前<code>WAN</code>接口更名为<code>WAN1</code>，并添加一个新接口，命名为<code>WAN2</code>。<br>在<code>WAN2</code>的配置中，设置第二条宽带的拨号方式，在“物理设置”中选择刚才添加的VLAN3（<code>eth0.3</code>）。<br><img src="/images/openwrt-interface-1.png" alt=""></p>
-<p><strong>重要</strong><br>进入<code>WAN1</code>的编辑页，在“高级设置”中，勾选“使用默认网关”，填写“使用网关跃点”为40；<br>进入<code>WAN2</code>的编辑页，在“高级设置”中，勾选“使用默认网关”，填写“使用网关跃点”为41；</p>
-<p>若有更多的WAN需要添加，方法类似，需要注意每个WAN接口的网关跃点必须不一样。</p>
-<p>设置完成后，在接口总览中应该能看到两个WAN都成功获取到IP，如果是PPPoE方式，应该都已经拨号成功。<br><img src="/images/openwrt-interface-2.png" alt=""></p>
-<h2 id="MWAN3配置"><a href="#MWAN3配置" class="headerlink" title="MWAN3配置"></a>MWAN3配置</h2><p>接下来需要通过MWAN3实现多WAN负载均衡。</p>
-<p>进入 网络-&gt;负载均衡。</p>
-<ul>
-<li><p>接口配置<br>进入 配置-&gt;接口。<br>删除所有已有的默认接口。<br>添加两个接口，分别为<code>WAN1</code>，<code>WAN2</code>。<br>在接口详情的“跟踪的IP地址”中，可添加几个国内的主机IP作为检测接口是否上线的ping地址。当ping该IP多次超时后，即该接口视作下线。<br>博主的固件版本下，这个跟踪功能并不好使，经常误判断接口下线，因此我清空了跟踪的IP地址，并视作接口始终上线。<br><img src="/images/openwrt-mwan-1.png" alt=""></p>
-</li>
-<li><p>成员配置<br>进入 配置-&gt;成员，删除所有已有的默认成员，添加两个成员，分别命名为<code>wan_1</code>, <code>wan_2</code>。<br>成员<code>wan_1</code>设置接口为<code>WAN1</code>，跃点数1，接口比重1；<br>成员<code>wan_2</code>设置接口为<code>WAN2</code>，跃点数1，接口比重1；</p>
-</li>
-<li><p>策略配置<br>进入 配置-&gt;策略，添加一个策略<code>balanced</code>（或者编辑已有的<code>balanced</code>策略），使用的成员为<code>wan_1</code>, <code>wan_2</code>。</p>
-</li>
-<li><p>规则配置<br>进入 配置-&gt;规则，保留已有的<code>https</code>规则。如果没有<code>default_rule</code>规则，则添加一条<code>default_rule</code>规则，目标地址设置为<code>0.0.0.0/0</code>，协议选择<code>all</code>，使用的策略为<code>balanced</code>，其他留空。</p>
-</li>
-<li><p>保存并应用全部设置，此时应该能够实现双线负载均衡了。</p>
-</li>
-</ul>
-<p>至此，openwrt路由器上的双WAN配置实现带宽叠加已经完成了，可以测速看看了。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cj15x9gi4000zoy2h3wwgeuc8" class="article-share-link">分享</a>
-      
-        <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-multiwan-configuration">多说</a>
-      
-      
-        <a href="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
-
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2016/07/23/mixins-considered-harmful/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          mixins是有害的（Mixins Considered Harmful）［上篇］
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2016/04/29/cron-job-locale-issues/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">cron任务的locale问题</div>
-    </a>
-  
-</nav>
-
-  
 </article>
-
-
-<section id="comments" class="disqus-comments-section">
-  <div id="disqus_thread">
-    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-  </div>
-</section>
-
-
-
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-openwrt-multiwan-configuration" data-title="OpenWRT下双WAN配置" data-url="http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/"></div>
-  <!-- 多说评论框 end -->
-</section>
+  
+  
+    </div></section>
+  
 
 </section>
         
@@ -503,16 +398,6 @@ VLAN配置
 <script>
   var disqus_shortname = 'chionlab';
   if (window.location.hostname.indexOf('cn2') === -1) {
-    
-    var disqus_url = 'http://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/';
-    
-    (function(){
-      var dsq = document.createElement('script');
-      dsq.type = 'text/javascript';
-      dsq.async = true;
-      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
     
     (function(){
       var dsq = document.createElement('script');
