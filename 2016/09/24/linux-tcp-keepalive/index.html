@@ -8,19 +8,19 @@
   <meta name="description" content="关于应用层的TCP连接保活（Keepalive）机制，相信大家都听说过。对于长连接TCP保活，典型的方法是发送应用层的心跳包，但这将增加开发人员的工作量：需要专门为心跳包制定协议。而在Linux的socket通信API中，自带了TCP_KEEPALIVE的相关参数设定，通过这种方式实现TCP长连接保活，无需修改原程序的逻辑，开发人员不需要关心心跳包的实现。本系列文章将从路由器NAT原理、keepa">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TCP keepalive的探究 (1) : NAT和保活机制">
-<meta property="og:url" content="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/index.html">
+<meta property="og:url" content="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="关于应用层的TCP连接保活（Keepalive）机制，相信大家都听说过。对于长连接TCP保活，典型的方法是发送应用层的心跳包，但这将增加开发人员的工作量：需要专门为心跳包制定协议。而在Linux的socket通信API中，自带了TCP_KEEPALIVE的相关参数设定，通过这种方式实现TCP长连接保活，无需修改原程序的逻辑，开发人员不需要关心心跳包的实现。本系列文章将从路由器NAT原理、keepa">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/1.png">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/2.png">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/4.png">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/6.png">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/5.png">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/1.png">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/2.png">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/4.png">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/6.png">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/5.png">
 <meta property="og:updated_time" content="2016-09-26T15:29:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP keepalive的探究 (1) : NAT和保活机制">
 <meta name="twitter:description" content="关于应用层的TCP连接保活（Keepalive）机制，相信大家都听说过。对于长连接TCP保活，典型的方法是发送应用层的心跳包，但这将增加开发人员的工作量：需要专门为心跳包制定协议。而在Linux的socket通信API中，自带了TCP_KEEPALIVE的相关参数设定，通过这种方式实现TCP长连接保活，无需修改原程序的逻辑，开发人员不需要关心心跳包的实现。本系列文章将从路由器NAT原理、keepa">
-<meta name="twitter:image" content="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/1.png">
+<meta name="twitter:image" content="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/1.png">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -49,6 +49,13 @@
   <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
   <script src="/scripts/jquery-2.2.0.min.js"></script>
   <script src="/scripts/jquery-confirm.min.js"></script>
+  
+    <script>
+      var yunModuleEnv = true;
+    </script>
+    <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+
   
 
 </head>
@@ -193,7 +200,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -356,12 +363,18 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cj1uppe6w0011wb2hjumgyksa" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cj1ut7bzx000r002hayvjsfk7" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-linux-tcp-keepalive">多说</a>
+        <a href="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
+          <span
+            lang="join-count"
+            data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/"
+          ></span>
+          <span> 跟帖</span>
+        </a>
       
       
-        <a href="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/network/">network</a></li></ul>
@@ -401,10 +414,18 @@
 
 
 
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-linux-tcp-keepalive" data-title="TCP keepalive的探究 (1) : NAT和保活机制" data-url="http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/"></div>
-  <!-- 多说评论框 end -->
+<section id="comments" class="gentie-comments-section">
+  <div id="cloud_tie_wrapper" class="cloud-tie-wrapper"></div>
+  <script>
+    var cloudTieConfig = {
+      url: "https://blog.chionlab.moe" + document.location.pathname,
+      sourceId: "",
+      productKey: "7495a9b7dca84e159d4b624ae53ec960",
+      target: "cloud_tie_wrapper"
+    };
+    var yunManualLoad = true;
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+  </script>
 </section>
 
 </section>
@@ -527,7 +548,7 @@
   var disqus_shortname = 'chionlab';
   if (window.location.hostname.indexOf('cn2') === -1) {
     
-    var disqus_url = 'http://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/';
+    var disqus_url = 'https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/';
     
     (function(){
       var dsq = document.createElement('script');
@@ -555,19 +576,10 @@
 
 
 
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:'chionlab'};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0]
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script>
-<!-- 多说公共JS代码 end -->
+  <script>
+    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
+  </script>
 
 
 

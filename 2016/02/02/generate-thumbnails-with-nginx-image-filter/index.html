@@ -9,7 +9,7 @@
 编译安装nginx大部分预编译的nginx默认不带ngx_http_image_filter_module模块，这时需要手动编译nginx。在执行con">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用nginx image filter动态生成缩略图">
-<meta property="og:url" content="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/index.html">
+<meta property="og:url" content="https://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="nginx提供ngx_http_image_filter_module模块，可用来动态生成图片的缩略图。当然，最好的办法是在后端进行图片压缩。但是当不方便修改后端代码时，在牺牲些许性能的代价下，使用image filter生成缩略图还是很方便的。
 编译安装nginx大部分预编译的nginx默认不带ngx_http_image_filter_module模块，这时需要手动编译nginx。在执行con">
@@ -46,6 +46,13 @@
   <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
   <script src="/scripts/jquery-2.2.0.min.js"></script>
   <script src="/scripts/jquery-confirm.min.js"></script>
+  
+    <script>
+      var yunModuleEnv = true;
+    </script>
+    <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+
   
 
 </head>
@@ -190,7 +197,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -291,12 +298,18 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="cj1uppe6h000iwb2hiu21wnyr" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" data-id="cj1ut7bzj000j002htdgyrsq2" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-generate-thumbnails-with-nginx-image-filter">多说</a>
+        <a href="https://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
+          <span
+            lang="join-count"
+            data-url="https://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/"
+          ></span>
+          <span> 跟帖</span>
+        </a>
       
       
-        <a href="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backend/">backend</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li></ul>
@@ -336,10 +349,18 @@
 
 
 
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-generate-thumbnails-with-nginx-image-filter" data-title="使用nginx image filter动态生成缩略图" data-url="http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/"></div>
-  <!-- 多说评论框 end -->
+<section id="comments" class="gentie-comments-section">
+  <div id="cloud_tie_wrapper" class="cloud-tie-wrapper"></div>
+  <script>
+    var cloudTieConfig = {
+      url: "https://blog.chionlab.moe" + document.location.pathname,
+      sourceId: "",
+      productKey: "7495a9b7dca84e159d4b624ae53ec960",
+      target: "cloud_tie_wrapper"
+    };
+    var yunManualLoad = true;
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+  </script>
 </section>
 
 </section>
@@ -462,7 +483,7 @@
   var disqus_shortname = 'chionlab';
   if (window.location.hostname.indexOf('cn2') === -1) {
     
-    var disqus_url = 'http://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/';
+    var disqus_url = 'https://blog.chionlab.moe/2016/02/02/generate-thumbnails-with-nginx-image-filter/';
     
     (function(){
       var dsq = document.createElement('script');
@@ -490,19 +511,10 @@
 
 
 
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:'chionlab'};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0]
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script>
-<!-- 多说公共JS代码 end -->
+  <script>
+    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
+  </script>
 
 
 

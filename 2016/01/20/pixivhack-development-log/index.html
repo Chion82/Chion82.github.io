@@ -9,7 +9,7 @@
 这是啥跟生活在2.5次元的老司机混久了便跟着入了ACG坑（看到本站首页LL大法时您应该意识到了，博主是个死宅(:з」∠) ）。P站找图是每一个ACG爱好者的必备技能，然而像我这种刚入坑不久的，收藏的画师才几个，再者没有钱买Premium，不能按人气选图，每次找图都要手动一页一页翻(╯‵">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PixivHack：记P站爬图脚本开发">
-<meta property="og:url" content="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/index.html">
+<meta property="og:url" content="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="由于7月学校考试，预习功课有点忙，最近又忙着做外包，一直都忘了维护博客，所以现在补上上个月本来应该写的技术博文。
 这是啥跟生活在2.5次元的老司机混久了便跟着入了ACG坑（看到本站首页LL大法时您应该意识到了，博主是个死宅(:з」∠) ）。P站找图是每一个ACG爱好者的必备技能，然而像我这种刚入坑不久的，收藏的画师才几个，再者没有钱买Premium，不能按人气选图，每次找图都要手动一页一页翻(╯‵">
@@ -46,6 +46,13 @@
   <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
   <script src="/scripts/jquery-2.2.0.min.js"></script>
   <script src="/scripts/jquery-confirm.min.js"></script>
+  
+    <script>
+      var yunModuleEnv = true;
+    </script>
+    <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+
   
 
 </head>
@@ -190,7 +197,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -308,12 +315,18 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cj1uppe73001awb2hoicga9su" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cj1ut7c0c0018002h9na6ibaw" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-pixivhack-development-log">多说</a>
+        <a href="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
+          <span
+            lang="join-count"
+            data-url="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/"
+          ></span>
+          <span> 跟帖</span>
+        </a>
       
       
-        <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crawler/">crawler</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
@@ -353,10 +366,18 @@
 
 
 
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-pixivhack-development-log" data-title="PixivHack：记P站爬图脚本开发" data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/"></div>
-  <!-- 多说评论框 end -->
+<section id="comments" class="gentie-comments-section">
+  <div id="cloud_tie_wrapper" class="cloud-tie-wrapper"></div>
+  <script>
+    var cloudTieConfig = {
+      url: "https://blog.chionlab.moe" + document.location.pathname,
+      sourceId: "",
+      productKey: "7495a9b7dca84e159d4b624ae53ec960",
+      target: "cloud_tie_wrapper"
+    };
+    var yunManualLoad = true;
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+  </script>
 </section>
 
 </section>
@@ -479,7 +500,7 @@
   var disqus_shortname = 'chionlab';
   if (window.location.hostname.indexOf('cn2') === -1) {
     
-    var disqus_url = 'http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/';
+    var disqus_url = 'https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/';
     
     (function(){
       var dsq = document.createElement('script');
@@ -507,19 +528,10 @@
 
 
 
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:'chionlab'};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0]
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script>
-<!-- 多说公共JS代码 end -->
+  <script>
+    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
+  </script>
 
 
 

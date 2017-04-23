@@ -10,7 +10,7 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
 开发笔记为了兼容多个站点，我的爬虫脚本并没有针对某个特定的网站进行抓取逻辑定制，而是采取递归遍历网站全部页面+正则匹配磁力链hash的方">
 <meta property="og:type" content="article">
 <meta property="og:title" content="你好，老司机：种子爬虫企划">
-<meta property="og:url" content="http://blog.chionlab.moe/2016/02/28/hello-old-driver/index.html">
+<meta property="og:url" content="https://blog.chionlab.moe/2016/02/28/hello-old-driver/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="在老司机的安利之下，学会了从琉璃神社找各种神奇的资源。于是萌生了造这个轮子的欲望。国内这种福利站不知还能维持多久，所以将资源大量扒下来存档是有点卵用的。
 GitHub repohttps://github.com/Chion82/hello-old-driver
@@ -49,6 +49,13 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
   <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
   <script src="/scripts/jquery-2.2.0.min.js"></script>
   <script src="/scripts/jquery-confirm.min.js"></script>
+  
+    <script>
+      var yunModuleEnv = true;
+    </script>
+    <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+
   
 
 </head>
@@ -193,7 +200,7 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -301,12 +308,18 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="cj1uppe6m000nwb2hv047ip5t" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/02/28/hello-old-driver/" data-id="cj1ut7bzn000n002ht03zorak" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-hello-old-driver">多说</a>
+        <a href="https://blog.chionlab.moe/2016/02/28/hello-old-driver/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
+          <span
+            lang="join-count"
+            data-url="https://blog.chionlab.moe/2016/02/28/hello-old-driver/"
+          ></span>
+          <span> 跟帖</span>
+        </a>
       
       
-        <a href="http://blog.chionlab.moe/2016/02/28/hello-old-driver/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2016/02/28/hello-old-driver/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crawler/">crawler</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
@@ -346,10 +359,18 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
 
 
 
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-hello-old-driver" data-title="你好，老司机：种子爬虫企划" data-url="http://blog.chionlab.moe/2016/02/28/hello-old-driver/"></div>
-  <!-- 多说评论框 end -->
+<section id="comments" class="gentie-comments-section">
+  <div id="cloud_tie_wrapper" class="cloud-tie-wrapper"></div>
+  <script>
+    var cloudTieConfig = {
+      url: "https://blog.chionlab.moe" + document.location.pathname,
+      sourceId: "",
+      productKey: "7495a9b7dca84e159d4b624ae53ec960",
+      target: "cloud_tie_wrapper"
+    };
+    var yunManualLoad = true;
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+  </script>
 </section>
 
 </section>
@@ -472,7 +493,7 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
   var disqus_shortname = 'chionlab';
   if (window.location.hostname.indexOf('cn2') === -1) {
     
-    var disqus_url = 'http://blog.chionlab.moe/2016/02/28/hello-old-driver/';
+    var disqus_url = 'https://blog.chionlab.moe/2016/02/28/hello-old-driver/';
     
     (function(){
       var dsq = document.createElement('script');
@@ -500,19 +521,10 @@ GitHub repohttps://github.com/Chion82/hello-old-driver
 
 
 
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:'chionlab'};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0]
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script>
-<!-- 多说公共JS代码 end -->
+  <script>
+    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
+  </script>
 
 
 

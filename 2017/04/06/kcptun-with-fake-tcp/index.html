@@ -10,7 +10,7 @@
 UDP断流问题我们知道kcptun的底层协议是UDP，而很多ISP对大流量UDP会做QoS，这包括了大量issue反映的“断流”问题：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试">
-<meta property="og:url" content="http://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/index.html">
+<meta property="og:url" content="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="关于KCP ARQ协议和kcptun请见：https://github.com/skywind3000/kcphttps://github.com/xtaci/kcptun本文程序源码：https://github.com/Chion82/kcptun-raw
 
@@ -51,6 +51,13 @@ UDP断流问题我们知道kcptun的底层协议是UDP，而很多ISP对大流�
   <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
   <script src="/scripts/jquery-2.2.0.min.js"></script>
   <script src="/scripts/jquery-confirm.min.js"></script>
+  
+    <script>
+      var yunModuleEnv = true;
+    </script>
+    <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+
   
 
 </head>
@@ -195,7 +202,7 @@ UDP断流问题我们知道kcptun的底层协议是UDP，而很多ISP对大流�
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -413,12 +420,18 @@ UDP断流问题我们知道kcptun的底层协议是UDP，而很多ISP对大流�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/" data-id="cj1uppe6o000rwb2hzdrhmc8a" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/" data-id="cj1ut7bzv000q002h42pmzvi7" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-kcptun-with-fake-tcp">多说</a>
+        <a href="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
+          <span
+            lang="join-count"
+            data-url="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/"
+          ></span>
+          <span> 跟帖</span>
+        </a>
       
       
-        <a href="http://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/network/">network</a></li></ul>
@@ -449,10 +462,18 @@ UDP断流问题我们知道kcptun的底层协议是UDP，而很多ISP对大流�
 
 
 
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-kcptun-with-fake-tcp" data-title="kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试" data-url="http://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/"></div>
-  <!-- 多说评论框 end -->
+<section id="comments" class="gentie-comments-section">
+  <div id="cloud_tie_wrapper" class="cloud-tie-wrapper"></div>
+  <script>
+    var cloudTieConfig = {
+      url: "https://blog.chionlab.moe" + document.location.pathname,
+      sourceId: "",
+      productKey: "7495a9b7dca84e159d4b624ae53ec960",
+      target: "cloud_tie_wrapper"
+    };
+    var yunManualLoad = true;
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+  </script>
 </section>
 
 </section>
@@ -575,7 +596,7 @@ UDP断流问题我们知道kcptun的底层协议是UDP，而很多ISP对大流�
   var disqus_shortname = 'chionlab';
   if (window.location.hostname.indexOf('cn2') === -1) {
     
-    var disqus_url = 'http://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/';
+    var disqus_url = 'https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/';
     
     (function(){
       var dsq = document.createElement('script');
@@ -603,19 +624,10 @@ UDP断流问题我们知道kcptun的底层协议是UDP，而很多ISP对大流�
 
 
 
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:'chionlab'};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0]
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script>
-<!-- 多说公共JS代码 end -->
+  <script>
+    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
+  </script>
 
 
 

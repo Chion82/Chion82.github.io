@@ -9,17 +9,17 @@
 事件回顾24日下午3点，博主正在去拜访亲戚家的路上，这时公司的菜鸟开发者突然从QQ上发消息过来，问我服务器是不是被黑了。我认为这个可能性不大。这个项目由我亲手带领团队开发，后端使用的是Python+Flask+PostgreSQL，前端使用nodejs+e">
 <meta property="og:type" content="article">
 <meta property="og:title" content="运维纪录：遭遇CC攻击，防御与查水表">
-<meta property="og:url" content="http://blog.chionlab.moe/2016/01/27/cc-defence-log/index.html">
+<meta property="og:url" content="https://blog.chionlab.moe/2016/01/27/cc-defence-log/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="博主之前完成了一个外包项目，最近两个月在负责这个项目的运维。这是一个web，主营不良资产催收O2O。由于可能存在竞争对手，有人试图攻击服务器。
 事件回顾24日下午3点，博主正在去拜访亲戚家的路上，这时公司的菜鸟开发者突然从QQ上发消息过来，问我服务器是不是被黑了。我认为这个可能性不大。这个项目由我亲手带领团队开发，后端使用的是Python+Flask+PostgreSQL，前端使用nodejs+e">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/01/27/cc-defence-log/cc_access_log_1.jpg">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/01/27/cc-defence-log/cc_access_log_1.jpg">
 <meta property="og:updated_time" content="2016-09-26T15:29:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="运维纪录：遭遇CC攻击，防御与查水表">
 <meta name="twitter:description" content="博主之前完成了一个外包项目，最近两个月在负责这个项目的运维。这是一个web，主营不良资产催收O2O。由于可能存在竞争对手，有人试图攻击服务器。
 事件回顾24日下午3点，博主正在去拜访亲戚家的路上，这时公司的菜鸟开发者突然从QQ上发消息过来，问我服务器是不是被黑了。我认为这个可能性不大。这个项目由我亲手带领团队开发，后端使用的是Python+Flask+PostgreSQL，前端使用nodejs+e">
-<meta name="twitter:image" content="http://blog.chionlab.moe/2016/01/27/cc-defence-log/cc_access_log_1.jpg">
+<meta name="twitter:image" content="https://blog.chionlab.moe/2016/01/27/cc-defence-log/cc_access_log_1.jpg">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -48,6 +48,13 @@
   <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
   <script src="/scripts/jquery-2.2.0.min.js"></script>
   <script src="/scripts/jquery-confirm.min.js"></script>
+  
+    <script>
+      var yunModuleEnv = true;
+    </script>
+    <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+
   
 
 </head>
@@ -192,7 +199,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -315,12 +322,18 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="cj1uppe650008wb2h1k0552se" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="cj1ut7bzc000c002hxtfw0m0p" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/01/27/cc-defence-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-cc-defence-log">多说</a>
+        <a href="https://blog.chionlab.moe/2016/01/27/cc-defence-log/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
+          <span
+            lang="join-count"
+            data-url="https://blog.chionlab.moe/2016/01/27/cc-defence-log/"
+          ></span>
+          <span> 跟帖</span>
+        </a>
       
       
-        <a href="http://blog.chionlab.moe/2016/01/27/cc-defence-log/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2016/01/27/cc-defence-log/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
@@ -360,10 +373,18 @@
 
 
 
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-cc-defence-log" data-title="运维纪录：遭遇CC攻击，防御与查水表" data-url="http://blog.chionlab.moe/2016/01/27/cc-defence-log/"></div>
-  <!-- 多说评论框 end -->
+<section id="comments" class="gentie-comments-section">
+  <div id="cloud_tie_wrapper" class="cloud-tie-wrapper"></div>
+  <script>
+    var cloudTieConfig = {
+      url: "https://blog.chionlab.moe" + document.location.pathname,
+      sourceId: "",
+      productKey: "7495a9b7dca84e159d4b624ae53ec960",
+      target: "cloud_tie_wrapper"
+    };
+    var yunManualLoad = true;
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+  </script>
 </section>
 
 </section>
@@ -486,7 +507,7 @@
   var disqus_shortname = 'chionlab';
   if (window.location.hostname.indexOf('cn2') === -1) {
     
-    var disqus_url = 'http://blog.chionlab.moe/2016/01/27/cc-defence-log/';
+    var disqus_url = 'https://blog.chionlab.moe/2016/01/27/cc-defence-log/';
     
     (function(){
       var dsq = document.createElement('script');
@@ -514,19 +535,10 @@
 
 
 
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:'chionlab'};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0]
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script>
-<!-- 多说公共JS代码 end -->
+  <script>
+    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
+  </script>
 
 
 

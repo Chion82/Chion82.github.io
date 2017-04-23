@@ -9,19 +9,19 @@
 HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TCP keepalive的探究 (2) : 浏览器的Keepalive机制">
-<meta property="og:url" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/index.html">
+<meta property="og:url" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。
 HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/http1.1.png">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/10.png">
-<meta property="og:image" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/9.png">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/http1.1.png">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/10.png">
+<meta property="og:image" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/9.png">
 <meta property="og:updated_time" content="2016-11-14T14:01:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP keepalive的探究 (2) : 浏览器的Keepalive机制">
 <meta name="twitter:description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。
 HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
-<meta name="twitter:image" content="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/http1.1.png">
+<meta name="twitter:image" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/http1.1.png">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -50,6 +50,13 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
   <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
   <script src="/scripts/jquery-2.2.0.min.js"></script>
   <script src="/scripts/jquery-confirm.min.js"></script>
+  
+    <script>
+      var yunModuleEnv = true;
+    </script>
+    <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+
   
 
 </head>
@@ -194,7 +201,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -317,12 +324,18 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cj1uppe7h001uwb2h2dgzar5h" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cj1ut7c0m001j002hqfrjt8mv" class="article-share-link">分享</a>
       
-        <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tcp-keepalive-on-chrome">多说</a>
+        <a href="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
+          <span
+            lang="join-count"
+            data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/"
+          ></span>
+          <span> 跟帖</span>
+        </a>
       
       
-        <a href="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/network/">network</a></li></ul>
@@ -362,10 +375,18 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
 
 
 
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-tcp-keepalive-on-chrome" data-title="TCP keepalive的探究 (2) : 浏览器的Keepalive机制" data-url="http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/"></div>
-  <!-- 多说评论框 end -->
+<section id="comments" class="gentie-comments-section">
+  <div id="cloud_tie_wrapper" class="cloud-tie-wrapper"></div>
+  <script>
+    var cloudTieConfig = {
+      url: "https://blog.chionlab.moe" + document.location.pathname,
+      sourceId: "",
+      productKey: "7495a9b7dca84e159d4b624ae53ec960",
+      target: "cloud_tie_wrapper"
+    };
+    var yunManualLoad = true;
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+  </script>
 </section>
 
 </section>
@@ -488,7 +509,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
   var disqus_shortname = 'chionlab';
   if (window.location.hostname.indexOf('cn2') === -1) {
     
-    var disqus_url = 'http://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/';
+    var disqus_url = 'https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/';
     
     (function(){
       var dsq = document.createElement('script');
@@ -516,19 +537,10 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
 
 
 
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:'chionlab'};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0]
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script>
-<!-- 多说公共JS代码 end -->
+  <script>
+    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
+    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
+  </script>
 
 
 
