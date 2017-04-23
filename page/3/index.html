@@ -129,51 +129,53 @@
             }
           </style>
           <div>
-            
-              <a class="main-nav-link switch-theme-btn"
-                title="uzume" href="#" style="float: left;margin-right: -10px;"
-                data-css-url="/css/style.css"
-                data-theme-name="uzume">
-                <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
-                  <img style="width: 100%; height: 100%;" src="/images/theme_uzume.png" />
-                </div>
-              </a>
-            
-              <a class="main-nav-link switch-theme-btn"
-                title="miria" href="#" style="float: left;margin-right: -10px;"
-                data-css-url="/stylesheets/theme_miria.css"
-                data-theme-name="miria">
-                <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
-                  <img style="width: 100%; height: 100%;" src="/images/theme_miria.png" />
-                </div>
-              </a>
-            
+            <!--
+              
+                <a class="main-nav-link switch-theme-btn"
+                  title="uzume" href="#" style="float: left;margin-right: -10px;"
+                  data-css-url="/css/style.css"
+                  data-theme-name="uzume">
+                  <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
+                    <img style="width: 100%; height: 100%;" src="/images/theme_uzume.png" />
+                  </div>
+                </a>
+              
+                <a class="main-nav-link switch-theme-btn"
+                  title="miria" href="#" style="float: left;margin-right: -10px;"
+                  data-css-url="/stylesheets/theme_miria.css"
+                  data-theme-name="miria">
+                  <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
+                    <img style="width: 100%; height: 100%;" src="/images/theme_miria.png" />
+                  </div>
+                </a>
+              
+            -->
           </div>
           <script>
-            (function(){
-
-              function switchThemeCSS(themeName, cssUrl) {
-                document.querySelector('head').querySelectorAll('link[rel=stylesheet]')[1].href = cssUrl;
-              }
-
-              var switchThemeBtns = document.querySelectorAll('.switch-theme-btn');
-              for (var i=0; i<switchThemeBtns.length; i++) {
-                var switchThemeBtn = switchThemeBtns[i];
-                (function(switchThemeBtn) {
-                  switchThemeBtn.addEventListener('click', function(){
-                    switchThemeCSS(switchThemeBtn.dataset.themeName, switchThemeBtn.dataset.cssUrl);
-                    JsCookies.set('theme', switchThemeBtn.dataset.themeName, 30);
-                  });
-                })(switchThemeBtn);
-              }
-
-              var initTheme = JsCookies.get('theme');
-              if (initTheme) {
-                var cssUrl = document.querySelector(".switch-theme-btn[data-theme-name='" + initTheme + "']").dataset.cssUrl;
-                switchThemeCSS(initTheme, cssUrl);
-              }
-
-            })();
+            // (function(){
+            //
+            //   function switchThemeCSS(themeName, cssUrl) {
+            //     document.querySelector('head').querySelectorAll('link[rel=stylesheet]')[1].href = cssUrl;
+            //   }
+            //
+            //   var switchThemeBtns = document.querySelectorAll('.switch-theme-btn');
+            //   for (var i=0; i<switchThemeBtns.length; i++) {
+            //     var switchThemeBtn = switchThemeBtns[i];
+            //     (function(switchThemeBtn) {
+            //       switchThemeBtn.addEventListener('click', function(){
+            //         switchThemeCSS(switchThemeBtn.dataset.themeName, switchThemeBtn.dataset.cssUrl);
+            //         JsCookies.set('theme', switchThemeBtn.dataset.themeName, 30);
+            //       });
+            //     })(switchThemeBtn);
+            //   }
+            //
+            //   var initTheme = JsCookies.get('theme');
+            //   if (initTheme) {
+            //     var cssUrl = document.querySelector(".switch-theme-btn[data-theme-name='" + initTheme + "']").dataset.cssUrl;
+            //     switchThemeCSS(initTheme, cssUrl);
+            //   }
+            //
+            // })();
           </script>
         
       </nav>
@@ -321,7 +323,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cj1u8hkz80014s52hm9gvzavu" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cj1uppe700018wb2hp74qz9p8" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-optimize-shadowsocks-on-openwrt">多说</a>
       
@@ -413,7 +415,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cj1u8hkza0016s52he93q8gu8" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cj1uppe6t000wwb2hqa5v0zwx" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-openwrt-bypass-gfw-solution">多说</a>
       
@@ -469,7 +471,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cj1u8hkzq001ps52hwkpcnr8f" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cj1uppe7b001mwb2h3nm82c0c" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/23/tldr-man-page/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-tldr-man-page">多说</a>
       
@@ -538,7 +540,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cj1u8hkzy0020s52h8n9kcq56" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cj1uppe7u002cwb2hm757z6dy" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-use-xposed-to-crawl-wechat-moments">多说</a>
       
@@ -600,7 +602,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cj1u8hkzi001cs52hou2oace9" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cj1uppe77001hwb2hlfj1k2mm" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-python2.7-on-centos6">多说</a>
       
@@ -677,7 +679,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cj1u8hkze0019s52hqumjuceb" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cj1uppe73001awb2hoicga9su" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-pixivhack-development-log">多说</a>
       
@@ -778,7 +780,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cj1u8hkxz0003s52hw3d0kytz" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cj1uppe5t0002wb2hzl6qp4sg" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Using-Gulp-to-Simplify-Front-end-Development-Workflow">多说</a>
       
@@ -850,7 +852,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cj1u8hkxv0002s52hz1ovr41x" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cj1uppe620006wb2hdruueu36" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-Project-Conclusion-of-m-21dianping-com">多说</a>
       

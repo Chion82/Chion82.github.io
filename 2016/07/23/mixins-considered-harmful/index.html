@@ -136,51 +136,53 @@
             }
           </style>
           <div>
-            
-              <a class="main-nav-link switch-theme-btn"
-                title="uzume" href="#" style="float: left;margin-right: -10px;"
-                data-css-url="/css/style.css"
-                data-theme-name="uzume">
-                <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
-                  <img style="width: 100%; height: 100%;" src="/images/theme_uzume.png" />
-                </div>
-              </a>
-            
-              <a class="main-nav-link switch-theme-btn"
-                title="miria" href="#" style="float: left;margin-right: -10px;"
-                data-css-url="/stylesheets/theme_miria.css"
-                data-theme-name="miria">
-                <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
-                  <img style="width: 100%; height: 100%;" src="/images/theme_miria.png" />
-                </div>
-              </a>
-            
+            <!--
+              
+                <a class="main-nav-link switch-theme-btn"
+                  title="uzume" href="#" style="float: left;margin-right: -10px;"
+                  data-css-url="/css/style.css"
+                  data-theme-name="uzume">
+                  <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
+                    <img style="width: 100%; height: 100%;" src="/images/theme_uzume.png" />
+                  </div>
+                </a>
+              
+                <a class="main-nav-link switch-theme-btn"
+                  title="miria" href="#" style="float: left;margin-right: -10px;"
+                  data-css-url="/stylesheets/theme_miria.css"
+                  data-theme-name="miria">
+                  <div style="width:38px; height: 38px; overflow:hidden; border-radius:19px;">
+                    <img style="width: 100%; height: 100%;" src="/images/theme_miria.png" />
+                  </div>
+                </a>
+              
+            -->
           </div>
           <script>
-            (function(){
-
-              function switchThemeCSS(themeName, cssUrl) {
-                document.querySelector('head').querySelectorAll('link[rel=stylesheet]')[1].href = cssUrl;
-              }
-
-              var switchThemeBtns = document.querySelectorAll('.switch-theme-btn');
-              for (var i=0; i<switchThemeBtns.length; i++) {
-                var switchThemeBtn = switchThemeBtns[i];
-                (function(switchThemeBtn) {
-                  switchThemeBtn.addEventListener('click', function(){
-                    switchThemeCSS(switchThemeBtn.dataset.themeName, switchThemeBtn.dataset.cssUrl);
-                    JsCookies.set('theme', switchThemeBtn.dataset.themeName, 30);
-                  });
-                })(switchThemeBtn);
-              }
-
-              var initTheme = JsCookies.get('theme');
-              if (initTheme) {
-                var cssUrl = document.querySelector(".switch-theme-btn[data-theme-name='" + initTheme + "']").dataset.cssUrl;
-                switchThemeCSS(initTheme, cssUrl);
-              }
-
-            })();
+            // (function(){
+            //
+            //   function switchThemeCSS(themeName, cssUrl) {
+            //     document.querySelector('head').querySelectorAll('link[rel=stylesheet]')[1].href = cssUrl;
+            //   }
+            //
+            //   var switchThemeBtns = document.querySelectorAll('.switch-theme-btn');
+            //   for (var i=0; i<switchThemeBtns.length; i++) {
+            //     var switchThemeBtn = switchThemeBtns[i];
+            //     (function(switchThemeBtn) {
+            //       switchThemeBtn.addEventListener('click', function(){
+            //         switchThemeCSS(switchThemeBtn.dataset.themeName, switchThemeBtn.dataset.cssUrl);
+            //         JsCookies.set('theme', switchThemeBtn.dataset.themeName, 30);
+            //       });
+            //     })(switchThemeBtn);
+            //   }
+            //
+            //   var initTheme = JsCookies.get('theme');
+            //   if (initTheme) {
+            //     var cssUrl = document.querySelector(".switch-theme-btn[data-theme-name='" + initTheme + "']").dataset.cssUrl;
+            //     switchThemeCSS(initTheme, cssUrl);
+            //   }
+            //
+            // })();
           </script>
         
       </nav>
@@ -339,7 +341,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cj1u8hkz50011s52h3q1lysec" class="article-share-link">分享</a>
+      <a data-url="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cj1uppe6y0014wb2hdm8r733b" class="article-share-link">分享</a>
       
         <a href="http://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" class="article-duoshuo-link ds-thread-count" data-thread-key="post-mixins-considered-harmful">多说</a>
       
