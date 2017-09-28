@@ -122,8 +122,8 @@
         
           <a class="main-nav-link" href="/about.html">About Me</a>
         
-        <a class="main-nav-link nav-link-switch-cdn" href="//cn2.chionlab.moe" data-domain="cn2">CN2加速</a>
-        <a class="main-nav-link nav-link-switch-cdn" href="//blog.chionlab.moe" data-domain="blog">CF加速</a>
+        <!-- <a class="main-nav-link nav-link-switch-cdn" href="//cn2.chionlab.moe" data-domain="cn2">CN2加速</a>
+        <a class="main-nav-link nav-link-switch-cdn" href="//blog.chionlab.moe" data-domain="blog">CF加速</a> -->
 
         
           <div style="clear: both;"></div>
@@ -199,58 +199,58 @@
     </div>
   </div>
   <script>
-    function getGeolocation(geoInfo) {
-      var rootDomain = 'chionlab.moe';
-      if (geoInfo.country_code === 'CN') {
-        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
-          JsCookies.set('domain', 'cn2', 30);
-          return;
-        }
-        $.confirm({
-          title: '线路优化建议',
-          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
-          buttons: {
-            '好的': function() {
-              JsCookies.set('domain', 'cn2', 30);
-              window.location.href = '//' + 'cn2' + '.' + rootDomain + window.location.pathname;
-            },
-            '不用了': function() {
-              JsCookies.set('domain', 'blog', 30);
-            }
-          }
-        })
-      } else {
-        JsCookies.set('domain', 'blog', 30);
-        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
-          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
-        }
-      }
-    }
-    (function(){
-      var rootDomain = 'chionlab.moe';
-
-      if (!JsCookies.check('domain')) {
-        var geoLocationScript = document.createElement('script');
-        geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
-        document.head.appendChild(geoLocationScript);
-      } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
-          window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
-        }
-      }
-
-      var switchBtns = document.querySelectorAll('.nav-link-switch-cdn');
-      for (var i=0; i<switchBtns.length; i++) {
-        (function(switchBtn){
-          if (switchBtn.dataset.domain === JsCookies.get('domain')) {
-            switchBtn.style.display = 'none';
-          }
-          switchBtn.addEventListener('click', function(ev) {
-            JsCookies.set('domain', switchBtn.dataset.domain);
-          });
-        })(switchBtns[i]);
-      }
-    })();
+    // function getGeolocation(geoInfo) {
+    //   var rootDomain = 'chionlab.moe';
+    //   if (geoInfo.country_code === 'CN') {
+    //     if (window.location.hostname === 'cn2' + '.' + rootDomain) {
+    //       JsCookies.set('domain', 'cn2', 30);
+    //       return;
+    //     }
+    //     $.confirm({
+    //       title: '线路优化建议',
+    //       content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
+    //       buttons: {
+    //         '好的': function() {
+    //           JsCookies.set('domain', 'cn2', 30);
+    //           window.location.href = '//' + 'cn2' + '.' + rootDomain + window.location.pathname;
+    //         },
+    //         '不用了': function() {
+    //           JsCookies.set('domain', 'blog', 30);
+    //         }
+    //       }
+    //     })
+    //   } else {
+    //     JsCookies.set('domain', 'blog', 30);
+    //     if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+    //       window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+    //     }
+    //   }
+    // }
+    // (function(){
+    //   var rootDomain = 'chionlab.moe';
+    //
+    //   if (!JsCookies.check('domain')) {
+    //     var geoLocationScript = document.createElement('script');
+    //     geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
+    //     document.head.appendChild(geoLocationScript);
+    //   } else {
+    //     if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+    //       window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
+    //     }
+    //   }
+    //
+    //   var switchBtns = document.querySelectorAll('.nav-link-switch-cdn');
+    //   for (var i=0; i<switchBtns.length; i++) {
+    //     (function(switchBtn){
+    //       if (switchBtn.dataset.domain === JsCookies.get('domain')) {
+    //         switchBtn.style.display = 'none';
+    //       }
+    //       switchBtn.addEventListener('click', function(ev) {
+    //         JsCookies.set('domain', switchBtn.dataset.domain);
+    //       });
+    //     })(switchBtns[i]);
+    //   }
+    // })();
   </script>
 </header>
 
@@ -309,15 +309,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cj1uuqw6i0002bb2h0dfuw5fo" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -349,22 +340,6 @@
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
-</section>
-
-
-
-<section id="comments" class="gentie-comments-section">
-  <div id="cloud_tie_wrapper" class="cloud-tie-wrapper"></div>
-  <script>
-    var cloudTieConfig = {
-      url: "https://blog.chionlab.moe" + document.location.pathname,
-      sourceId: "",
-      productKey: "7495a9b7dca84e159d4b624ae53ec960",
-      target: "cloud_tie_wrapper"
-    };
-    var yunManualLoad = true;
-    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
-  </script>
 </section>
 
 </section>
@@ -486,7 +461,7 @@
     
 <script>
   var disqus_shortname = 'chionlab';
-  if (window.location.hostname.indexOf('cn2') === -1) {
+  if (/*window.location.hostname.indexOf('cn2') === -1*/true) {
     
     var disqus_url = 'https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/';
     
@@ -513,13 +488,6 @@
     }
   }
 </script>
-
-
-
-  <script>
-    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
-    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
-  </script>
 
 
 

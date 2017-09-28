@@ -121,8 +121,8 @@
         
           <a class="main-nav-link" href="/about.html">About Me</a>
         
-        <a class="main-nav-link nav-link-switch-cdn" href="//cn2.chionlab.moe" data-domain="cn2">CN2加速</a>
-        <a class="main-nav-link nav-link-switch-cdn" href="//blog.chionlab.moe" data-domain="blog">CF加速</a>
+        <!-- <a class="main-nav-link nav-link-switch-cdn" href="//cn2.chionlab.moe" data-domain="cn2">CN2加速</a>
+        <a class="main-nav-link nav-link-switch-cdn" href="//blog.chionlab.moe" data-domain="blog">CF加速</a> -->
 
         
           <div style="clear: both;"></div>
@@ -198,58 +198,58 @@
     </div>
   </div>
   <script>
-    function getGeolocation(geoInfo) {
-      var rootDomain = 'chionlab.moe';
-      if (geoInfo.country_code === 'CN') {
-        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
-          JsCookies.set('domain', 'cn2', 30);
-          return;
-        }
-        $.confirm({
-          title: '线路优化建议',
-          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
-          buttons: {
-            '好的': function() {
-              JsCookies.set('domain', 'cn2', 30);
-              window.location.href = '//' + 'cn2' + '.' + rootDomain + window.location.pathname;
-            },
-            '不用了': function() {
-              JsCookies.set('domain', 'blog', 30);
-            }
-          }
-        })
-      } else {
-        JsCookies.set('domain', 'blog', 30);
-        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
-          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
-        }
-      }
-    }
-    (function(){
-      var rootDomain = 'chionlab.moe';
-
-      if (!JsCookies.check('domain')) {
-        var geoLocationScript = document.createElement('script');
-        geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
-        document.head.appendChild(geoLocationScript);
-      } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
-          window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
-        }
-      }
-
-      var switchBtns = document.querySelectorAll('.nav-link-switch-cdn');
-      for (var i=0; i<switchBtns.length; i++) {
-        (function(switchBtn){
-          if (switchBtn.dataset.domain === JsCookies.get('domain')) {
-            switchBtn.style.display = 'none';
-          }
-          switchBtn.addEventListener('click', function(ev) {
-            JsCookies.set('domain', switchBtn.dataset.domain);
-          });
-        })(switchBtns[i]);
-      }
-    })();
+    // function getGeolocation(geoInfo) {
+    //   var rootDomain = 'chionlab.moe';
+    //   if (geoInfo.country_code === 'CN') {
+    //     if (window.location.hostname === 'cn2' + '.' + rootDomain) {
+    //       JsCookies.set('domain', 'cn2', 30);
+    //       return;
+    //     }
+    //     $.confirm({
+    //       title: '线路优化建议',
+    //       content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
+    //       buttons: {
+    //         '好的': function() {
+    //           JsCookies.set('domain', 'cn2', 30);
+    //           window.location.href = '//' + 'cn2' + '.' + rootDomain + window.location.pathname;
+    //         },
+    //         '不用了': function() {
+    //           JsCookies.set('domain', 'blog', 30);
+    //         }
+    //       }
+    //     })
+    //   } else {
+    //     JsCookies.set('domain', 'blog', 30);
+    //     if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+    //       window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+    //     }
+    //   }
+    // }
+    // (function(){
+    //   var rootDomain = 'chionlab.moe';
+    //
+    //   if (!JsCookies.check('domain')) {
+    //     var geoLocationScript = document.createElement('script');
+    //     geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
+    //     document.head.appendChild(geoLocationScript);
+    //   } else {
+    //     if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+    //       window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
+    //     }
+    //   }
+    //
+    //   var switchBtns = document.querySelectorAll('.nav-link-switch-cdn');
+    //   for (var i=0; i<switchBtns.length; i++) {
+    //     (function(switchBtn){
+    //       if (switchBtn.dataset.domain === JsCookies.get('domain')) {
+    //         switchBtn.style.display = 'none';
+    //       }
+    //       switchBtn.addEventListener('click', function(ev) {
+    //         JsCookies.set('domain', switchBtn.dataset.domain);
+    //       });
+    //     })(switchBtns[i]);
+    //   }
+    // })();
   </script>
 </header>
 
@@ -415,15 +415,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/" data-id="cj1uuqw7k000qbb2hj9di4yf8" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -433,8 +424,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -533,15 +522,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cj1uuqw8n001rbb2hk60uc207" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -551,8 +531,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -764,15 +742,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/" data-id="cj1uuqw6w0007bb2hewq0qpv4" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -782,8 +751,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -835,15 +802,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cj1uuqw76000ebb2hjrfmgnnq" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -853,8 +811,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -923,15 +879,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cj1uuqw8h001hbb2hmtnytmn7" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -941,8 +888,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -1051,15 +996,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cj1uuqw7m000sbb2hbq9zm79x" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -1069,8 +1005,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -1260,15 +1194,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cj1uuqw7p000vbb2hakpecv0k" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -1278,8 +1203,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -1373,15 +1296,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cj1uuqw7t000ybb2hlvas2321" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -1391,8 +1305,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -1459,15 +1371,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cj1uuqw7z0013bb2h2zk168d8" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -1477,8 +1380,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -1566,15 +1467,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cj1uuqw7c000hbb2hndjxs648" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -1584,8 +1476,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -1714,7 +1604,7 @@
     
 <script>
   var disqus_shortname = 'chionlab';
-  if (window.location.hostname.indexOf('cn2') === -1) {
+  if (/*window.location.hostname.indexOf('cn2') === -1*/true) {
     
     (function(){
       var dsq = document.createElement('script');
@@ -1731,13 +1621,6 @@
     }
   }
 </script>
-
-
-
-  <script>
-    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
-    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
-  </script>
 
 
 

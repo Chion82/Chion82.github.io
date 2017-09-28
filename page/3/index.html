@@ -121,8 +121,8 @@
         
           <a class="main-nav-link" href="/about.html">About Me</a>
         
-        <a class="main-nav-link nav-link-switch-cdn" href="//cn2.chionlab.moe" data-domain="cn2">CN2加速</a>
-        <a class="main-nav-link nav-link-switch-cdn" href="//blog.chionlab.moe" data-domain="blog">CF加速</a>
+        <!-- <a class="main-nav-link nav-link-switch-cdn" href="//cn2.chionlab.moe" data-domain="cn2">CN2加速</a>
+        <a class="main-nav-link nav-link-switch-cdn" href="//blog.chionlab.moe" data-domain="blog">CF加速</a> -->
 
         
           <div style="clear: both;"></div>
@@ -198,58 +198,58 @@
     </div>
   </div>
   <script>
-    function getGeolocation(geoInfo) {
-      var rootDomain = 'chionlab.moe';
-      if (geoInfo.country_code === 'CN') {
-        if (window.location.hostname === 'cn2' + '.' + rootDomain) {
-          JsCookies.set('domain', 'cn2', 30);
-          return;
-        }
-        $.confirm({
-          title: '线路优化建议',
-          content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
-          buttons: {
-            '好的': function() {
-              JsCookies.set('domain', 'cn2', 30);
-              window.location.href = '//' + 'cn2' + '.' + rootDomain + window.location.pathname;
-            },
-            '不用了': function() {
-              JsCookies.set('domain', 'blog', 30);
-            }
-          }
-        })
-      } else {
-        JsCookies.set('domain', 'blog', 30);
-        if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
-          window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
-        }
-      }
-    }
-    (function(){
-      var rootDomain = 'chionlab.moe';
-
-      if (!JsCookies.check('domain')) {
-        var geoLocationScript = document.createElement('script');
-        geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
-        document.head.appendChild(geoLocationScript);
-      } else {
-        if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
-          window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
-        }
-      }
-
-      var switchBtns = document.querySelectorAll('.nav-link-switch-cdn');
-      for (var i=0; i<switchBtns.length; i++) {
-        (function(switchBtn){
-          if (switchBtn.dataset.domain === JsCookies.get('domain')) {
-            switchBtn.style.display = 'none';
-          }
-          switchBtn.addEventListener('click', function(ev) {
-            JsCookies.set('domain', switchBtn.dataset.domain);
-          });
-        })(switchBtns[i]);
-      }
-    })();
+    // function getGeolocation(geoInfo) {
+    //   var rootDomain = 'chionlab.moe';
+    //   if (geoInfo.country_code === 'CN') {
+    //     if (window.location.hostname === 'cn2' + '.' + rootDomain) {
+    //       JsCookies.set('domain', 'cn2', 30);
+    //       return;
+    //     }
+    //     $.confirm({
+    //       title: '线路优化建议',
+    //       content: '检测到您是境内用户，为了提高您的访问体验，是否切换到CN2线路？',
+    //       buttons: {
+    //         '好的': function() {
+    //           JsCookies.set('domain', 'cn2', 30);
+    //           window.location.href = '//' + 'cn2' + '.' + rootDomain + window.location.pathname;
+    //         },
+    //         '不用了': function() {
+    //           JsCookies.set('domain', 'blog', 30);
+    //         }
+    //       }
+    //     })
+    //   } else {
+    //     JsCookies.set('domain', 'blog', 30);
+    //     if ('blog' + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+    //       window.location.href = '//' + 'blog' + '.' + rootDomain + window.location.pathname;
+    //     }
+    //   }
+    // }
+    // (function(){
+    //   var rootDomain = 'chionlab.moe';
+    //
+    //   if (!JsCookies.check('domain')) {
+    //     var geoLocationScript = document.createElement('script');
+    //     geoLocationScript.setAttribute('src','//freegeoip.net/json/?callback=getGeolocation');
+    //     document.head.appendChild(geoLocationScript);
+    //   } else {
+    //     if (JsCookies.get('domain') + '.' + rootDomain !== window.location.hostname && window.location.hostname.indexOf('localhost') === -1) {
+    //       window.location.href = '//' + JsCookies.get('domain') + '.' + rootDomain + window.location.pathname;
+    //     }
+    //   }
+    //
+    //   var switchBtns = document.querySelectorAll('.nav-link-switch-cdn');
+    //   for (var i=0; i<switchBtns.length; i++) {
+    //     (function(switchBtn){
+    //       if (switchBtn.dataset.domain === JsCookies.get('domain')) {
+    //         switchBtn.style.display = 'none';
+    //       }
+    //       switchBtn.addEventListener('click', function(ev) {
+    //         JsCookies.set('domain', switchBtn.dataset.domain);
+    //       });
+    //     })(switchBtns[i]);
+    //   }
+    // })();
   </script>
 </header>
 
@@ -332,15 +332,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cj1uuqw810015bb2hmixanpcf" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -350,8 +341,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -430,15 +419,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cj1uuqw7x0011bb2huij5q6ph" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -448,8 +428,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -492,15 +470,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cj1uuqw8j001kbb2huq8axs22" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/23/tldr-man-page/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/23/tldr-man-page/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/23/tldr-man-page/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -510,8 +479,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -567,15 +534,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cj1uuqw8q001ubb2h4f3wbehu" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -585,8 +543,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -635,15 +591,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cj1uuqw88001bbb2hmjvnyeuj" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -653,8 +600,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -718,15 +663,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cj1uuqw850018bb2h61wahshw" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -736,8 +672,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -825,15 +759,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cj1uuqw6s0006bb2hz8ppceri" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -843,8 +768,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -903,15 +826,6 @@
     <footer class="article-footer">
       <a data-url="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cj1uuqw6i0002bb2h0dfuw5fo" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/#cloud_tie_wrapper" class="article-comment-link gentie-comment-link" style="margin-left: 20px;">
-          <span
-            lang="join-count"
-            data-url="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/"
-          ></span>
-          <span> 跟帖</span>
-        </a>
-      
-      
         <a href="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
       
@@ -921,8 +835,6 @@
   </div>
   
 </article>
-
-
 
 
 
@@ -1051,7 +963,7 @@
     
 <script>
   var disqus_shortname = 'chionlab';
-  if (window.location.hostname.indexOf('cn2') === -1) {
+  if (/*window.location.hostname.indexOf('cn2') === -1*/true) {
     
     (function(){
       var dsq = document.createElement('script');
@@ -1068,13 +980,6 @@
     }
   }
 </script>
-
-
-
-  <script>
-    var yunTieProductKey = "7495a9b7dca84e159d4b624ae53ec960";
-    Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vZXh0ZW5kL2xpc3Rfam9pbl9zY3JpcHQuaHRtbA==", true);
-  </script>
 
 
 
