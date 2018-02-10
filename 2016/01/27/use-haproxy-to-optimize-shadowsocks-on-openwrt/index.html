@@ -5,19 +5,17 @@
   
   <title>OpenWRT上使用haproxy对shadowsocks做负载均衡 | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="上篇OpenWRT科学上网的问题及其优化中，提到使用haproxy对shadowsocks的远程TCP连接做负载均衡，本文将介绍其实现过程。
-交叉编译haproxy虽然haproxy有预编译版本的ipk包，但是作者的小米路由mini所使用的Pandorabox的内核版本与该包依赖的内核版本不一致，于是作者选择交叉编译。因为haproxy的源码简单，外部依赖少，编译过程比较简单，甚至不需要OpenW">
+  <meta name="description" content="上篇OpenWRT科学上网的问题及其优化中，提到使用haproxy对shadowsocks的远程TCP连接做负载均衡，本文将介绍其实现过程。 交叉编译haproxy虽然haproxy有预编译版本的ipk包，但是作者的小米路由mini所使用的Pandorabox的内核版本与该包依赖的内核版本不一致，于是作者选择交叉编译。因为haproxy的源码简单，外部依赖少，编译过程比较简单，甚至不需要OpenW">
+<meta name="keywords" content="openwrt,router">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenWRT上使用haproxy对shadowsocks做负载均衡">
 <meta property="og:url" content="https://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/index.html">
 <meta property="og:site_name" content="ChionLab">
-<meta property="og:description" content="上篇OpenWRT科学上网的问题及其优化中，提到使用haproxy对shadowsocks的远程TCP连接做负载均衡，本文将介绍其实现过程。
-交叉编译haproxy虽然haproxy有预编译版本的ipk包，但是作者的小米路由mini所使用的Pandorabox的内核版本与该包依赖的内核版本不一致，于是作者选择交叉编译。因为haproxy的源码简单，外部依赖少，编译过程比较简单，甚至不需要OpenW">
+<meta property="og:description" content="上篇OpenWRT科学上网的问题及其优化中，提到使用haproxy对shadowsocks的远程TCP连接做负载均衡，本文将介绍其实现过程。 交叉编译haproxy虽然haproxy有预编译版本的ipk包，但是作者的小米路由mini所使用的Pandorabox的内核版本与该包依赖的内核版本不一致，于是作者选择交叉编译。因为haproxy的源码简单，外部依赖少，编译过程比较简单，甚至不需要OpenW">
 <meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OpenWRT上使用haproxy对shadowsocks做负载均衡">
-<meta name="twitter:description" content="上篇OpenWRT科学上网的问题及其优化中，提到使用haproxy对shadowsocks的远程TCP连接做负载均衡，本文将介绍其实现过程。
-交叉编译haproxy虽然haproxy有预编译版本的ipk包，但是作者的小米路由mini所使用的Pandorabox的内核版本与该包依赖的内核版本不一致，于是作者选择交叉编译。因为haproxy的源码简单，外部依赖少，编译过程比较简单，甚至不需要OpenW">
+<meta name="twitter:description" content="上篇OpenWRT科学上网的问题及其优化中，提到使用haproxy对shadowsocks的远程TCP连接做负载均衡，本文将介绍其实现过程。 交叉编译haproxy虽然haproxy有预编译版本的ipk包，但是作者的小米路由mini所使用的Pandorabox的内核版本与该包依赖的内核版本不一致，于是作者选择交叉编译。因为haproxy的源码简单，外部依赖少，编译过程比较简单，甚至不需要OpenW">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -197,7 +195,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -289,39 +287,39 @@
 <p>博主这里提供一个在MT7620平台编译好的binary:<br><a href="/downloads/haproxy">MT7620</a></p>
 <ol>
 <li><p>获取haproxy源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ git clone https://github.com/haproxy/haproxy.git</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/haproxy/haproxy.git</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>修改Makefile<br>只需要在Makefile中将编译器改为OpenWRT的toolchain即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cd haproxy</div><div class="line">$ vim Makefile</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd haproxy</span><br><span class="line">$ vim Makefile</span><br></pre></td></tr></table></figure>
 <p>找到</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#### Toolchain options.</div><div class="line"># GCC is normally used both for compiling and linking.</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#### Toolchain options.</span><br><span class="line"># GCC is normally used both for compiling and linking.</span><br></pre></td></tr></table></figure>
 <p>下面的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CC = XXX</div><div class="line">LD = XXX</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CC = XXX</span><br><span class="line">LD = XXX</span><br></pre></td></tr></table></figure>
 <p>这两行，将<code>CC</code>的值改为路由器toolchain的gcc的完整路径，<code>LD</code>的值改为<code>$(CC)</code><br>例如，博主修改后是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CC = /home/chiontang/development/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2/staging_dir/toolchain-mipsel_24kec+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-uclibc-gcc</div><div class="line">LD = $(CC)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CC = /home/chiontang/development/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2/staging_dir/toolchain-mipsel_24kec+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-uclibc-gcc</span><br><span class="line">LD = $(CC)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>编译</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ make TARGET=generic</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ make TARGET=generic</span><br></pre></td></tr></table></figure>
 <p>如不出意外，当前目录下已经有了一个编译好的<code>haproxy</code>。可以在电脑上直接运行它测试一下，如果一切正常，会返回如下错误，因为使用了OpenWRT ARM平台的toolchain进行编译，x86环境下无法直接运行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ ./haproxy</div><div class="line">zsh: exec format error: ./haproxy</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./haproxy</span><br><span class="line">zsh: exec format error: ./haproxy</span><br></pre></td></tr></table></figure>
 <p>如果能够成功运行，说明刚才toolchain的设置没有成功，编译时直接使用了当前系统的编译器（如x86下的gcc）</p>
 </li>
-<li>将编译好的haproxy复制到路由器下的<code>/root/haproxy</code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ scp haproxy root@192.168.1.1:/root/haproxy</div></pre></td></tr></table></figure>
+<li>将编译好的haproxy复制到路由器下的<code>/root/haproxy</code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp haproxy root@192.168.1.1:/root/haproxy</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <h2 id="配置haproxy"><a href="#配置haproxy" class="headerlink" title="配置haproxy"></a>配置haproxy</h2><p>现在ssh连接上OpwnWRT路由器：</p>
 <ol>
 <li><p>建立haproxy配置文件：<code>/etc/haproxy.cfg</code>，内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">global</div><div class="line">    log         127.0.0.1 local2</div><div class="line"></div><div class="line">    chroot      /root</div><div class="line">    pidfile     /tmp/haproxy.pid</div><div class="line">    maxconn     4000</div><div class="line">    user        root</div><div class="line">    daemon</div><div class="line"></div><div class="line">defaults</div><div class="line">    mode                    tcp    #TCP模式</div><div class="line">    log                     global</div><div class="line">    option                  httplog</div><div class="line">    option                  dontlognull</div><div class="line">    option http-server-close</div><div class="line">    option forwardfor       except 127.0.0.0/8</div><div class="line">    option                  redispatch</div><div class="line">    retries                 2</div><div class="line">    timeout http-request    10s</div><div class="line">    timeout queue           1m</div><div class="line">    timeout connect         2s     #上游TCP服务器连接等待时间                                      </div><div class="line">    timeout client          1m</div><div class="line">    timeout server          1m</div><div class="line">    timeout http-keep-alive 10s</div><div class="line">    timeout check           10s</div><div class="line">    maxconn                 3000</div><div class="line"></div><div class="line">listen test1</div><div class="line">    bind 0.0.0.0:8388       #haproxy监听端口</div><div class="line">    mode tcp</div><div class="line">    server s1 X.X.X.X:8388</div><div class="line">    server s2 X.X.X.X:8389</div><div class="line">    server s3 X.X.X.X:8390</div><div class="line">    server s4 X.X.X.X:8391</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">global</span><br><span class="line">    log         127.0.0.1 local2</span><br><span class="line"></span><br><span class="line">    chroot      /root</span><br><span class="line">    pidfile     /tmp/haproxy.pid</span><br><span class="line">    maxconn     4000</span><br><span class="line">    user        root</span><br><span class="line">    daemon</span><br><span class="line"></span><br><span class="line">defaults</span><br><span class="line">    mode                    tcp    #TCP模式</span><br><span class="line">    log                     global</span><br><span class="line">    option                  httplog</span><br><span class="line">    option                  dontlognull</span><br><span class="line">    option http-server-close</span><br><span class="line">    option forwardfor       except 127.0.0.0/8</span><br><span class="line">    option                  redispatch</span><br><span class="line">    retries                 2</span><br><span class="line">    timeout http-request    10s</span><br><span class="line">    timeout queue           1m</span><br><span class="line">    timeout connect         2s     #上游TCP服务器连接等待时间                                      </span><br><span class="line">    timeout client          1m</span><br><span class="line">    timeout server          1m</span><br><span class="line">    timeout http-keep-alive 10s</span><br><span class="line">    timeout check           10s</span><br><span class="line">    maxconn                 3000</span><br><span class="line"></span><br><span class="line">listen test1</span><br><span class="line">    bind 0.0.0.0:8388       #haproxy监听端口</span><br><span class="line">    mode tcp</span><br><span class="line">    server s1 X.X.X.X:8388</span><br><span class="line">    server s2 X.X.X.X:8389</span><br><span class="line">    server s3 X.X.X.X:8390</span><br><span class="line">    server s4 X.X.X.X:8391</span><br></pre></td></tr></table></figure>
 <p>其中，<code>X.X.X.X</code>为ss服务器，8388~8391这四个端口都为ss服务器上运行ssserver的端口（如果觉得不够你可以再加几个），稍后将讲到服务器端的配置。haproxy监听的端口为8388。</p>
 </li>
 <li><p>建立启动脚本：<code>/etc/init.d/haproxy</code>，内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh /etc/rc.common</div><div class="line"></div><div class="line">START=99  #启动优先级设置为99，即最后启动</div><div class="line"></div><div class="line">start() &#123;</div><div class="line">        /root/haproxy -f /etc/haproxy.cfg</div><div class="line">&#125;</div><div class="line"></div><div class="line">stop() &#123;</div><div class="line">        killall haproxy</div><div class="line">&#125;</div><div class="line"></div><div class="line">restart() &#123;</div><div class="line">        stop</div><div class="line">        sleep 1</div><div class="line">        start</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh /etc/rc.common</span><br><span class="line"></span><br><span class="line">START=99  #启动优先级设置为99，即最后启动</span><br><span class="line"></span><br><span class="line">start() &#123;</span><br><span class="line">        /root/haproxy -f /etc/haproxy.cfg</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop() &#123;</span><br><span class="line">        killall haproxy</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">restart() &#123;</span><br><span class="line">        stop</span><br><span class="line">        sleep 1</span><br><span class="line">        start</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后使其生效：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># /etc/init.d/haproxy enable</div><div class="line"># /etc/init.d/haproxy start</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># /etc/init.d/haproxy enable</span><br><span class="line"># /etc/init.d/haproxy start</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<h2 id="服务器配置"><a href="#服务器配置" class="headerlink" title="服务器配置"></a>服务器配置</h2><p>作者使用supervisor作为ssserver的daemon，本例中，服务器同时监听8388~8391这四个端口。<br>博主服务器上的supervisor配置文件如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">[supervisord]</div><div class="line"></div><div class="line">[program:ssserver1]</div><div class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8388 -k [KEY]</div><div class="line"></div><div class="line">[program:ssserver2]</div><div class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8389 -k [KEY]</div><div class="line"></div><div class="line">[program:ssserver3]</div><div class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8390 -k [KEY]</div><div class="line"></div><div class="line">[program:ssserver4]</div><div class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8391 -k [KEY]</div></pre></td></tr></table></figure></p>
+<h2 id="服务器配置"><a href="#服务器配置" class="headerlink" title="服务器配置"></a>服务器配置</h2><p>作者使用supervisor作为ssserver的daemon，本例中，服务器同时监听8388~8391这四个端口。<br>博主服务器上的supervisor配置文件如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[supervisord]</span><br><span class="line"></span><br><span class="line">[program:ssserver1]</span><br><span class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8388 -k [KEY]</span><br><span class="line"></span><br><span class="line">[program:ssserver2]</span><br><span class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8389 -k [KEY]</span><br><span class="line"></span><br><span class="line">[program:ssserver3]</span><br><span class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8390 -k [KEY]</span><br><span class="line"></span><br><span class="line">[program:ssserver4]</span><br><span class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8391 -k [KEY]</span><br></pre></td></tr></table></figure></p>
 <p>将<code>[KEY]</code>替换为ss密码即可</p>
 <h2 id="ShadowSocks配置"><a href="#ShadowSocks配置" class="headerlink" title="ShadowSocks配置"></a>ShadowSocks配置</h2><ol>
 <li>编辑<code>/etc/shadowsocks/ignore.list</code>（如果你设置的忽略列表为其他文件，则编辑那个文件）,在最后添加一行，输入ss服务器的IP。</li>
@@ -331,7 +329,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="cj1uuqw8l001nbb2hbx8mhkz3" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="cjdhhkc3r001r052hc8r1sryw" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
@@ -399,7 +397,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 13.33px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -409,7 +407,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -420,6 +418,10 @@
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
+          </li>
         
           <li>
             <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试</a>
@@ -435,10 +437,6 @@
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
@@ -469,7 +467,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Chion Tang<br>
+      &copy; 2018 Chion Tang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
     </div>
   </div>

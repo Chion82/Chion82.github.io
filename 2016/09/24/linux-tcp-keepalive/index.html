@@ -6,6 +6,7 @@
   <title>TCP keepalive的探究 (1) : NAT和保活机制 | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="关于应用层的TCP连接保活（Keepalive）机制，相信大家都听说过。对于长连接TCP保活，典型的方法是发送应用层的心跳包，但这将增加开发人员的工作量：需要专门为心跳包制定协议。而在Linux的socket通信API中，自带了TCP_KEEPALIVE的相关参数设定，通过这种方式实现TCP长连接保活，无需修改原程序的逻辑，开发人员不需要关心心跳包的实现。本系列文章将从路由器NAT原理、keepa">
+<meta name="keywords" content="linux,maintenance,network">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TCP keepalive的探究 (1) : NAT和保活机制">
 <meta property="og:url" content="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/index.html">
@@ -200,7 +201,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -329,33 +330,33 @@
 <li>不关闭连接，在空闲5分钟后再进行双向发包测试。</li>
 </ul>
 <p>在我的例子中，在双方建立TCP连接后，客户端（局域网主机）发送一行<code>hello from client</code>，服务端发送一行<code>hello from server</code>。<br>等待5分钟，然后客户端发送一行<code>test from client</code>。</p>
-<p>通过wireshark在客户端主机上抓包，跟踪这个TCP连接得出如下结果：<br><img src="/2016/09/24/linux-tcp-keepalive/1.png" alt="1.png" title=""></p>
+<p>通过wireshark在客户端主机上抓包，跟踪这个TCP连接得出如下结果：<br><img src="/2016/09/24/linux-tcp-keepalive/1.png"></p>
 <p>从上图可得出：</p>
 <ul>
 <li>在第144秒时，通过TCP三次握手，双方建立连接。</li>
 <li>随后双方各发一行hello信息，并都成功接收到ACK响应包，证明发送成功。</li>
 <li>在第500秒时，客户端发送<code>test from client</code>，但是没有收到对方响应ACK，导致客户端多次重发（TCP Retransmission），但是仍然收不到ACK。</li>
 </ul>
-<p>在服务端上，仅能收到客户端一开始发送的<code>hello from client</code>，5分钟后客户端发送的<code>test from client</code>并不能收到：<br><img src="/2016/09/24/linux-tcp-keepalive/2.png" alt="2.png" title=""></p>
+<p>在服务端上，仅能收到客户端一开始发送的<code>hello from client</code>，5分钟后客户端发送的<code>test from client</code>并不能收到：<br><img src="/2016/09/24/linux-tcp-keepalive/2.png"></p>
 <p>而在服务端尝试发送<code>test from server</code>，客户端也收不到了。</p>
 <p>这表明，在这空闲的5分钟内，网关路由器已经“掐断”了这个TCP连接，导致5分钟后该连接不可再用。但无论是客户端还是服务端，都不知道这个连接已经作废了，因此客户端在发包没有收到ACK后仍在尝试重发，双方的netcat进程仍然没有退出，说明了网关在掐断连接时并没有通知双方。</p>
 <h2 id="TCP-Keepalive"><a href="#TCP-Keepalive" class="headerlink" title="TCP Keepalive"></a>TCP Keepalive</h2><p>如果我们的业务需要我们维持长连接，这就要避免网关“干掉”我们的长连接。解决方法就是，让网关认为我们的TCP连接是活动的。在应用层，我们可以通过定时发送心跳包的方式实现。而如果使用Linux提供的TCP_KEEPALIVE，在应用层我们可完全不关心心跳包何时发送、发送什么内容，这一切由操作系统自动管理：操作系统会在该TCP连接上定时发送探测包，探测包既能像心跳包一样起到连接保活的作用，也能自动检测连接的有效性，并自动关闭无效连接。</p>
-<p>在Linux全局内核设置中，有以下三个参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># cat /proc/sys/net/ipv4/tcp_keepalive_time</div><div class="line">7200</div><div class="line"># cat /proc/sys/net/ipv4/tcp_keepalive_intvl</div><div class="line">75</div><div class="line"># cat /proc/sys/net/ipv4/tcp_keepalive_probes</div><div class="line">9</div></pre></td></tr></table></figure></p>
+<p>在Linux全局内核设置中，有以下三个参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># cat /proc/sys/net/ipv4/tcp_keepalive_time</span><br><span class="line">7200</span><br><span class="line"># cat /proc/sys/net/ipv4/tcp_keepalive_intvl</span><br><span class="line">75</span><br><span class="line"># cat /proc/sys/net/ipv4/tcp_keepalive_probes</span><br><span class="line">9</span><br></pre></td></tr></table></figure></p>
 <ul>
 <li><code>tcp_keepalive_time</code>: 如果在该时间内没有数据往来，则发送探测包。</li>
 <li><code>tcp_keepalive_intvl</code>: 探测包发送间隔时间。</li>
 <li><code>tcp_keepalive_probes</code>: 尝试探测的次数。如果发送的探测包次数超过该值仍然没有收到对方响应，则认为连接已失效并关闭连接。</li>
 </ul>
-<p>TCP Keepalive默认是关闭的。要启用这个特性，需要在程序中如下设置（代码实例来自<a href="https://my.oschina.net/lvsin/blog/382904" target="_blank" rel="external">Linux下TCP keepalive属性的表现</a>）：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/in.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/tcp.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">int</span> keepAlive = <span class="number">1</span>; <span class="comment">// 开启keepalive属性</span></div><div class="line"><span class="keyword">int</span> keepIdle = <span class="number">60</span>; <span class="comment">// 如该连接在60秒内没有任何数据往来,则进行探测</span></div><div class="line"><span class="keyword">int</span> keepInterval = <span class="number">5</span>; <span class="comment">// 探测时发包的时间间隔为5 秒</span></div><div class="line"><span class="keyword">int</span> keepCount = <span class="number">3</span>; <span class="comment">// 探测尝试的次数.如果第1次探测包就收到响应了,则后2次的不再发.</span></div><div class="line"></div><div class="line">setsockopt(rs, SOL_SOCKET, SO_KEEPALIVE, (<span class="keyword">void</span> *)&amp;keepAlive, <span class="keyword">sizeof</span>(keepAlive));</div><div class="line">setsockopt(rs, SOL_TCP, TCP_KEEPIDLE, (<span class="keyword">void</span>*)&amp;keepIdle, <span class="keyword">sizeof</span>(keepIdle)); <span class="comment">//对应tcp_keepalive_time</span></div><div class="line">setsockopt(rs, SOL_TCP, TCP_KEEPINTVL, (<span class="keyword">void</span> *)&amp;keepInterval, <span class="keyword">sizeof</span>(keepInterval)); <span class="comment">//对应tcp_keepalive_intvl</span></div><div class="line">setsockopt(rs, SOL_TCP, TCP_KEEPCNT, (<span class="keyword">void</span> *)&amp;keepCount, <span class="keyword">sizeof</span>(keepCount)); <span class="comment">//对应tcp_keepalive_probes</span></div></pre></td></tr></table></figure>
+<p>TCP Keepalive默认是关闭的。要启用这个特性，需要在程序中如下设置（代码实例来自<a href="https://my.oschina.net/lvsin/blog/382904" target="_blank" rel="noopener">Linux下TCP keepalive属性的表现</a>）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/tcp.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> keepAlive = <span class="number">1</span>; <span class="comment">// 开启keepalive属性</span></span><br><span class="line"><span class="keyword">int</span> keepIdle = <span class="number">60</span>; <span class="comment">// 如该连接在60秒内没有任何数据往来,则进行探测</span></span><br><span class="line"><span class="keyword">int</span> keepInterval = <span class="number">5</span>; <span class="comment">// 探测时发包的时间间隔为5 秒</span></span><br><span class="line"><span class="keyword">int</span> keepCount = <span class="number">3</span>; <span class="comment">// 探测尝试的次数.如果第1次探测包就收到响应了,则后2次的不再发.</span></span><br><span class="line"></span><br><span class="line">setsockopt(rs, SOL_SOCKET, SO_KEEPALIVE, (<span class="keyword">void</span> *)&amp;keepAlive, <span class="keyword">sizeof</span>(keepAlive));</span><br><span class="line">setsockopt(rs, SOL_TCP, TCP_KEEPIDLE, (<span class="keyword">void</span>*)&amp;keepIdle, <span class="keyword">sizeof</span>(keepIdle)); <span class="comment">//对应tcp_keepalive_time</span></span><br><span class="line">setsockopt(rs, SOL_TCP, TCP_KEEPINTVL, (<span class="keyword">void</span> *)&amp;keepInterval, <span class="keyword">sizeof</span>(keepInterval)); <span class="comment">//对应tcp_keepalive_intvl</span></span><br><span class="line">setsockopt(rs, SOL_TCP, TCP_KEEPCNT, (<span class="keyword">void</span> *)&amp;keepCount, <span class="keyword">sizeof</span>(keepCount)); <span class="comment">//对应tcp_keepalive_probes</span></span><br></pre></td></tr></table></figure>
 <p>如果省略<code>TCP_KEEPIDLE</code>、<code>TCP_KEEPINTVL</code>、<code>TCP_KEEPCNT</code>三个属性的设置，将使用上文的三个系统全局默认值。</p>
-<h2 id="第二次实验"><a href="#第二次实验" class="headerlink" title="第二次实验"></a>第二次实验</h2><p>这次我们使用 <a href="https://github.com/cyberelf/netcat-keepalive" target="_blank" rel="external">netcat-keepalive</a> 来测试。这个Github上的开源项目在netcat的基础上加入了上述的代码。参数说明请参照README。</p>
+<h2 id="第二次实验"><a href="#第二次实验" class="headerlink" title="第二次实验"></a>第二次实验</h2><p>这次我们使用 <a href="https://github.com/cyberelf/netcat-keepalive" target="_blank" rel="noopener">netcat-keepalive</a> 来测试。这个Github上的开源项目在netcat的基础上加入了上述的代码。参数说明请参照README。</p>
 <p>测试方法基本不变。唯一的不同之处是，客户端使用netcat-keepalive，并开启TCP Keepalive特性。</p>
-<p>客户端上的测试结果和wireshark抓包记录如下：<br><img src="/2016/09/24/linux-tcp-keepalive/4.png" alt="4.png" title=""></p>
+<p>客户端上的测试结果和wireshark抓包记录如下：<br><img src="/2016/09/24/linux-tcp-keepalive/4.png"></p>
 <p>抓包记录显示，在空闲的5分钟内，客户端每隔30秒发送一个TCP探测包（TCP Keep-Alive），并收到服务端ACK（TCP Keep-Alive ACK）。在5分钟后客户端发送<code>test from client</code>，服务端发送<code>test from server</code>，均发送成功。</p>
-<p>服务端上的截图：<br><img src="/2016/09/24/linux-tcp-keepalive/6.png" alt="服务端收到了来自客户端的“test from client”" title="服务端收到了来自客户端的“test from client”"></p>
+<p>服务端上的截图：<br><img src="/2016/09/24/linux-tcp-keepalive/6.png" title="服务端收到了来自客户端的“test from client”"></p>
 <p>这证明，我们通过TCP Keepalive，成功地阻止了网关路由器丢弃我们的TCP长连接，所以我们在5分钟后仍能够使用这个长连接进行通信。</p>
-<p>让我们来看看这个TCP Keep-Alive探测包是个什么东西：<br><img src="/2016/09/24/linux-tcp-keepalive/5.png" alt="5.png" title=""></p>
+<p>让我们来看看这个TCP Keep-Alive探测包是个什么东西：<br><img src="/2016/09/24/linux-tcp-keepalive/5.png"></p>
 <p>由上图可看出，探测包是一个特殊的TCP包：它的长度为零，Flags位ACK置1，Options置为两个NOP，而它的端口信息和普通的TCP数据包是一样的。</p>
 <p>对于服务端响应的TCP Keep-Alive ACK探测包，是由服务器操作系统发送的。实际上，在使用应用层TCP编程时，并不能收到这个探测包，所以服务端应用程序对该探测包是无感知的。</p>
 <h2 id="待续…"><a href="#待续…" class="headerlink" title="待续…"></a>待续…</h2><p>本文从NAT基本原理介绍了TCP Keepalive的原理和基本实现，在下篇文章中，我们将探究Chrome浏览器对于TCP保活的实现。</p>
@@ -363,7 +364,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cj1uuqw7m000sbb2hbq9zm79x" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cjdhhkc2j000v052hfqlrb3n0" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
@@ -431,7 +432,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 13.33px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -441,7 +442,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -452,6 +453,10 @@
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
+          </li>
         
           <li>
             <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试</a>
@@ -467,10 +472,6 @@
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
@@ -501,7 +502,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Chion Tang<br>
+      &copy; 2018 Chion Tang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
     </div>
   </div>

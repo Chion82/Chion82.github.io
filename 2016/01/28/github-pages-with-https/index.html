@@ -5,22 +5,20 @@
   
   <title>在GitHub Pages上使用CloudFlare https CDN | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
-GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
+  <meta name="description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。 GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
+<meta name="keywords" content="maintenance">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在GitHub Pages上使用CloudFlare https CDN">
 <meta property="og:url" content="https://blog.chionlab.moe/2016/01/28/github-pages-with-https/index.html">
 <meta property="og:site_name" content="ChionLab">
-<meta property="og:description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
-GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
+<meta property="og:description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。 GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
 <meta property="og:image" content="https://blog.chionlab.moe/2016/01/28/github-pages-with-https/dns-config.png">
 <meta property="og:image" content="https://blog.chionlab.moe/2016/01/28/github-pages-with-https/dig-result.png">
 <meta property="og:image" content="https://blog.chionlab.moe/2016/01/28/github-pages-with-https/page-rules.png">
 <meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在GitHub Pages上使用CloudFlare https CDN">
-<meta name="twitter:description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。
-GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
+<meta name="twitter:description" content="本站就是使用hexo搭建的静态Web站点，托管在GitHub repo，并使用GitHub Pages。另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。 GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的域名为username.github.io，如果需要使用自己的域名（以下简称“你的域名”），可参考官方的帮助文档，其实非常简单：">
 <meta name="twitter:image" content="https://blog.chionlab.moe/2016/01/28/github-pages-with-https/dns-config.png">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
@@ -201,7 +199,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -288,15 +286,15 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本站就是使用<a href="https://hexo.io" target="_blank" rel="external">hexo</a>搭建的静态Web站点，托管在<a href="https://github.com/Chion82/Chion82.github.io" target="_blank" rel="external">GitHub repo</a>，并使用GitHub Pages。<br>另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。</p>
-<h2 id="GitHub-Pages应用自定义域名"><a href="#GitHub-Pages应用自定义域名" class="headerlink" title="GitHub Pages应用自定义域名"></a>GitHub Pages应用自定义域名</h2><p>默认情况下，访问GitHub Pages页面的域名为<code>username.github.io</code>，如果需要使用自己的域名（以下简称“你的域名”），可<a href="https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/" target="_blank" rel="external">参考官方的帮助文档</a>，其实非常简单：</p>
+        <p>本站就是使用<a href="https://hexo.io" target="_blank" rel="noopener">hexo</a>搭建的静态Web站点，托管在<a href="https://github.com/Chion82/Chion82.github.io" target="_blank" rel="noopener">GitHub repo</a>，并使用GitHub Pages。<br>另外，阿里云最近也提供https的CDN服务，更适合用在国内链路质量要求高的站点。</p>
+<h2 id="GitHub-Pages应用自定义域名"><a href="#GitHub-Pages应用自定义域名" class="headerlink" title="GitHub Pages应用自定义域名"></a>GitHub Pages应用自定义域名</h2><p>默认情况下，访问GitHub Pages页面的域名为<code>username.github.io</code>，如果需要使用自己的域名（以下简称“你的域名”），可<a href="https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/" target="_blank" rel="noopener">参考官方的帮助文档</a>，其实非常简单：</p>
 <ol>
-<li>在repo根目录下创建<code>CNAME</code>文件，内容为你的域名。<a href="https://github.com/Chion82/Chion82.github.io/blob/master/CNAME" target="_blank" rel="external">本站的CNAME文件</a></li>
+<li>在repo根目录下创建<code>CNAME</code>文件，内容为你的域名。<a href="https://github.com/Chion82/Chion82.github.io/blob/master/CNAME" target="_blank" rel="noopener">本站的CNAME文件</a></li>
 <li>在你的域名管理中心，添加一条<code>CNAME</code>记录，指向<code>username.github.io</code>。（将username替换为你的GitHub用户名）</li>
 </ol>
 <p>现在，访问<code>http://你的域名</code> ，已经可以访问到站点首页了。而如果访问<code>http://username.github.io</code> （即原来的地址），将被302跳转到<code>http://你的域名</code>。</p>
 <h2 id="https的问题"><a href="#https的问题" class="headerlink" title="https的问题"></a>https的问题</h2><p>尝试直接访问<code>https://你的域名</code>，浏览器会报SSL_DOMAIN_NOT_MATCHED警告。因为GitHub Pages默认提供的SSL证书的根域名是<code>github.io</code>，和你的域名不相同。<br>而且，GitHub Pages不支持上传SSL证书。</p>
-<h2 id="使用CloudFlare"><a href="#使用CloudFlare" class="headerlink" title="使用CloudFlare"></a>使用CloudFlare</h2><p><a href="https://www.cloudflare.com" target="_blank" rel="external">CloudFlare</a>（以下简称CF）是一家CDN提供商，它的free plan里面就提供https服务（免费计划不能上传SSL）。现在可以通过CF实现：从用户到CDN服务器的连接为https，而CDN服务器到GitHub Pages服务器的连接为http。<br>1.注册并登录到CF。按照提示，在你的域名的管理中心，将域名的name server改为CF的name server。CF提供的NS如下：</p>
+<h2 id="使用CloudFlare"><a href="#使用CloudFlare" class="headerlink" title="使用CloudFlare"></a>使用CloudFlare</h2><p><a href="https://www.cloudflare.com" target="_blank" rel="noopener">CloudFlare</a>（以下简称CF）是一家CDN提供商，它的free plan里面就提供https服务（免费计划不能上传SSL）。现在可以通过CF实现：从用户到CDN服务器的连接为https，而CDN服务器到GitHub Pages服务器的连接为http。<br>1.注册并登录到CF。按照提示，在你的域名的管理中心，将域名的name server改为CF的name server。CF提供的NS如下：</p>
 <table>
 <thead>
 <tr>
@@ -315,17 +313,17 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
 </tr>
 </tbody>
 </table>
-<p>2.在CF的DNS设置页中，检查对应的子域名记录。博主的DNS记录如下：<br>  <img src="/2016/01/28/github-pages-with-https/dns-config.png" alt="blog.chionlab.moe的DNS记录" title="blog.chionlab.moe的DNS记录"><br>  其中，右侧的橙色云图标代表该条记录将经过CF的CDN加速。<br>  在这里设置的DNS记录，如果是CNAME记录或者A记录，若右边的STATUS为连通状态，CF都会在name server中将其设置为A记录并指向CF的CDN服务器（并根据用户所在地选择最优CDN），当用户通过该域名访问CF的CDN时（仅限http或https），CDN再转发到刚才填写的真实目的主机（即username.github.io）<br>  <img src="/2016/01/28/github-pages-with-https/dig-result.png" alt="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN" title="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN"><br>  CF正是通过这种动态DNS的方式实现CDN加速的。</p>
+<p>2.在CF的DNS设置页中，检查对应的子域名记录。博主的DNS记录如下：<br>  <img src="/2016/01/28/github-pages-with-https/dns-config.png" title="blog.chionlab.moe的DNS记录"><br>  其中，右侧的橙色云图标代表该条记录将经过CF的CDN加速。<br>  在这里设置的DNS记录，如果是CNAME记录或者A记录，若右边的STATUS为连通状态，CF都会在name server中将其设置为A记录并指向CF的CDN服务器（并根据用户所在地选择最优CDN），当用户通过该域名访问CF的CDN时（仅限http或https），CDN再转发到刚才填写的真实目的主机（即username.github.io）<br>  <img src="/2016/01/28/github-pages-with-https/dig-result.png" title="博主的blog.chionlab.moe虽在CF中设置为CNAME到gh-pages，但dig结果是A指向CF的CDN"><br>  CF正是通过这种动态DNS的方式实现CDN加速的。</p>
 <h2 id="设置https"><a href="#设置https" class="headerlink" title="设置https"></a>设置https</h2><ol>
 <li>在CF的Crypto页中，SSL设置为Flexible。这将允许CDN到github pages之间的访问为http。</li>
 <li>现在，通过<code>https://你的域名</code>已经可以访问站点首页了。</li>
 </ol>
-<h2 id="强制https"><a href="#强制https" class="headerlink" title="强制https"></a>强制https</h2><p>CF提供Page Rules功能，可设置路由规则。通过规则中的<code>Always use https</code>选项，可以将用户强制跳转到https。博主的设置如下：<br><img src="/2016/01/28/github-pages-with-https/page-rules.png" alt="page-rules.png" title=""></p>
+<h2 id="强制https"><a href="#强制https" class="headerlink" title="强制https"></a>强制https</h2><p>CF提供Page Rules功能，可设置路由规则。通过规则中的<code>Always use https</code>选项，可以将用户强制跳转到https。博主的设置如下：<br><img src="/2016/01/28/github-pages-with-https/page-rules.png"></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="cj1uuqw7h000mbb2hptz1p3dp" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/28/github-pages-with-https/" data-id="cjdhhkc29000n052hkou8pv96" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/28/github-pages-with-https/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
@@ -393,7 +391,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 13.33px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -403,7 +401,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -414,6 +412,10 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
+          </li>
         
           <li>
             <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试</a>
@@ -429,10 +431,6 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
@@ -463,7 +461,7 @@ GitHub Pages应用自定义域名默认情况下，访问GitHub Pages页面的�
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Chion Tang<br>
+      &copy; 2018 Chion Tang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
     </div>
   </div>

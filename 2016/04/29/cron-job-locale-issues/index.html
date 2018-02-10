@@ -5,28 +5,17 @@
   
   <title>cron任务的locale问题 | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="原文：Linux - cron での locale の挙動！ - mk-mode BLOG
-
-こんばんは。Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。以下、それについての備忘録です。
-
-晚上好。在Linux下，自己编写的（shell）脚本，在终端下手动运行是一切正常的">
+  <meta name="description" content="原文：Linux - cron での locale の挙動！ - mk-mode BLOG  こんばんは。Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。以下、それについての備忘録です。  晚上好。在Linux下，自己编写的（shell）脚本，在终端下手动运行是一切正常的">
+<meta name="keywords" content="linux,maintenance">
 <meta property="og:type" content="article">
 <meta property="og:title" content="cron任务的locale问题">
 <meta property="og:url" content="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/index.html">
 <meta property="og:site_name" content="ChionLab">
-<meta property="og:description" content="原文：Linux - cron での locale の挙動！ - mk-mode BLOG
-
-こんばんは。Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。以下、それについての備忘録です。
-
-晚上好。在Linux下，自己编写的（shell）脚本，在终端下手动运行是一切正常的">
+<meta property="og:description" content="原文：Linux - cron での locale の挙動！ - mk-mode BLOG  こんばんは。Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。以下、それについての備忘録です。  晚上好。在Linux下，自己编写的（shell）脚本，在终端下手动运行是一切正常的">
 <meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cron任务的locale问题">
-<meta name="twitter:description" content="原文：Linux - cron での locale の挙動！ - mk-mode BLOG
-
-こんばんは。Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。以下、それについての備忘録です。
-
-晚上好。在Linux下，自己编写的（shell）脚本，在终端下手动运行是一切正常的">
+<meta name="twitter:description" content="原文：Linux - cron での locale の挙動！ - mk-mode BLOG  こんばんは。Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。以下、それについての備忘録です。  晚上好。在Linux下，自己编写的（shell）脚本，在终端下手动运行是一切正常的">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -206,7 +195,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -293,7 +282,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>原文：<a href="http://www.mk-mode.com/octopress/2013/11/26/linux-cron-locale-behavior/" target="_blank" rel="external">Linux - cron での locale の挙動！ - mk-mode BLOG</a></p>
+        <p>原文：<a href="http://www.mk-mode.com/octopress/2013/11/26/linux-cron-locale-behavior/" target="_blank" rel="noopener">Linux - cron での locale の挙動！ - mk-mode BLOG</a></p>
 <blockquote>
 <p>こんばんは。<br>Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。<br>以下、それについての備忘録です。</p>
 </blockquote>
@@ -309,15 +298,15 @@
 <blockquote>
 <p>1. cron 外（コンソール）でのロケール<br>普通にコンソールで locale コマンドでロケールを確認してみる。</p>
 </blockquote>
-<h2 id="1-在cron外部（用户终端）的locale"><a href="#1-在cron外部（用户终端）的locale" class="headerlink" title="1. 在cron外部（用户终端）的locale"></a>1. 在cron外部（用户终端）的locale</h2><p>在一般的用户终端（console）中，尝试通过<code>locale</code>命令来确认当前环境的locale。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># locale</span></div><div class="line">LANG=ja_JP.UTF<span class="number">-8</span></div><div class="line">LC_CTYPE=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_NUMERIC=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_TIME=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_COLLATE=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_MONETARY=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_MESSAGES=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_PAPER=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_NAME=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_ADDRESS=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_TELEPHONE=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_MEASUREMENT=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_IDENTIFICATION=<span class="string">"ja_JP.UTF-8"</span></div><div class="line">LC_ALL=</div></pre></td></tr></table></figure></p>
+<h2 id="1-在cron外部（用户终端）的locale"><a href="#1-在cron外部（用户终端）的locale" class="headerlink" title="1. 在cron外部（用户终端）的locale"></a>1. 在cron外部（用户终端）的locale</h2><p>在一般的用户终端（console）中，尝试通过<code>locale</code>命令来确认当前环境的locale。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># locale</span></span><br><span class="line">LANG=ja_JP.UTF<span class="number">-8</span></span><br><span class="line">LC_CTYPE=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_NUMERIC=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_TIME=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_COLLATE=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_MONETARY=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_MESSAGES=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_PAPER=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_NAME=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_ADDRESS=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_TELEPHONE=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_MEASUREMENT=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_IDENTIFICATION=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_ALL=</span><br></pre></td></tr></table></figure></p>
 <blockquote>
 <p>2. cron 内でのロケール<br>次に cron 内で locale コマンドを実行させてみる。<br>例えば、以下のようなファイル /etc/cron.d/locale_test を作成してみる。</p>
 </blockquote>
-<h2 id="2-cron内的locale"><a href="#2-cron内的locale" class="headerlink" title="2. cron内的locale"></a>2. cron内的locale</h2><p>接下来，我们尝试在cron内执行<code>locale</code>命令。（译者注：其实就是在cron job中运行<code>locale</code>命令）<br>如下例，尝试创建一个文件<code>/home/hoge/work/locale.log</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * * root locale &gt; /home/hoge/work/locale.log</div></pre></td></tr></table></figure></p>
+<h2 id="2-cron内的locale"><a href="#2-cron内的locale" class="headerlink" title="2. cron内的locale"></a>2. cron内的locale</h2><p>接下来，我们尝试在cron内执行<code>locale</code>命令。（译者注：其实就是在cron job中运行<code>locale</code>命令）<br>如下例，尝试创建一个文件<code>/home/hoge/work/locale.log</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * root locale &gt; /home/hoge/work/locale.log</span><br></pre></td></tr></table></figure></p>
 <blockquote>
 <p>毎分 “/home/hoge/work/” ディレクトリ内に “locale.log” というファイルが作成されるので、内容を確認してみる。</p>
 </blockquote>
-<p>每分钟，<code>/home/hoge/work/</code>下的<code>locale.log</code>文件都会被写入新数据，我们来尝试确认该文件内容。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">LANG=</div><div class="line">LC_CTYPE=<span class="string">"POSIX"</span></div><div class="line">LC_NUMERIC=<span class="string">"POSIX"</span></div><div class="line">LC_TIME=<span class="string">"POSIX"</span></div><div class="line">LC_COLLATE=<span class="string">"POSIX"</span></div><div class="line">LC_MONETARY=<span class="string">"POSIX"</span></div><div class="line">LC_MESSAGES=<span class="string">"POSIX"</span></div><div class="line">LC_PAPER=<span class="string">"POSIX"</span></div><div class="line">LC_NAME=<span class="string">"POSIX"</span></div><div class="line">LC_ADDRESS=<span class="string">"POSIX"</span></div><div class="line">LC_TELEPHONE=<span class="string">"POSIX"</span></div><div class="line">LC_MEASUREMENT=<span class="string">"POSIX"</span></div><div class="line">LC_IDENTIFICATION=<span class="string">"POSIX"</span></div><div class="line">LC_ALL=</div></pre></td></tr></table></figure></p>
+<p>每分钟，<code>/home/hoge/work/</code>下的<code>locale.log</code>文件都会被写入新数据，我们来尝试确认该文件内容。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">LANG=</span><br><span class="line">LC_CTYPE=<span class="string">"POSIX"</span></span><br><span class="line">LC_NUMERIC=<span class="string">"POSIX"</span></span><br><span class="line">LC_TIME=<span class="string">"POSIX"</span></span><br><span class="line">LC_COLLATE=<span class="string">"POSIX"</span></span><br><span class="line">LC_MONETARY=<span class="string">"POSIX"</span></span><br><span class="line">LC_MESSAGES=<span class="string">"POSIX"</span></span><br><span class="line">LC_PAPER=<span class="string">"POSIX"</span></span><br><span class="line">LC_NAME=<span class="string">"POSIX"</span></span><br><span class="line">LC_ADDRESS=<span class="string">"POSIX"</span></span><br><span class="line">LC_TELEPHONE=<span class="string">"POSIX"</span></span><br><span class="line">LC_MEASUREMENT=<span class="string">"POSIX"</span></span><br><span class="line">LC_IDENTIFICATION=<span class="string">"POSIX"</span></span><br><span class="line">LC_ALL=</span><br></pre></td></tr></table></figure></p>
 <blockquote>
 <p>“ja_JP.UTF-8” でなく “POSIX” となっている。<br>これでは、UTF-8 でエンコードされているスクリプトは日本語表示で不具合を起こすでしょう。</p>
 </blockquote>
@@ -325,11 +314,11 @@
 <blockquote>
 <p>3. 対処方法<br>cron 内で UTF-8 でデンコードされたスクリプトを実行させる場合は、以下のように LC_CTYPE, LANG を設定してやる。</p>
 </blockquote>
-<h2 id="3-解决方法"><a href="#3-解决方法" class="headerlink" title="3. 解决方法"></a>3. 解决方法</h2><p>要在cron中运行通过UTF-8编码的脚本，需要设定<code>LC_CTYPE</code>和<code>LANG</code>。如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">LC_CTYPE=<span class="string">"ja_JP.utf8"</span></div><div class="line">LANG=<span class="string">"ja_JP.utf8"</span></div><div class="line"></div><div class="line">* * * * * root locale &gt; /home/hoge/work/locale.log</div></pre></td></tr></table></figure></p>
+<h2 id="3-解决方法"><a href="#3-解决方法" class="headerlink" title="3. 解决方法"></a>3. 解决方法</h2><p>要在cron中运行通过UTF-8编码的脚本，需要设定<code>LC_CTYPE</code>和<code>LANG</code>。如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">LC_CTYPE=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LANG=<span class="string">"ja_JP.utf8"</span></span><br><span class="line"></span><br><span class="line">* * * * * root locale &gt; /home/hoge/work/locale.log</span><br></pre></td></tr></table></figure></p>
 <blockquote>
 <p>再度 “/home/hoge/work/” ディレクトリ内の “locale.log” の内容を確認してみる。</p>
 </blockquote>
-<p>再次确认<code>/home/hoge/work/</code>目录下的<code>locale.log</code>文件的内容。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">LANG=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_CTYPE=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_NUMERIC=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_TIME=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_COLLATE=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_MONETARY=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_MESSAGES=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_PAPER=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_NAME=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_ADDRESS=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_TELEPHONE=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_MEASUREMENT=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_IDENTIFICATION=<span class="string">"ja_JP.utf8"</span></div><div class="line">LC_ALL=</div></pre></td></tr></table></figure></p>
+<p>再次确认<code>/home/hoge/work/</code>目录下的<code>locale.log</code>文件的内容。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">LANG=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_CTYPE=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_NUMERIC=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_TIME=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_COLLATE=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_MONETARY=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_MESSAGES=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_PAPER=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_NAME=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_ADDRESS=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_TELEPHONE=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_MEASUREMENT=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_IDENTIFICATION=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_ALL=</span><br></pre></td></tr></table></figure></p>
 <blockquote>
 <p>“ja_JP.utf8” になりました。（UTF-8 と utf8 の違いはあるが問題ない）<br>これで、日本語出力で文字化けすることがなくなります。</p>
 </blockquote>
@@ -337,7 +326,7 @@
 <blockquote>
 <p>4. 参考<br>上記では任意のスクリプトについて話したが、UTF-8 エンコードの Ruby スクリプト（日本語出力を伴うもの）を cron 起動させるには以下のように -Ku オプションで文字コードを指定することでも対処可能である。</p>
 </blockquote>
-<h2 id="4-参考"><a href="#4-参考" class="headerlink" title="4. 参考"></a>4. 参考</h2><p>上面的记录是针对任意的脚本。若需通过cron运行含有日语输出的Ruby脚本，可以通过<code>-Ku</code>选项指定字符编码。如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * * root /usr/local/bin/ruby -Ku test_script.rb</div></pre></td></tr></table></figure></p>
+<h2 id="4-参考"><a href="#4-参考" class="headerlink" title="4. 参考"></a>4. 参考</h2><p>上面的记录是针对任意的脚本。若需通过cron运行含有日语输出的Ruby脚本，可以通过<code>-Ku</code>选项指定字符编码。如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * root /usr/local/bin/ruby -Ku test_script.rb</span><br></pre></td></tr></table></figure></p>
 <blockquote>
 <p>5. 後始末<br>当然、テストで作成した cron スクリプトは不要なので削除しておく。</p>
 <p>以上。</p>
@@ -348,7 +337,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cj1uuqw7c000hbb2hndjxs648" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cjdhhkc1y000h052h0hhefa9w" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
@@ -416,7 +405,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 13.33px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -426,7 +415,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -437,6 +426,10 @@
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
+          </li>
         
           <li>
             <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试</a>
@@ -452,10 +445,6 @@
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
@@ -486,7 +475,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Chion Tang<br>
+      &copy; 2018 Chion Tang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
     </div>
   </div>

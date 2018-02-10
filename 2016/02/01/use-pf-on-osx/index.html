@@ -5,19 +5,17 @@
   
   <title>OSX上pf的简单配置笔记 | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="水果的OSX上没有iptables，在10.10以后以pf取代ipfw。相比于iptables，pf一般使用配置文件保存防火墙规则，语法规范上更严谨，但是配置也更复杂、规则冗长。本文记录pf的简单配置方法。
-cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456scrub-anchor &amp;quot;com.apple/*&amp;quot;nat-anchor &amp;quot;co">
+  <meta name="description" content="水果的OSX上没有iptables，在10.10以后以pf取代ipfw。相比于iptables，pf一般使用配置文件保存防火墙规则，语法规范上更严谨，但是配置也更复杂、规则冗长。本文记录pf的简单配置方法。 cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456scrub-anchor &amp;quot;com.apple/*&amp;quot;nat-anchor &amp;quot;co">
+<meta name="keywords" content="OSX">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OSX上pf的简单配置笔记">
 <meta property="og:url" content="https://blog.chionlab.moe/2016/02/01/use-pf-on-osx/index.html">
 <meta property="og:site_name" content="ChionLab">
-<meta property="og:description" content="水果的OSX上没有iptables，在10.10以后以pf取代ipfw。相比于iptables，pf一般使用配置文件保存防火墙规则，语法规范上更严谨，但是配置也更复杂、规则冗长。本文记录pf的简单配置方法。
-cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456scrub-anchor &amp;quot;com.apple/*&amp;quot;nat-anchor &amp;quot;co">
+<meta property="og:description" content="水果的OSX上没有iptables，在10.10以后以pf取代ipfw。相比于iptables，pf一般使用配置文件保存防火墙规则，语法规范上更严谨，但是配置也更复杂、规则冗长。本文记录pf的简单配置方法。 cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456scrub-anchor &amp;quot;com.apple/*&amp;quot;nat-anchor &amp;quot;co">
 <meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OSX上pf的简单配置笔记">
-<meta name="twitter:description" content="水果的OSX上没有iptables，在10.10以后以pf取代ipfw。相比于iptables，pf一般使用配置文件保存防火墙规则，语法规范上更严谨，但是配置也更复杂、规则冗长。本文记录pf的简单配置方法。
-cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456scrub-anchor &amp;quot;com.apple/*&amp;quot;nat-anchor &amp;quot;co">
+<meta name="twitter:description" content="水果的OSX上没有iptables，在10.10以后以pf取代ipfw。相比于iptables，pf一般使用配置文件保存防火墙规则，语法规范上更严谨，但是配置也更复杂、规则冗长。本文记录pf的简单配置方法。 cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456scrub-anchor &amp;quot;com.apple/*&amp;quot;nat-anchor &amp;quot;co">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -197,7 +195,7 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -285,36 +283,36 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
     <div class="article-entry" itemprop="articleBody">
       
         <p>水果的OSX上没有iptables，在10.10以后以pf取代ipfw。相比于iptables，pf一般使用配置文件保存防火墙规则，语法规范上更严谨，但是配置也更复杂、规则冗长。本文记录pf的简单配置方法。</p>
-<p><code>cat /etc/pf.conf</code>，可看到以下已有内容：（忽略注释部分）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">scrub-anchor &quot;com.apple/*&quot;</div><div class="line">nat-anchor &quot;com.apple/*&quot;</div><div class="line">rdr-anchor &quot;com.apple/*&quot;</div><div class="line">dummynet-anchor &quot;com.apple/*&quot;</div><div class="line">anchor &quot;com.apple/*&quot;</div><div class="line">load anchor &quot;com.apple&quot; from &quot;/etc/pf.anchors/com.apple&quot;</div></pre></td></tr></table></figure></p>
-<p><code>anchor</code>可理解为一组规则的集合。默认情况下，这里的几行anchor都是苹果留的place holder，实际上没有active的规则。<br><code>/etc/pf.conf</code>在以后的OSX更新中可能会被覆盖，最好可以另外建立一个自定义的<code>pf.conf</code>。<br>配置文件必须按照<code>Macros</code>, <code>Tables</code>, <code>Options</code>, <code>Traffic Normalization</code>, <code>Queueing</code>, <code>Translation</code>, <code>Packet Filtering</code>的顺序。<br>更详细的说明参考<a href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man5/pf.conf.5.html" target="_blank" rel="external">pf.conf man page</a></p>
+<p><code>cat /etc/pf.conf</code>，可看到以下已有内容：（忽略注释部分）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">scrub-anchor &quot;com.apple/*&quot;</span><br><span class="line">nat-anchor &quot;com.apple/*&quot;</span><br><span class="line">rdr-anchor &quot;com.apple/*&quot;</span><br><span class="line">dummynet-anchor &quot;com.apple/*&quot;</span><br><span class="line">anchor &quot;com.apple/*&quot;</span><br><span class="line">load anchor &quot;com.apple&quot; from &quot;/etc/pf.anchors/com.apple&quot;</span><br></pre></td></tr></table></figure></p>
+<p><code>anchor</code>可理解为一组规则的集合。默认情况下，这里的几行anchor都是苹果留的place holder，实际上没有active的规则。<br><code>/etc/pf.conf</code>在以后的OSX更新中可能会被覆盖，最好可以另外建立一个自定义的<code>pf.conf</code>。<br>配置文件必须按照<code>Macros</code>, <code>Tables</code>, <code>Options</code>, <code>Traffic Normalization</code>, <code>Queueing</code>, <code>Translation</code>, <code>Packet Filtering</code>的顺序。<br>更详细的说明参考<a href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man5/pf.conf.5.html" target="_blank" rel="noopener">pf.conf man page</a></p>
 <ol>
 <li><p>添加一个<code>anchor</code>。修改<code>/etc/pf.conf</code>如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">scrub-anchor &quot;com.apple/*&quot;</div><div class="line">nat-anchor &quot;com.apple/*&quot;</div><div class="line">nat-anchor &quot;custom&quot;</div><div class="line">rdr-anchor &quot;com.apple/*&quot;</div><div class="line">rdr-anchor &quot;custom&quot;</div><div class="line">dummynet-anchor &quot;com.apple/*&quot;</div><div class="line">anchor &quot;com.apple/*&quot;</div><div class="line">anchor &quot;custom&quot;</div><div class="line">load anchor &quot;com.apple&quot; from &quot;/etc/pf.anchors/com.apple&quot;</div><div class="line">load anchor &quot;custom&quot; from &quot;/etc/pf.anchors/custom&quot;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">scrub-anchor &quot;com.apple/*&quot;</span><br><span class="line">nat-anchor &quot;com.apple/*&quot;</span><br><span class="line">nat-anchor &quot;custom&quot;</span><br><span class="line">rdr-anchor &quot;com.apple/*&quot;</span><br><span class="line">rdr-anchor &quot;custom&quot;</span><br><span class="line">dummynet-anchor &quot;com.apple/*&quot;</span><br><span class="line">anchor &quot;com.apple/*&quot;</span><br><span class="line">anchor &quot;custom&quot;</span><br><span class="line">load anchor &quot;com.apple&quot; from &quot;/etc/pf.anchors/com.apple&quot;</span><br><span class="line">load anchor &quot;custom&quot; from &quot;/etc/pf.anchors/custom&quot;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>建立<code>anchor</code>规则文件<code>/etc/pf.anchors/custom</code>，内容为具体规则。<br>常用的规则：</p>
 <ul>
 <li><p>屏蔽IP入站TCP连接并记录：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">block in log proto tcp from 192.168.1.136 to any</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">block in log proto tcp from 192.168.1.136 to any</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>转发入站TCP连接到另一本地端口：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rdr inet proto tcp from any to any port 8081 -&gt; 127.0.0.1 port 80</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rdr inet proto tcp from any to any port 8081 -&gt; 127.0.0.1 port 80</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<p>经测试，rdr无法转发到另一台外部主机上（man page的示例，只可以转发到internal network），内核开启<code>net.inet.ip.forwarding=1</code>也无效。如需转发到另一个外网IP，需要配合<a href="http://mitmproxy.org/doc/transparent/osx.html" target="_blank" rel="external">mitmproxy的透明代理</a></p>
+<p>经测试，rdr无法转发到另一台外部主机上（man page的示例，只可以转发到internal network），内核开启<code>net.inet.ip.forwarding=1</code>也无效。如需转发到另一个外网IP，需要配合<a href="http://mitmproxy.org/doc/transparent/osx.html" target="_blank" rel="noopener">mitmproxy的透明代理</a></p>
 <ul>
-<li>NAT，路由vlan12接口上(192.168.168.0/24)的出口包，经由非vlan12的接口转换到外部地址(204.92.77.111)，并允许vlan12之间的互相访问:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nat on ! vlan12 from 192.168.168.0/24 to any -&gt; 204.92.77.111</div></pre></td></tr></table></figure>
+<li>NAT，路由vlan12接口上(192.168.168.0/24)的出口包，经由非vlan12的接口转换到外部地址(204.92.77.111)，并允许vlan12之间的互相访问:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nat on ! vlan12 from 192.168.168.0/24 to any -&gt; 204.92.77.111</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 </li>
 <li><p>使配置文件生效</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pfctl -evf /etc/pf.conf</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pfctl -evf /etc/pf.conf</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="cj1uuqw8s001ybb2hfsb9gy6u" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/02/01/use-pf-on-osx/" data-id="cjdhhkc3u001u052hop2096q1" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/02/01/use-pf-on-osx/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
@@ -382,7 +380,7 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 13.33px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -392,7 +390,7 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -403,6 +401,10 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
+          </li>
         
           <li>
             <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试</a>
@@ -418,10 +420,6 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
@@ -452,7 +450,7 @@ cat /etc/pf.conf，可看到以下已有内容：（忽略注释部分）123456s
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Chion Tang<br>
+      &copy; 2018 Chion Tang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
     </div>
   </div>

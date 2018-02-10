@@ -5,22 +5,20 @@
   
   <title>TCP keepalive的探究 (2) : 浏览器的Keepalive机制 | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。
-HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
+  <meta name="description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。 HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
+<meta name="keywords" content="linux,maintenance,network">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TCP keepalive的探究 (2) : 浏览器的Keepalive机制">
 <meta property="og:url" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/index.html">
 <meta property="og:site_name" content="ChionLab">
-<meta property="og:description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。
-HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
+<meta property="og:description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。 HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
 <meta property="og:image" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/http1.1.png">
 <meta property="og:image" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/10.png">
 <meta property="og:image" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/9.png">
 <meta property="og:updated_time" content="2016-11-14T14:01:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP keepalive的探究 (2) : 浏览器的Keepalive机制">
-<meta name="twitter:description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。
-HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
+<meta name="twitter:description" content="上文介绍了TCP Keepalive机制以及其在linux中的编程实现，本文将继续介绍这种机制在浏览器中的运用，并以Chrome为例。 HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之前，我们先来了解一下第七层协议HTTP1.1中的Connection字段。注意，本章节讨论的Keepalive为七层协议(HTTP1.1)中的Kee">
 <meta name="twitter:image" content="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/http1.1.png">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
@@ -201,7 +199,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -301,20 +299,20 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
 <li>客户端所需的各种资源都请求完毕，但是因为客户端的最后一次资源请求头中仍置<code>Connection</code>为<code>keep-alive</code>，该TCP连接仍未被关闭。</li>
 <li>如果在一段时间（通常是3分钟左右）内客户端没有使用该TCP连接请求资源，服务器可能会关闭该连接。连接被关闭后，客户端需要重新向该域建立TCP连接才能继续请求数据。</li>
 </ol>
-<img src="/2016/11/07/tcp-keepalive-on-chrome/http1.1.png" alt="HTTP1.1的请求示意图" title="HTTP1.1的请求示意图">
-<img src="/2016/11/07/tcp-keepalive-on-chrome/10.png" alt="一次HTTP1.1的请求和响应报头" title="一次HTTP1.1的请求和响应报头">
+<img src="/2016/11/07/tcp-keepalive-on-chrome/http1.1.png" title="HTTP1.1的请求示意图">
+<img src="/2016/11/07/tcp-keepalive-on-chrome/10.png" title="一次HTTP1.1的请求和响应报头">
 <h3 id="几点细节"><a href="#几点细节" class="headerlink" title="几点细节"></a>几点细节</h3><ul>
 <li><p>HTTP1.1的Keep-Alive机制仅对同域下的网络请求有效。比如，对于<code>http://www.bilibili.com/index.html</code>和<code>http://www.bilibili.com/style.css</code>这两个资源请求，浏览器能够复用其TCP连接，而对于非同域下的<code>http://space.bilibili.com/index.html</code>，则需要重新建立一次TCP连接。</p>
 </li>
 <li><p>服务器有权拒绝客户端的Keep-Alive请求，在响应头中置<code>Connection</code>为<code>close</code>，并在传输一次完整的响应报文后主动关闭TCP连接，在这之后，客户端如需向该域请求资源，则需重新建立TCP连接。而事实上，即使客户端和服务端都开启了Keep-Alive，服务端一般会主动关闭非活动的连接，否则会造成资源浪费。</p>
 </li>
-<li><p>Keep-Alive虽然可以在一定程度上通过复用TCP连接来提高页面资源加载性能，但是受HTTP1.1的max-connection限制，提高的性能很有限。很多时候，为了加快更多资源的加载，通常会使用多个不同域名的CDN。而在HTTP2中，通过二进制数据帧的方式来传输同域下多资源，可以解决这个问题。关于HTTP2的传输机制，可以参考<a href="https://segmentfault.com/a/1190000006923359" target="_blank" rel="external">这篇文章</a>。</p>
+<li><p>Keep-Alive虽然可以在一定程度上通过复用TCP连接来提高页面资源加载性能，但是受HTTP1.1的max-connection限制，提高的性能很有限。很多时候，为了加快更多资源的加载，通常会使用多个不同域名的CDN。而在HTTP2中，通过二进制数据帧的方式来传输同域下多资源，可以解决这个问题。关于HTTP2的传输机制，可以参考<a href="https://segmentfault.com/a/1190000006923359" target="_blank" rel="noopener">这篇文章</a>。</p>
 </li>
 </ul>
 <h2 id="Chrome对TCP连接的保活机制"><a href="#Chrome对TCP连接的保活机制" class="headerlink" title="Chrome对TCP连接的保活机制"></a>Chrome对TCP连接的保活机制</h2><p>上篇章节中我们熟悉了七层协议中HTTP1.1的Keep-Alive机制，本章节我们介绍Chrome对四层协议的TCP Keepalive的实现。</p>
 <p><strong>Chrome何时需要启用TCP Keepalive？</strong><br>假定服务器启用了HTTP1.1 Keep-Alive，浏览器与服务器建立TCP连接，并在该TCP连接上有序地传输多个HTTP1.1七层报文，以此来请求多个资源。对于同域下，在浏览器完成一次请求并获得对应资源后，若一段时间内暂时未有新的资源请求（资源请求可能由页面JavaScript发出，如Ajax），直至下次请求发出前，该TCP连接保持空闲状态。而在这段空闲时间内，浏览器需要对该TCP连接进行保活。</p>
 <p>下面我们将通过Wireshark抓包来验证。</p>
-<img src="/2016/11/07/tcp-keepalive-on-chrome/9.png" alt="Wireshark抓到的Chrome发出的TCP keepalive探测包" title="Wireshark抓到的Chrome发出的TCP keepalive探测包">
+<img src="/2016/11/07/tcp-keepalive-on-chrome/9.png" title="Wireshark抓到的Chrome发出的TCP keepalive探测包">
 <p>从上面的抓包结果中看到，在服务器返回完整HTTP 200报文的45秒后（Time=72），本地发出了第一个TCP Keepalive探测包并收到来自服务器的ACK。</p>
 <p>这说明，Chrome对于可复用的TCP连接，采用的保活机制是TCP层（传输层）自带的Keepalive机制，通过TCP Keepalive探测包的方式实现，而不是在七层报文上自成协议来传输其它数据。</p>
 <p>而实际上，由于HTTP1.1对时序和报文的约定，浏览器也不可在七层实现保活。假设，客户端在通过HTTP1.1获取一次资源后，若在这个TCP连接上发送一个<code>0x70</code>（无意义的数据，在七层实现保活的方式大多如此），服务器会在应用层接收到并缓存该数据，一段时间后客户端发送有效的HTTP请求报头，则服务端CGI应用程序收到的数据是<code>0x70</code>再接上一段HTTP请求头，这被认为是无效的HTTP报文，服务器则会返回400响应头，告知客户端这是坏的请求（Bad Request）。</p>
@@ -324,7 +322,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cj1uuqw8h001hbb2hmtnytmn7" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cjdhhkc3o001n052h0z88m5an" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
@@ -392,7 +390,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 13.33px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -402,7 +400,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -413,6 +411,10 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
+          </li>
         
           <li>
             <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试</a>
@@ -428,10 +430,6 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
@@ -462,7 +460,7 @@ HTTP1.1中的Connection: Keep-Alive在介绍Chrome对TCP Keepalive的实现之�
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Chion Tang<br>
+      &copy; 2018 Chion Tang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
     </div>
   </div>

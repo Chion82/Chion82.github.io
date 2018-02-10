@@ -6,6 +6,7 @@
   <title>Using Gulp to Simplify Front end Development Workflow | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="What is GulpGulp is a streaming build system which is usually used to simplify front-end development workflow, such as automatically minifying JavaScript or compiling LESS. In this tutorial, you’ll le">
+<meta name="keywords" content="front-end">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Using Gulp to Simplify Front end Development Workflow">
 <meta property="og:url" content="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/index.html">
@@ -194,7 +195,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -287,36 +288,36 @@
 <li>have node.js &amp; npm installed</li>
 <li>have basic knowledge of node.js scripting.</li>
 </ul>
-<h1 id="Installing-Gulp"><a href="#Installing-Gulp" class="headerlink" title="Installing Gulp"></a>Installing Gulp</h1><p>Let’s start with the installation of Gulp.<br>Run the following command in your shell terminal. The installation requires sudo or root previlege and you may be required to enter the password.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo npm install --global gulp</div></pre></td></tr></table></figure></p>
-<h1 id="Project-Setup"><a href="#Project-Setup" class="headerlink" title="Project Setup"></a>Project Setup</h1><p><code>cd</code> into the root directory of your project and run the following command, which will save the Gulp dependencies in your project directory.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install --save-dev gulp</div></pre></td></tr></table></figure></p>
+<h1 id="Installing-Gulp"><a href="#Installing-Gulp" class="headerlink" title="Installing Gulp"></a>Installing Gulp</h1><p>Let’s start with the installation of Gulp.<br>Run the following command in your shell terminal. The installation requires sudo or root previlege and you may be required to enter the password.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo npm install --global gulp</span><br></pre></td></tr></table></figure></p>
+<h1 id="Project-Setup"><a href="#Project-Setup" class="headerlink" title="Project Setup"></a>Project Setup</h1><p><code>cd</code> into the root directory of your project and run the following command, which will save the Gulp dependencies in your project directory.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save-dev gulp</span><br></pre></td></tr></table></figure></p>
 <h1 id="Create-gulpfile-js"><a href="#Create-gulpfile-js" class="headerlink" title="Create gulpfile.js"></a>Create gulpfile.js</h1><p>At the root of your project, create a <code>gulpfile.js</code> containing the following code.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> gulp = <span class="built_in">require</span>(<span class="string">'gulp'</span>);</div><div class="line"></div><div class="line">gulp.task(<span class="string">'mytask'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;  </div><div class="line"> 	<span class="comment">//All task code places here  </span></div><div class="line">	<span class="built_in">console</span>.log(<span class="string">'Hello World!'</span>);  </div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> gulp = <span class="built_in">require</span>(<span class="string">'gulp'</span>);</span><br><span class="line"></span><br><span class="line">gulp.task(<span class="string">'mytask'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;  </span><br><span class="line"> 	<span class="comment">//All task code places here  </span></span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'Hello World!'</span>);  </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>The code above defines a gulp task named “mytask” with the detailed commands defined in the callback function as the second parameter passed to the <code>gulp.task()</code> method. When running this task, <code>console.log(&#39;Hello World!&#39;);</code> will be executed.</p>
-<h1 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h1><p>Now you should be able to run <code>mytask</code> using the following command:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ gulp mytask</div></pre></td></tr></table></figure></p>
-<p>Assume the root directory of your project is <code>~/project</code>, the output should be like:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">➜  project  gulp mytask</div><div class="line">[21:14:25] Using gulpfile ~/project/gulpfile.js</div><div class="line">[21:14:25] Starting <span class="string">'mytask'</span>...</div><div class="line">Hello World!</div><div class="line">[21:14:25] Finished <span class="string">'mytask'</span> after 62 μs</div></pre></td></tr></table></figure></p>
+<h1 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h1><p>Now you should be able to run <code>mytask</code> using the following command:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gulp mytask</span><br></pre></td></tr></table></figure></p>
+<p>Assume the root directory of your project is <code>~/project</code>, the output should be like:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  project  gulp mytask</span><br><span class="line">[21:14:25] Using gulpfile ~/project/gulpfile.js</span><br><span class="line">[21:14:25] Starting <span class="string">'mytask'</span>...</span><br><span class="line">Hello World!</span><br><span class="line">[21:14:25] Finished <span class="string">'mytask'</span> after 62 μs</span><br></pre></td></tr></table></figure></p>
 <p>You can always run specific tasks by executing <code>gulp &lt;task&gt; &lt;other_task&gt;</code></p>
-<h1 id="Basic-File-Streaming"><a href="#Basic-File-Streaming" class="headerlink" title="Basic File Streaming"></a>Basic File Streaming</h1><p>In this section we’ll use Gulp’s streaming system which is its primary function.<br>We will use <code>Gulp.src()</code>, <code>Gulp.dest()</code>, <code>readable.pipe()</code> to implement a basic JavaScript source file copying program using Gulp.<br>For detailed API doc of the methods above, please refer to <a href="https://github.com/gulpjs/gulp/blob/master/docs/API.md" target="_blank" rel="external">Gulp API doc</a> and <a href="https://nodejs.org/api/stream.html#stream_readable_pipe_destination_options" target="_blank" rel="external">Node.js:Stream</a>.  </p>
+<h1 id="Basic-File-Streaming"><a href="#Basic-File-Streaming" class="headerlink" title="Basic File Streaming"></a>Basic File Streaming</h1><p>In this section we’ll use Gulp’s streaming system which is its primary function.<br>We will use <code>Gulp.src()</code>, <code>Gulp.dest()</code>, <code>readable.pipe()</code> to implement a basic JavaScript source file copying program using Gulp.<br>For detailed API doc of the methods above, please refer to <a href="https://github.com/gulpjs/gulp/blob/master/docs/API.md" target="_blank" rel="noopener">Gulp API doc</a> and <a href="https://nodejs.org/api/stream.html#stream_readable_pipe_destination_options" target="_blank" rel="noopener">Node.js:Stream</a>.  </p>
 <ul>
 <li>Create a directory named <code>js</code> at the root of your project (Assume you created this directory: <code>~/project/js</code>) and place some JavaScript files in it.  </li>
 <li><p>Add the following code at the end of <code>gulpfile.js</code>  </p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">gulp.task(<span class="string">'copyjs'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">        gulp.src(<span class="string">'js/*.js'</span>)</div><div class="line">           .pipe(gulp.dest(<span class="string">'dest'</span>));</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gulp.task(<span class="string">'copyjs'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        gulp.src(<span class="string">'js/*.js'</span>)</span><br><span class="line">           .pipe(gulp.dest(<span class="string">'dest'</span>));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>At the root of the project which is <code>~/project</code>, run:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ gulp copyjs</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gulp copyjs</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Check out <code>~/project/dest</code> to which you’ll find all js files in <code>~/project/js</code> are copied.</p>
 </li>
 </ul>
-<h1 id="Using-Gulp-to-Minify-JS"><a href="#Using-Gulp-to-Minify-JS" class="headerlink" title="Using Gulp to Minify JS"></a>Using Gulp to Minify JS</h1><p>Next we’ll use Gulp to do some amazing tasks which bring great convenience for front-end development.<br>Let’s start with JavaScript minifying.<br>To make Gulp powerful enouth to do this job, we must install some plugins of Gulp. Here we’ll use <strong>gulp-uglify</strong>.(For more amazing gulp plugins, check out <a href="http://gulpjs.com/plugins/" target="_blank" rel="external">Gulp Plugins</a>)  </p>
+<h1 id="Using-Gulp-to-Minify-JS"><a href="#Using-Gulp-to-Minify-JS" class="headerlink" title="Using Gulp to Minify JS"></a>Using Gulp to Minify JS</h1><p>Next we’ll use Gulp to do some amazing tasks which bring great convenience for front-end development.<br>Let’s start with JavaScript minifying.<br>To make Gulp powerful enouth to do this job, we must install some plugins of Gulp. Here we’ll use <strong>gulp-uglify</strong>.(For more amazing gulp plugins, check out <a href="http://gulpjs.com/plugins/" target="_blank" rel="noopener">Gulp Plugins</a>)  </p>
 <ul>
 <li><p>Back to <code>~/project</code>, run the following command to install <strong>gulp-uglify</strong>.</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install --save-dev gulp-uglify</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save-dev gulp-uglify</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Replace <code>gulpfile.js</code> with the following code.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> gulp = <span class="built_in">require</span>(<span class="string">'gulp'</span>);</div><div class="line"><span class="keyword">var</span> uglify = <span class="built_in">require</span>(<span class="string">'gulp-uglify'</span>);</div><div class="line"></div><div class="line">gulp.task(<span class="string">'minifyjs'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">        gulp.src(<span class="string">'js/*.js'</span>)	<span class="comment">//Get the stream of the source file</span></div><div class="line">                .pipe(uglify())<span class="comment">//Pass the stream to the uglify module to minify all JS files.</span></div><div class="line">                .pipe(gulp.dest(<span class="string">'build'</span>));<span class="comment">//Pass the stream to the destination directory which is ~/project/build</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> gulp = <span class="built_in">require</span>(<span class="string">'gulp'</span>);</span><br><span class="line"><span class="keyword">var</span> uglify = <span class="built_in">require</span>(<span class="string">'gulp-uglify'</span>);</span><br><span class="line"></span><br><span class="line">gulp.task(<span class="string">'minifyjs'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        gulp.src(<span class="string">'js/*.js'</span>)	<span class="comment">//Get the stream of the source file</span></span><br><span class="line">                .pipe(uglify())<span class="comment">//Pass the stream to the uglify module to minify all JS files.</span></span><br><span class="line">                .pipe(gulp.dest(<span class="string">'build'</span>));<span class="comment">//Pass the stream to the destination directory which is ~/project/build</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Exucute the task by running:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ gulp minifyjs</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gulp minifyjs</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Check out <code>~/project/build</code>. All minified JavaScript source files are placed here!</p>
 </li>
@@ -324,10 +325,10 @@
 <h1 id="Using-Gulp-watch"><a href="#Using-Gulp-watch" class="headerlink" title="Using Gulp.watch()"></a>Using Gulp.watch()</h1><p>Sometimes we want the JS files to be automatically minified everytime we modify them and <code>Gulp.watch()</code> will do the trick.<br><code>Gulp.watch()</code> allows us to implement a daemon to monitor file modifications and automatically execute specific tasks every time the modifications are made.  </p>
 <ul>
 <li><p>Add the following code at the end of <code>gulpfile.js</code>.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">gulp.task(<span class="string">'watchjs'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">        gulp.watch(<span class="string">'js/*.js'</span>,[<span class="string">'minifyjs'</span>]);	<span class="comment">//Watch all *.js files under ~/project/js directory and run task "minifyjs" when files are modified</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gulp.task(<span class="string">'watchjs'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        gulp.watch(<span class="string">'js/*.js'</span>,[<span class="string">'minifyjs'</span>]);	<span class="comment">//Watch all *.js files under ~/project/js directory and run task "minifyjs" when files are modified</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Execute the daemon task by running:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ gulp watchjs</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gulp watchjs</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Now, JS files will be automatically minified every time you modify them.</p>
 </li>
@@ -336,7 +337,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cj1uuqw6s0006bb2hz8ppceri" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cjdhhkc190006052hvxh66zia" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
@@ -404,7 +405,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 13.33px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -414,7 +415,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -425,6 +426,10 @@
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
+          </li>
         
           <li>
             <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试</a>
@@ -440,10 +445,6 @@
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
@@ -474,7 +475,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Chion Tang<br>
+      &copy; 2018 Chion Tang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
     </div>
   </div>

@@ -5,25 +5,17 @@
   
   <title>OpenWRT自动科学上网的问题及优化 | ChionLab  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：
-
-ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）
-链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
+  <meta name="description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：  ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区） 链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
+<meta name="keywords" content="openwrt,router">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenWRT自动科学上网的问题及优化">
 <meta property="og:url" content="https://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/index.html">
 <meta property="og:site_name" content="ChionLab">
-<meta property="og:description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：
-
-ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）
-链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
+<meta property="og:description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：  ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区） 链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
 <meta property="og:updated_time" content="2016-09-09T16:05:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OpenWRT自动科学上网的问题及优化">
-<meta name="twitter:description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：
-
-ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区）
-链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
+<meta name="twitter:description" content="在OpenWRT路由器配置ShadowSocks+ChinaDNS虽然使用起来十分优雅和方便，但是因为ISP质量问题，可能随之会带来很多稳定性问题，包括但不限以下作者遇到过的问题：  ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询失败（比如广州电信部分地区） 链路拥堵时，到ss服务器的多并发TCP连接无法建立成功，新建立的连接容易卡在SYN_SENT，最终导致超时">
   
     <link rel="alternate" href="/atom.xml" title="ChionLab" type="application/atom+xml">
   
@@ -203,7 +195,7 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.chionlab.moe"></form>
       </div>
     </div>
   </div>
@@ -300,45 +292,45 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
 <p>一、在UDP跳板服务器上进行以下配置以实现中转。</p>
 <ol>
 <li><p>开启内核的ip_forward</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/sysctl.conf</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> vim /etc/sysctl.conf</span></span><br></pre></td></tr></table></figure>
 <p>将<code>net.ipv4.ip_forward=0</code>修改为<code>net.ipv4.ip_forward=1</code>。如果文件为空，则添加一行<code>net.ipv4.ip_forward=1</code>即可。<br>运行这条命令即时生效：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># sysctl -p</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># sysctl -p</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>用iptables实现TCP+UDP中转</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># iptables -t nat -A PREROUTING -p tcp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A PREROUTING -p ucp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</div><div class="line"># iptables -t nat -A POSTROUTING -j MASQUERADE</div><div class="line"># service iptables save #永久保存修改</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> iptables -t nat -A PREROUTING -p tcp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> iptables -t nat -A PREROUTING -p ucp --dport [PORT] -j DNAT --to-destination X.X.X.X:X</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> iptables -t nat -A POSTROUTING -j MASQUERADE</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> service iptables save <span class="comment">#永久保存修改</span></span></span><br></pre></td></tr></table></figure>
 <p>其中，<code>X.X.X.X:X</code>为ss服务器IP和端口，<code>[PORT]</code>为跳板服务器上用于中转的监听端口（为了方便，可以和ss服务器的端口相同）。</p>
 </li>
 </ol>
 <p>二、修改OpenWRT上的配置</p>
 <ol>
 <li><p>ssh连接上路由器，建立一个跳板服务器的ss配置:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># cp /var/etc/shadowsocks.json /root/shadowsocks_udp.json #复制当前的ss配置文件</div><div class="line"># vim /root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cp /var/etc/shadowsocks.json /root/shadowsocks_udp.json <span class="comment">#复制当前的ss配置文件</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> vim /root/shadowsocks_udp.json</span></span><br></pre></td></tr></table></figure>
 <p>然后修改<code>/root/shadowsocks_udp.json</code>，将远程服务器IP改为跳板服务器的IP，远程端口改为跳板服务器的监听端口（即刚才的<code>[PORT]</code>）</p>
 </li>
 <li><p>然后需要修改shadowsocks的启动脚本，让ss隧道使用跳板服务器的配置文件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/init.d/shadowsocks</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># vim /etc/init.d/shadowsocks</span><br></pre></td></tr></table></figure>
 <p>在<code>CONFIG_FILE=/var/etc/shadowsocks.json</code>下增加一行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UDP_CONFIG_FILE=/root/shadowsocks_udp.json</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UDP_CONFIG_FILE=/root/shadowsocks_udp.json</span><br></pre></td></tr></table></figure>
 <p>找到：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ss-tunnel \       </span><br><span class="line">              -c $CONFIG_FILE \        </span><br><span class="line">              -l $tunnel_port \          </span><br><span class="line">              -L $tunnel_forward \</span><br><span class="line">              -f /var/run/ss-tunnel.pid \</span><br></pre></td></tr></table></figure>
 <p>将其修改为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ss-tunnel \       </div><div class="line">              -c $UDP_CONFIG_FILE \        </div><div class="line">              -l $tunnel_port \          </div><div class="line">              -L $tunnel_forward \</div><div class="line">              -f /var/run/ss-tunnel.pid \</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ss-tunnel \       </span><br><span class="line">              -c $UDP_CONFIG_FILE \        </span><br><span class="line">              -l $tunnel_port \          </span><br><span class="line">              -L $tunnel_forward \</span><br><span class="line">              -f /var/run/ss-tunnel.pid \</span><br></pre></td></tr></table></figure>
 <p>保存后重启shadowsocks</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># /etc/init.d/shadowsocks restart</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># /etc/init.d/shadowsocks restart</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <h2 id="优化TCP稳定性"><a href="#优化TCP稳定性" class="headerlink" title="优化TCP稳定性"></a>优化TCP稳定性</h2><ol>
 <li>最好的方法是选择链路质量好的服务器作为ss服务器，比如香港的vps，将不容易出现多并发TCP连接无法建立的情况。</li>
 <li>如果不能选择更换ss服务器，可在ss服务器上同时监听多个端口，同时在路由器上使用haproxy进行负载均衡，把ss服务器的多个端口加入到upstream列表中，由于haproxy超时自动更换upstream的特性，可大大降低连接失败的概率。详细操作方法作者将在下篇博文中介绍。</li>
 </ol>
-<h2 id="ChinaDNS偶然解析不正常的解决"><a href="#ChinaDNS偶然解析不正常的解决" class="headerlink" title="ChinaDNS偶然解析不正常的解决"></a>ChinaDNS偶然解析不正常的解决</h2><p>尚不明确为何ChinaDNS长时间运行后偶然地可能会始终返回国外DNS结果（重启ChinaDNS即恢复），作者之前尝试<a href="https://github.com/Chion82/ChinaDNS" target="_blank" rel="external">修改了一下ChinaDNS</a>，将判断某个IP是否为国内IP的逻辑修改为借助ipset来判断，但是作者没有测试过其稳定性。<br>本文介绍的解决方法很无脑，即定时重启ChinaDNS。使用cron，在每天的零时重启一次ChinaDNS。经作者测试，这招确实有效。<br>在路由器上运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># crontab -e</div></pre></td></tr></table></figure></p>
-<p>添加一行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 0 * * * /etc/init.d/chinadns restart</div></pre></td></tr></table></figure></p>
+<h2 id="ChinaDNS偶然解析不正常的解决"><a href="#ChinaDNS偶然解析不正常的解决" class="headerlink" title="ChinaDNS偶然解析不正常的解决"></a>ChinaDNS偶然解析不正常的解决</h2><p>尚不明确为何ChinaDNS长时间运行后偶然地可能会始终返回国外DNS结果（重启ChinaDNS即恢复），作者之前尝试<a href="https://github.com/Chion82/ChinaDNS" target="_blank" rel="noopener">修改了一下ChinaDNS</a>，将判断某个IP是否为国内IP的逻辑修改为借助ipset来判断，但是作者没有测试过其稳定性。<br>本文介绍的解决方法很无脑，即定时重启ChinaDNS。使用cron，在每天的零时重启一次ChinaDNS。经作者测试，这招确实有效。<br>在路由器上运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># crontab -e</span><br></pre></td></tr></table></figure></p>
+<p>添加一行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 0 * * * /etc/init.d/chinadns restart</span><br></pre></td></tr></table></figure></p>
 <p>保存并重启路由器生效。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cj1uuqw810015bb2hmixanpcf" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/" data-id="cjdhhkc380018052h16dlmkol" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/27/optimize-shadowsocks-on-openwrt/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
       
@@ -406,7 +398,7 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 13.33px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -416,7 +408,7 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -427,6 +419,10 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
+          </li>
         
           <li>
             <a href="/2017/04/06/kcptun-with-fake-tcp/">kcptun-raw：应对UDP QoS，重新实现kcptun的一次尝试</a>
@@ -442,10 +438,6 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
@@ -476,7 +468,7 @@ ISP封杀境外UDP流量，导致SS的UDP隧道非常不稳定，ChinaDNS查询�
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Chion Tang<br>
+      &copy; 2018 Chion Tang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, themed &amp; customized by Chion
     </div>
   </div>
