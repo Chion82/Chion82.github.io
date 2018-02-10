@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="前言 根据 RFC 3489 中的定义，NAT类型被划分为以下四种： Full Cone, Restricted Cone, Port Restricted Cone, Symmetric. (RFC 5780 中对NAT类型定义有了更严格的拓展分类，但不是十分常用，本文暂不探讨。) STUN过程( RFC 3489 和 RFC 5389 )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛">
-<meta property="og:updated_time" content="2018-02-10T15:03:34.000Z">
+<meta property="og:updated_time" content="2018-02-10T15:24:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现">
 <meta name="twitter:description" content="前言 根据 RFC 3489 中的定义，NAT类型被划分为以下四种： Full Cone, Restricted Cone, Port Restricted Cone, Symmetric. (RFC 5780 中对NAT类型定义有了更严格的拓展分类，但不是十分常用，本文暂不探讨。) STUN过程( RFC 3489 和 RFC 5389 )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛">
@@ -309,7 +309,7 @@
 <p>由此可见，他们的回答基本和我们的讨论基本无二：netfilter只实现最成熟的symmetric NAT，如果要实现Full Cone NAT，需要使用一对一的定向DNAT/NETMAP转发。</p>
 <h2 id="还有没有必要在Linux上实现真正意义上的Full-Cone-NAT？"><a href="#还有没有必要在Linux上实现真正意义上的Full-Cone-NAT？" class="headerlink" title="还有没有必要在Linux上实现真正意义上的Full Cone NAT？"></a>还有没有必要在Linux上实现真正意义上的Full Cone NAT？</h2><p>经过对DMZ host和UPnP的分析，我们重新定义何为“真正意义上的Full Cone NAT”：对于内网主机中的任意一台主机，在不借助“主动端口映射”申请（如UPnP）和“手动端口转发配置”（如DMZ host或DNAT规则）下，在路由器端口用完之前，都是Full Cone的；路由器的“入站端口映射规则”是根据“内网主机出站端口映射记录”动态生成的，无论内网主机数量是否改变，内网主机的IP地址是否变更，在不依赖人工改变配置时，内网主机的NAT类型始终为Full Cone。<br>当然，这个定义只是为了方便理解本文的内容而定下的。</p>
 <p>Linux的NAT类型的影响范围：涉及了所有日渐普及的基于Linux的嵌入式网络设备，如家用光猫、家用智能路由器等。事实上，部分小区级别的ISP由于节约成本使用的也是基于Linux的NAT路由器，出于安全考虑这些路由器当然不会开启UPnP，因此这部分ISP的终端用户将不可能得到完整的Full Cone NAT。对于电信、移动等一级运营商，通过光纤入户的普通用户通常经过企业级LSN设备的NAT，至此入户部分的PPPoE拨号终端通常是Full Cone的，但是，由于一部分用户使用光猫拨号再由光猫NAT后路由至用户最终的计算机（这也是运营商推荐的方式），而光猫没有开启UPnP或DMZ（用户通常没有权限配置），这部分用户的终端设备也不可能得到Full Cone NAT而通常是Symmetric NAT。</p>
-<p>因此作者认为，还是有必要在Linux上实现Full Cone NAT。</p>
+<p>因此作者认为，还是有必要在Linux上实现Full Cone NAT。Symmetric NAT意味着更高的安全性，而Cone NAT能兼容更多的应用程序。我们当然不会通过硬编码来实现这个feature，而应该是为用户提供一个新的选择。</p>
 <h2 id="netfilter内核子系统和conntrack"><a href="#netfilter内核子系统和conntrack" class="headerlink" title="netfilter内核子系统和conntrack"></a>netfilter内核子系统和conntrack</h2><p>经过作者的各种尝试，要实现一个高效的原生Full Cone NAT，在应用层是无法实现的了（就算通过程序抓包后实时添加iptables规则，或从用户态刷新conntrack，也非常低效），因此，我们只能深入linux内核来进一步研究。</p>
 <p><strong>HACK THE KERNEL!</strong></p>
 <p>上文已有提到，在linux中负责处理nat的内核子系统是netfilter，而netfilter对应的前端有iptables和nftables。</p>
