@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="前言 根据 RFC 3489 中的定义，NAT类型被划分为以下四种： Full Cone, Restricted Cone, Port Restricted Cone, Symmetric. (RFC 5780 中对NAT类型定义有了更严格的拓展分类，但不是十分常用，本文暂不探讨。) STUN过程( RFC 3489 和 RFC 5389 )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛">
-<meta property="og:updated_time" content="2018-02-10T14:51:41.000Z">
+<meta property="og:updated_time" content="2018-02-10T15:03:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现">
 <meta name="twitter:description" content="前言 根据 RFC 3489 中的定义，NAT类型被划分为以下四种： Full Cone, Restricted Cone, Port Restricted Cone, Symmetric. (RFC 5780 中对NAT类型定义有了更严格的拓展分类，但不是十分常用，本文暂不探讨。) STUN过程( RFC 3489 和 RFC 5389 )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛">
@@ -287,7 +287,7 @@
 <li>STUN过程( <a href="https://www.ietf.org/rfc/rfc3489.txt" target="_blank" rel="noopener">RFC 3489</a> 和 <a href="https://tools.ietf.org/html/rfc5389" target="_blank" rel="noopener">RFC 5389</a> )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛应用于 VoIP、WebRTC、网络游戏、VPN等涉及低延迟点到点通讯的领域。</li>
 <li>基于STUN的内网穿透成功率取决于通信双方的NAT类型，其中 Full Cone NAT 的成功率最高。</li>
 <li>关于NAT type和STUN协议、STUN过程的详细知识请参考其他文章。本文仅探讨 RFC 3489 下定义的 Full Cone NAT 和 UDP hole punching 技术。</li>
-<li>本文中的NAT泛指NAPT。ALG等周边技术在部分厂商的linux网络设备上已有相应实现，暂不讨论。</li>
+<li>本文中的NAT特指NAPT。ALG等周边技术在部分厂商的linux网络设备上已有相应实现，暂不讨论。</li>
 <li>你可以直接到 <a href="https://github.com/Chion82/netfilter-full-cone-nat" target="_blank" rel="noopener">https://github.com/Chion82/netfilter-full-cone-nat</a> 使用本文的解决方案。</li>
 </ul>
 <h2 id="关于NAT类型在Linux上实现的现状"><a href="#关于NAT类型在Linux上实现的现状" class="headerlink" title="关于NAT类型在Linux上实现的现状"></a>关于NAT类型在Linux上实现的现状</h2><p>TLDR: Linux上至今未实现真正意义上的Full Cone NAT，Linux的 SNAT/MASQUERADE（以<code>iptables</code>的配置为例）均是Symmetric NAT。</p>
