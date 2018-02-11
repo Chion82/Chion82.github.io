@@ -44,11 +44,18 @@
   <link href="/stylesheets/jquery-confirm.min.css" rel="stylesheet" type="text/css">
   <script src="/scripts/jquery-2.2.0.min.js"></script>
   <script src="/scripts/jquery-confirm.min.js"></script>
+  <!--
   
     <script>
       var yunModuleEnv = true;
     </script>
     <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+  -->
+
+  
+    <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+    <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
   
 
   
@@ -355,9 +362,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjdhjkeoh000g6z2hcek3vfgq" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjdiq02sn000n2c2h23yquk4q" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/#disqus_thread" class="article-comment-link disqus-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/#gitment-comments" class="article-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/network/">network</a></li></ul>
@@ -380,7 +387,26 @@
 </article>
 
 
-<section id="comments" class="disqus-comments-section">
+<section id="gitment-comments">
+
+</section>
+<script>
+var gitment = new Gitment({
+  id: 'full-cone-nat-with-linux',
+  owner: 'Chion82',
+  repo: 'Chion82.github.io',
+  oauth: {
+    client_id: '3d49c913e74f56758d07',
+    client_secret: '35dde7b9a07307660ca366a195434c19c076c7df'
+  }
+});
+
+gitment.render('gitment-comments');
+</script>
+
+
+
+<section id="disqus-comments" class="disqus-comments-section">
   <div id="disqus_thread">
     <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>

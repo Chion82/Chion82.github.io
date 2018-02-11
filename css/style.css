@@ -946,7 +946,8 @@ a.article-title:hover {
   max-width: 100%;
   margin: 0 auto;
 }
-#comments {
+#disqus-comments,
+#gitment-comments {
   background: #fff;
   -webkit-box-shadow: 1px 2px 3px #ddd;
   box-shadow: 1px 2px 3px #ddd;
@@ -955,7 +956,8 @@ a.article-title:hover {
   border-radius: 3px;
   margin: 50px 0;
 }
-#comments a {
+#disqus-comments a,
+#gitment-comments a {
   color: #258fb8;
 }
 .archives-wrap {
