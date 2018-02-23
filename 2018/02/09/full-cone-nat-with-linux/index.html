@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="前言 根据 RFC 3489 中的定义，NAT类型被划分为以下四种： Full Cone, Restricted Cone, Port Restricted Cone, Symmetric. (RFC 5780 中对NAT类型定义有了更严格的拓展分类，但不是十分常用，本文暂不探讨。) STUN过程( RFC 3489 和 RFC 5389 )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛">
-<meta property="og:updated_time" content="2018-02-11T07:46:17.000Z">
+<meta property="og:updated_time" content="2018-02-23T04:40:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现">
 <meta name="twitter:description" content="前言 根据 RFC 3489 中的定义，NAT类型被划分为以下四种： Full Cone, Restricted Cone, Port Restricted Cone, Symmetric. (RFC 5780 中对NAT类型定义有了更严格的拓展分类，但不是十分常用，本文暂不探讨。) STUN过程( RFC 3489 和 RFC 5389 )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛">
@@ -308,7 +308,7 @@
 <li>一次UPnP请求只能进行一级NAT的映射，当然你也可以转发UPnP请求到上级NAT设备，但是似乎至今没有一款家用智能路由器会这么做。这意味着如果你在家使用两台以上的智能路由器级联上网，仅通过UPnP是无法实现内网穿透的。</li>
 </ul>
 <p>综上所述，目前Linux下对于Full Cone NAT的实现均是基于主动的端口映射技术（添加DNAT规则），这种实现一定程度上能满足现今的大多数家用场景，但仍在很多场合下有较大的局限性：如网吧、ISP的NAT(LSN)网关等，这些组织对于Full Cone NAT的实现通常是使用非Linux内核的企业级路由设备，这些设备可能基于如思科的硬转发芯片、FPGA等。</p>
-<h2 id="内核开发者们的说法"><a href="#内核开发者们的说法" class="headerlink" title="内核开发者们的说法"></a>内核开发者们的说法</h2><p>对于Full Cone NAT这个feature，Linux内核开发者（具体是netfilter子系统）早有对用户的回答：</p>
+<h2 id="Mailing"><a href="#Mailing" class="headerlink" title="Mailing"></a>Mailing</h2><p>对于Full Cone NAT这个feature，可以从内核（具体是netfilter子系统）的mailing list上找到相关的问题：</p>
 <blockquote>
 <p><a href="http://lists.netfilter.org/pipermail/netfilter/2005-February/058428.html" target="_blank" rel="noopener">Configure to Full Cone</a> :<br>How can I configure IPtables to be Full Cone?<br>- You cannot. iptable_nat only implements the most sophisticated version<br>of NAT: fully symmetric.</p>
 <p><a href="http://lists.netfilter.org/pipermail/netfilter/2007-February/067963.html" target="_blank" rel="noopener">IPTables and different types of NAT</a> :<br>“Full cone NAT” can be implemented with 1-to-1 bidirectional NAT using<br>SNAT+DNAT or NETMAP.</p>
@@ -362,7 +362,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjdq0b191000nla2hgt15tcdg" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjdzg9gve000njvcmp2lbqof8" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/#gitment-comments" class="article-comment-link">评论</a>
       
