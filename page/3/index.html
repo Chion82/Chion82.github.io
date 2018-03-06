@@ -263,95 +263,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-openwrt-bypass-gfw-solution" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/01/23/openwrt-bypass-gfw-solution/" class="article-date">
-  <time datetime="2016-01-23T08:07:53.000Z" itemprop="datePublished">2016-01-23</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/23/openwrt-bypass-gfw-solution/">OpenWRT路由器上的ShadowSocks+ChinaDNS搭梯子方案</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在路由器上运行ShadowSocks科学上网是最为优雅的方案。本文将介绍其安装和配置步骤。<br>首先为智能路由器刷上OpenWRT，博主推荐<a href="http://downloads.openwrt.org.cn/PandoraBox/" target="_blank" rel="noopener">Pandorabox</a>修改版。本文将实现：连接上路由器的客户端当访问国内主机时，直接连接，而访问国外主机时，自动代理。</p>
-<blockquote>
-<p>2016.12.25更新：<br>openwrt shadowsocks作者已不在SourceForge上更新，大家可以直接到Github Release下载预编译包（感谢Blessing Studio博主提醒）：<br><a href="https://github.com/shadowsocks/openwrt-shadowsocks/releases" target="_blank" rel="noopener">https://github.com/shadowsocks/openwrt-shadowsocks/releases</a><br>另外可以参考博主最新的 <a href="https://blog.chionlab.moe/2016/12/12/better-way-to-bypass-gfw-with-tinc/">tinc VPN策略路由</a> ，使用更优雅的方式科学上网</p>
-</blockquote>
-<h2 id="安装ShadowSocks"><a href="#安装ShadowSocks" class="headerlink" title="安装ShadowSocks"></a>安装ShadowSocks</h2><ol>
-<li><p>因为本文讨论的是SS+ChinaDNS的翻墙方案，对于部分已集成SS+domain list的固件版本，需要先删除已安装的SS及相关工具。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#ssh连接上路由器后运行</span><br><span class="line">$ opkg list_installed | grep shadowsocks #查询已安装的ss和相关工具</span><br><span class="line"># opkg remove shadowsocks-* #删除之</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>下载安装shadowsocks-libev-spec<br><a href="https://github.com/shadowsocks/openwrt-shadowsocks/releases" target="_blank" rel="noopener">https://github.com/shadowsocks/openwrt-shadowsocks/releases</a><br>经作者测试，最新版在极贰最新OpenWRT固件上会出现iptables规则失效的情况，建议使用<code>shadowsocks-libev-spec_2.3.0-1_XXXX</code>版本。<br>以MT7620系列为例，在路由器上运行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># opkg update</span><br><span class="line"># cd /tmp</span><br><span class="line"># wget http://sourceforge.net/projects/openwrt-dist/files/shadowsocks-libev/2.3.0-3ff06a6/ramips/shadowsocks-libev-spec_2.3.0-1_ramips_24kec.ipk  #如果不是ramips平台，请根据路由器ARCH选择对应ipk</span><br><span class="line"># opkg install shadowsocks-libev-spec_2.3.0-1_ramips_24kec.ipk</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>下载安装luci-app-shadowsocks-spec<br>luci-app提供ss的图形化配置界面。<br><a href="http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/" target="_blank" rel="noopener">http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/</a><br>如果<code>shadowsocks-libev-spec</code>使用的版本是本文推荐的<code>2.3.0</code>，请下载<code>luci-app-shadowsocks-spec_1.3.2-1_all.ipk</code>。路由器上运行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># wget http://sourceforge.net/projects/openwrt-dist/files/luci-app/shadowsocks-spec/luci-app-shadowsocks-spec_1.3.2-1_all.ipk</span><br><span class="line"># opkg install luci-app-shadowsocks-spec_1.3.2-1_all.ipk</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="安装ChinaDNS"><a href="#安装ChinaDNS" class="headerlink" title="安装ChinaDNS"></a>安装ChinaDNS</h2><p>ChinaDNS用于解决国内DNS污染问题，同时可加速国内网站的访问。其原理如下：<br>提供至少一个国内DNS服务器和一个国外DNS服务器，ChinaDNS收到来自用户的DNS请求后，同时向这两个服务器发DNS请求。如果从国内DNS服务器返回的解析结果为国外IP，则选择国外DNS服务器的解析结果，否则选择国内DNS的解析结果，最后返回给用户。<br><a href="http://sourceforge.net/projects/openwrt-dist/files/chinadns/" target="_blank" rel="noopener">http://sourceforge.net/projects/openwrt-dist/files/chinadns/</a></p>
-<ol>
-<li><p>ChinaDNS</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://sourceforge.net/projects/openwrt-dist/files/chinadns/1.3.2-d3e75dd/ChinaDNS_1.3.2-3_ramips_24kec.ipk</span><br><span class="line"># opkg install ChinaDNS_1.3.2-3_ramips_24kec.ipk</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>luci-app-ChinaDNS<br><a href="http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/" target="_blank" rel="noopener">http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://sourceforge.net/projects/openwrt-dist/files/luci-app/chinadns/luci-app-chinadns_1.3.4-1_all.ipk</span><br><span class="line"># opkg install luci-app-chinadns_1.3.4-1_all.ipk</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="配置ShadowSocks"><a href="#配置ShadowSocks" class="headerlink" title="配置ShadowSocks"></a>配置ShadowSocks</h2><ol>
-<li><p>创建国内IP段列表，用于忽略国内目标主机。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># mkdir /etc/shadowsocks</span><br><span class="line"># wget -O- &apos;http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest&apos; | awk -F\| &apos;/CN\|ipv4/ &#123; printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) &#125;&apos; &gt; /etc/shadowsocks/ignore.list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用luci-app配置ss<br>进入路由器管理web页面，用root登录，进入服务(Services)-&gt;ShadowSocks。<br>勾选启用Shadowsocks，输入ss服务器信息（服务器IP、端口、密码、加密方式）。<br>代理方法(Proxy method)选择忽略列表(Ignore list)，并在–custom–中填入<code>/etc/shadowsocks/ignore.list</code>。代理协议(Proxy protocol)选择<code>TCP+UDP</code>。<br>开启UDP隧道，UDP本地端口5300，目的地址<code>8.8.8.8:53</code>。UDP隧道用于加密DNS查询包，稍后将会用到。<br><img src="/images/openwrt-ss-1.png" alt=""></p>
-</li>
-<li>保存并应用(Save and Apply)</li>
-</ol>
-<h2 id="配置ChinaDNS"><a href="#配置ChinaDNS" class="headerlink" title="配置ChinaDNS"></a>配置ChinaDNS</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -O- &apos;http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest&apos; | awk -F\| &apos;/CN\|ipv4/ &#123; printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) &#125;&apos; &gt; /etc/chinadns_chnroute.txt</span><br></pre></td></tr></table></figure>
-<p>在路由器web管理页面，进入服务(Services)-&gt;ChinaDNS。<br>勾选启用ChinaDNS，启用DNS压缩指针。<br>本地端口写5353，中国路由表(CHNRoute File)填<code>/etc/chinadns_chnroute.txt</code>。<br>上游DNS服务器填<code>114.114.114.114,127.0.0.1:5300</code>。（可将114.114.114.114改成当前ISP提供的DNS服务器IP）<br>这里将ss的UDP隧道作为ChinaDNS的国外DNS上游源。<br>保存并应用</p>
-<h2 id="配置路由器DNS-Dnsmasq"><a href="#配置路由器DNS-Dnsmasq" class="headerlink" title="配置路由器DNS(Dnsmasq)"></a>配置路由器DNS(Dnsmasq)</h2><p>进入网络(Network)-&gt;DHCP and DNS。<br>将DNS转发(DNS forwardings)设置为<code>127.0.0.1#5353</code>。这将使得路由器将DNS请求经由dnsmasq全部转发至ChinaDNS处理。<br>这样设置后，从内网主机端发出的国外DNS请求将发送至：dnsmasq-&gt;ChinaDNS-&gt;ss-tunnel-&gt;ss服务器-&gt;8.8.8.8，<br>国内DNS请求则：dnsmasq-&gt;ChinaDNS-&gt;114.114.114.114<br>还要记得勾选“忽略解析文件”(ignore resolve file)。</p>
-<p>至此，路由器上的梯子已经搭建完毕，如不出意外，你已经可以进youtube了。<br>但是，受路由器到ss服务器的链路质量影响，可能会出现不稳定的情况。例如某些ISP下会出现境外UDP流量丢包、多TCP并发连接容易建立失败等情况。博主将在下篇文章中介绍优化方案。</p>
-<h2 id="关于shadowsocks-libev-spec的原理"><a href="#关于shadowsocks-libev-spec的原理" class="headerlink" title="关于shadowsocks-libev-spec的原理"></a>关于shadowsocks-libev-spec的原理</h2><p>通过分析ss的启动脚本，初步确定ss-libev-spec是以以下步骤实现自动翻墙的。</p>
-<ol>
-<li>运行<code>/usr/bin/ss-rules</code>，设置在ipset中建立一个列表<code>ss_spec_wan_ac</code>，列表中存放了<code>/etc/shadowsocks/ignore.list</code>中的IP段（即为需要忽略的国内IP段），然后设置iptables，在<code>nat</code>表的<code>OUTPUT</code>链中将目标地址<code>match-set ss_spec_wan_ac</code>的包采取<code>RETURN</code>处理。然后再在这条规则后增加一条，将全部包<code>REDIRECT</code>到<code>127.0.0.1:1080</code></li>
-<li>运行<code>/usr/bin/ss-redir</code>，监听本地端口<code>1080</code>，负责将收到的包经由ss，加密socks代理至ss服务器。</li>
-<li>运行<code>/usr/bin/ss-tunnel</code>，经由ss服务器建立加密的UDP隧道，隧道一端为本地监听端口<code>5300</code>，另一端为<code>8.8.8.8:53</code>。</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/" data-id="cjdzg9gwd0018jvcmkf5lc8mt" class="article-share-link">分享</a>
-      
-        <a href="https://blog.chionlab.moe/2016/01/23/openwrt-bypass-gfw-solution/#gitment-comments" class="article-comment-link">评论</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-  
     <article id="post-tldr-man-page" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/01/23/tldr-man-page/" class="article-date">
@@ -388,7 +299,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cjdzg9gwq001rjvcmsmoalixc" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/23/tldr-man-page/" data-id="cjefu78j5001nd12howfftfa7" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/23/tldr-man-page/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -454,7 +365,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cjdzg9gwy0022jvcmmh89x3sv" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/" data-id="cjefu78j9001vd12hcg8ranth" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/22/use-xposed-to-crawl-wechat-moments/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -513,7 +424,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cjdzg9gwl001kjvcmpq9vvpme" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/" data-id="cjefu78iv001cd12hj6e5i3ot" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/22/python2.7-on-centos6/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -587,7 +498,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cjdzg9gwi001fjvcmcx4crc71" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/" data-id="cjefu78is0018d12h86gknksr" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/20/pixivhack-development-log/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -685,7 +596,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cjdzg9gu50002jvcm4eg6xw5c" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/" data-id="cjefu78gj0002d12hjbn5cw6x" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/20/Using-Gulp-to-Simplify-Front-end-Development-Workflow/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -754,7 +665,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cjdzg9gub0003jvcm6ixryy6l" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/" data-id="cjefu78go0003d12ho3azkyuc" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/01/20/Project-Conclusion-of-m-21dianping-com/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -804,7 +715,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 16px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 12px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18px;">front-end</a> <a href="/tags/hack/" style="font-size: 14px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/network/" style="font-size: 16px;">network</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 14px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 12px;">python</a> <a href="/tags/router/" style="font-size: 12px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 16px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 12px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18px;">front-end</a> <a href="/tags/hack/" style="font-size: 14px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/network/" style="font-size: 16px;">network</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 12px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 12px;">python</a> <a href="/tags/router/" style="font-size: 10px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
     </div>
   </div>
 
