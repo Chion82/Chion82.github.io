@@ -900,14 +900,14 @@
 
 
   
-    <article id="post-use-haproxy-to-optimize-shadowsocks-on-openwrt" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-cc-defence-log" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" class="article-date">
-  <time datetime="2016-01-27T14:22:34.000Z" itemprop="datePublished">2016-01-27</time>
+    <a href="/2016/01/27/cc-defence-log/" class="article-date">
+  <time datetime="2016-01-26T19:28:34.000Z" itemprop="datePublished">2016-01-27</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/OpenWRT/">OpenWRT</a>
+    <a class="article-category-link" href="/categories/运维/">运维</a>
   </div>
 
   </div>
@@ -918,7 +918,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/">OpenWRT上使用haproxy对shadowsocks做负载均衡</a>
+      <a class="article-title" href="/2016/01/27/cc-defence-log/">运维纪录：遭遇CC攻击，防御与查水表</a>
     </h1>
   
 
@@ -926,59 +926,48 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>上篇<a href="/2016/01/27/optimize-shadowsocks-on-openwrt/">OpenWRT科学上网的问题及其优化</a>中，提到使用haproxy对shadowsocks的远程TCP连接做负载均衡，本文将介绍其实现过程。</p>
-<h2 id="交叉编译haproxy"><a href="#交叉编译haproxy" class="headerlink" title="交叉编译haproxy"></a>交叉编译haproxy</h2><p>虽然haproxy有预编译版本的ipk包，但是作者的小米路由mini所使用的Pandorabox的内核版本与该包依赖的内核版本不一致，于是作者选择交叉编译。因为haproxy的源码简单，外部依赖少，编译过程比较简单，甚至不需要OpenWRT的完整SDK，只需要toolchain即可。</p>
-<p>博主这里提供一个在MT7620平台编译好的binary:<br><a href="/downloads/haproxy">MT7620</a></p>
+        <p>博主之前完成了一个外包项目，最近两个月在负责这个项目的运维。这是一个web，主营不良资产催收O2O。由于可能存在竞争对手，有人试图攻击服务器。</p>
+<h2 id="事件回顾"><a href="#事件回顾" class="headerlink" title="事件回顾"></a>事件回顾</h2><p>24日下午3点，博主正在去拜访亲戚家的路上，这时公司的菜鸟开发者突然从QQ上发消息过来，问我服务器是不是被黑了。我认为这个可能性不大。这个项目由我亲手带领团队开发，后端使用的是Python+Flask+PostgreSQL，前端使用nodejs+express实现的midway，服务器部署也是由博主亲手完成。这类技术栈，已公布的可直接利用的漏洞十分有限，再者，博主在领队开发时已多次强调安全的重要性，具体到每个API都对用户权限进行了严格认证，编码过程中也不存在可能被注入、被远程执行等低级的危险代码，于是博主认为服务器被web渗透的可能性非常小。当然，不排除黑客从web之外的服务渗透进入，但是服务器上除了web只有ssh服务（强密码+公钥认证），除非公司的开发者部署了其他服务，否则能渗进来的可能性不大。</p>
+<p>博主于是立即用手机访问网站，网站返回了504，这说明nginx的上游没有响应了，node midway或者Python后端，肯定有一个处于freeze状态。</p>
+<p>到达亲戚家后，经过简短的问候，我即问道有没有能用的电脑。朋友让我使用一台08年的笔记本，运行的XP系统，只有IE8和360安全浏览器，但是已经够用了。下载Putty后ssh连接上服务器，立即<code>killall supervisord &amp;&amp; supervisord</code>。因为node midway和Python后端都处于开发中状态，为了调试方便，所以直接是用supervisor作为daemon的。结果是，网站首页仍然返回504。</p>
+<p>下意识地<code>tail /var/log/nginx/access.log -n 100</code>，出来的结果让我目瞪口呆.jpg<br><img src="/2016/01/27/cc-defence-log/cc_access_log_1.jpg" title="nginx access log:图中/api开头的URL全是短信API"><br>我立即就知道是怎么一回事了：黑客在flood发送短信的API。由于当时开发急促，没有对短信API加入图形验证码或者reCaptcha之类的验证，使得可以通过软件实现模拟请求，并且由于项目处于开发中，为方便调试没有使用wsgi容器调度请求和超时处理，再者，由于发送短信需要服务器向第三方短信平台请求，这个请求将比较费时，同时的大量请求使得Python后端完全被阻塞，难怪nginx报504。从log上看，flood来源自多个不同的IP，这是分布式的攻击，算得上是一场小型的CC攻击。后来发现参与这次CC的肉鸡大概有700～800台。</p>
+<p><strong>出于保密原则，本文以下内容中，发送短信API的URI均由[SMS_API]代替</strong></p>
+<h2 id="应急防御"><a href="#应急防御" class="headerlink" title="应急防御"></a>应急防御</h2><p>运行了一下<code>cat /var/log/nginx/access.log | grep &#39;[SMS_API]&#39; | wc -l</code>，返回的数字超过了30万，这时公司购买的短信平台套餐肯定已经用光了。但是现在首先要考虑恢复网站的正常访问。</p>
+<p>对于这种小型的CC防御，除了ban ip之外我没有想到更好的解决方法。于是，我用ipset+iptables将当天访问过短信API的IP全部ban了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># ipset create blacklist hash:net</span><br><span class="line"># cat /var/log/nginx/access.log | grep &apos;[SMS_API]&apos; | awk &apos;&#123;print $1&#125;&apos; | while read line;do ipset add blacklist $line;done  #将访问过短信API的IP全部加入ipset的blacklist集合</span><br><span class="line"># iptables -I INPUT -m set --match-set blacklist src -j DROP</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>笔记： iptables -m set –match-set [SET_NAME] [src|dst]</p>
+</blockquote>
+<p>执行后，再查看access log，flood马上就停下来了。但是现在遇到了新问题：后端跑不起来了。</p>
+<h2 id="修复后端"><a href="#修复后端" class="headerlink" title="修复后端"></a>修复后端</h2><p>手动运行后端Python脚本，Peewee报不能连接上数据库。<br>跑了一下psql，发现正常读取数据，再查看PostgreSQL的log，没有发现异常。没有头绪，通知公司的后端开发者检查后端代码。<br>公司的开发者没有回应，我折腾了很久找不到问题所在，直到我想到会不会是刚才添加iptables过滤规则时把本机也过滤了。<br>试着运行了一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># ipset test blacklist 127.0.0.1</span><br></pre></td></tr></table></figure></p>
+<p>返回<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 is in set blacklist.</span><br></pre></td></tr></table></figure></p>
+<p>再次目瞪口呆.jpg。突然想起来，刚才我为了测试短信接口，在服务器上跑了一下<code>curl localhost/[SMS_API]</code>，于是nginx access log中就有了127.0.0.1，然后在跑脚本的时候就把127.0.0.1加入到blacklist中了。立即运行了一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># ipset del blacklist 127.0.0.1</span><br></pre></td></tr></table></figure></p>
+<p>再次重启后端，一切正常，网站也能够访问了。</p>
+<h2 id="nginx中添加访问限制"><a href="#nginx中添加访问限制" class="headerlink" title="nginx中添加访问限制"></a>nginx中添加访问限制</h2><p>目前后端是从session判断唯一用户的，并限制每个用户每分钟只能调用短信API一次。但是如果黑客手动清空cookie，服务器将允许再次请求。在nginx的文档中快速查找了一下，发现nginx支持从IP上request limit。现在需要限制1 request/min per IP，为此修改nginx配置：</p>
 <ol>
-<li><p>获取haproxy源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/haproxy/haproxy.git</span><br></pre></td></tr></table></figure>
+<li><p>添加limit_req_zone</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># /etc/nginx/nginx.conf</span><br><span class="line">http &#123;</span><br><span class="line">  limit_req_zone $binary_remote_addr zone=sms:10m rate=1r/m;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>修改Makefile<br>只需要在Makefile中将编译器改为OpenWRT的toolchain即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd haproxy</span><br><span class="line">$ vim Makefile</span><br></pre></td></tr></table></figure>
-<p>找到</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#### Toolchain options.</span><br><span class="line"># GCC is normally used both for compiling and linking.</span><br></pre></td></tr></table></figure>
-<p>下面的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CC = XXX</span><br><span class="line">LD = XXX</span><br></pre></td></tr></table></figure>
-<p>这两行，将<code>CC</code>的值改为路由器toolchain的gcc的完整路径，<code>LD</code>的值改为<code>$(CC)</code><br>例如，博主修改后是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CC = /home/chiontang/development/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2/staging_dir/toolchain-mipsel_24kec+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-uclibc-gcc</span><br><span class="line">LD = $(CC)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>编译</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ make TARGET=generic</span><br></pre></td></tr></table></figure>
-<p>如不出意外，当前目录下已经有了一个编译好的<code>haproxy</code>。可以在电脑上直接运行它测试一下，如果一切正常，会返回如下错误，因为使用了OpenWRT ARM平台的toolchain进行编译，x86环境下无法直接运行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./haproxy</span><br><span class="line">zsh: exec format error: ./haproxy</span><br></pre></td></tr></table></figure>
-<p>如果能够成功运行，说明刚才toolchain的设置没有成功，编译时直接使用了当前系统的编译器（如x86下的gcc）</p>
-</li>
-<li>将编译好的haproxy复制到路由器下的<code>/root/haproxy</code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp haproxy root@192.168.1.1:/root/haproxy</span><br></pre></td></tr></table></figure>
+<li><p>location中应用limit_req_zone</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">  ...</span><br><span class="line">  location ~ ^([SMS_API]) &#123;</span><br><span class="line">      limit_req zone=sms nodelay;</span><br><span class="line">      proxy_pass http://127.0.0.1:5000;</span><br><span class="line">      proxy_set_header Host $host;</span><br><span class="line">      proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<h2 id="配置haproxy"><a href="#配置haproxy" class="headerlink" title="配置haproxy"></a>配置haproxy</h2><p>现在ssh连接上OpwnWRT路由器：</p>
-<ol>
-<li><p>建立haproxy配置文件：<code>/etc/haproxy.cfg</code>，内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">global</span><br><span class="line">    log         127.0.0.1 local2</span><br><span class="line"></span><br><span class="line">    chroot      /root</span><br><span class="line">    pidfile     /tmp/haproxy.pid</span><br><span class="line">    maxconn     4000</span><br><span class="line">    user        root</span><br><span class="line">    daemon</span><br><span class="line"></span><br><span class="line">defaults</span><br><span class="line">    mode                    tcp    #TCP模式</span><br><span class="line">    log                     global</span><br><span class="line">    option                  httplog</span><br><span class="line">    option                  dontlognull</span><br><span class="line">    option http-server-close</span><br><span class="line">    option forwardfor       except 127.0.0.0/8</span><br><span class="line">    option                  redispatch</span><br><span class="line">    retries                 2</span><br><span class="line">    timeout http-request    10s</span><br><span class="line">    timeout queue           1m</span><br><span class="line">    timeout connect         2s     #上游TCP服务器连接等待时间                                      </span><br><span class="line">    timeout client          1m</span><br><span class="line">    timeout server          1m</span><br><span class="line">    timeout http-keep-alive 10s</span><br><span class="line">    timeout check           10s</span><br><span class="line">    maxconn                 3000</span><br><span class="line"></span><br><span class="line">listen test1</span><br><span class="line">    bind 0.0.0.0:8388       #haproxy监听端口</span><br><span class="line">    mode tcp</span><br><span class="line">    server s1 X.X.X.X:8388</span><br><span class="line">    server s2 X.X.X.X:8389</span><br><span class="line">    server s3 X.X.X.X:8390</span><br><span class="line">    server s4 X.X.X.X:8391</span><br></pre></td></tr></table></figure>
-<p>其中，<code>X.X.X.X</code>为ss服务器，8388~8391这四个端口都为ss服务器上运行ssserver的端口（如果觉得不够你可以再加几个），稍后将讲到服务器端的配置。haproxy监听的端口为8388。</p>
-</li>
-<li><p>建立启动脚本：<code>/etc/init.d/haproxy</code>，内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh /etc/rc.common</span><br><span class="line"></span><br><span class="line">START=99  #启动优先级设置为99，即最后启动</span><br><span class="line"></span><br><span class="line">start() &#123;</span><br><span class="line">        /root/haproxy -f /etc/haproxy.cfg</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop() &#123;</span><br><span class="line">        killall haproxy</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">restart() &#123;</span><br><span class="line">        stop</span><br><span class="line">        sleep 1</span><br><span class="line">        start</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后使其生效：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># /etc/init.d/haproxy enable</span><br><span class="line"># /etc/init.d/haproxy start</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="服务器配置"><a href="#服务器配置" class="headerlink" title="服务器配置"></a>服务器配置</h2><p>作者使用supervisor作为ssserver的daemon，本例中，服务器同时监听8388~8391这四个端口。<br>博主服务器上的supervisor配置文件如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[supervisord]</span><br><span class="line"></span><br><span class="line">[program:ssserver1]</span><br><span class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8388 -k [KEY]</span><br><span class="line"></span><br><span class="line">[program:ssserver2]</span><br><span class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8389 -k [KEY]</span><br><span class="line"></span><br><span class="line">[program:ssserver3]</span><br><span class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8390 -k [KEY]</span><br><span class="line"></span><br><span class="line">[program:ssserver4]</span><br><span class="line">command=/usr/bin/ssserver -m rc4-md5 -p 8391 -k [KEY]</span><br></pre></td></tr></table></figure></p>
-<p>将<code>[KEY]</code>替换为ss密码即可</p>
-<h2 id="ShadowSocks配置"><a href="#ShadowSocks配置" class="headerlink" title="ShadowSocks配置"></a>ShadowSocks配置</h2><ol>
-<li>编辑<code>/etc/shadowsocks/ignore.list</code>（如果你设置的忽略列表为其他文件，则编辑那个文件）,在最后添加一行，输入ss服务器的IP。</li>
-<li>进入路由器配置Web，在luci配置页中，将ss服务器IP改为<code>127.0.0.1</code>，端口改为<code>8388</code>。</li>
-</ol>
+<p>经过这样的配置，同一IP在一分钟内只能访问该URL一次，否则返回503 server unavailable。</p>
+<h2 id="脚本实现自动Ban-IP"><a href="#脚本实现自动Ban-IP" class="headerlink" title="脚本实现自动Ban IP"></a>脚本实现自动Ban IP</h2><p>之后发现源源不断地还有更多IP试图发起CC，不可能人工一个一个的ban，于是写了一个简单shell脚本实现：当天access log中，访问短信API超过30次的IP，将被加入黑名单。当然，这只是临时的，生产环境中，对于同一内网中的多个真实用户可能会出现误ban的情况，因此攻击过后要将脚本关闭。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line"></span><br><span class="line">while [ True ]</span><br><span class="line">do</span><br><span class="line">        cat /var/log/nginx/access.log | grep '[SMS_API]' | awk '&#123;print $1&#125;' | sort | uniq -c | awk '$1&gt;30&#123;print $2&#125;' | while read line;do echo 'Blocking IP:'$line &amp;&amp; ipset add blacklist $line;done</span><br><span class="line">        sleep 10</span><br><span class="line">done</span><br></pre></td></tr></table></figure></p>
+<h2 id="找出攻击发起者"><a href="#找出攻击发起者" class="headerlink" title="找出攻击发起者"></a>找出攻击发起者</h2><p>由于CC分布式的特征，很难找出真正的攻击发起者。但是，往往可以找到第一个嫌疑者。通过翻看当天上午的access log，发现如下有趣的信息:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">113.232.156.* - - [23/Jan/2016:11:19:13 +0800] &quot;GET /register.html HTTP/1.1&quot; 200 8383 &quot;https://www.google.com/&quot; &quot;Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1&quot; &quot;-&quot; #使用Chrome进入网站注册页</span><br><span class="line">#...</span><br><span class="line">#下面若干行纪录均为页面静态资源请求</span><br><span class="line">#...</span><br><span class="line">113.232.156.* - - [23/Jan/2016:11:19:20 +0800] &quot;GET [SMS_API]?phone=1584059XXXX HTTP/1.1&quot; 200 46 &quot;http://网站域名.com/register.html&quot; &quot;Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1&quot; &quot;-&quot;</span><br><span class="line">#在Chrome中点击“发送短信验证码”按钮</span><br></pre></td></tr></table></figure></p>
+<p>正常的UA（Chrome 21.0.1180.89），并且有静态资源访问记录，基本可以确定是人工操作。<br>继续翻：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">113.232.156.* - - [23/Jan/2016:11:19:27 +0800] &quot;GET /register.html HTTP/1.1&quot; 200 8383 &quot;-&quot; &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)&quot; &quot;-&quot;</span><br><span class="line">#注意，这个人在1分钟内使用了IE9重新进入网站注册页</span><br><span class="line">#...</span><br><span class="line">#下面若干行纪录均为页面静态资源请求</span><br><span class="line">#...</span><br><span class="line">113.232.156.* - - [23/Jan/2016:11:19:35 +0800] &quot;GET [SMS_API]?phone=1552442XXXX HTTP/1.1&quot; 200 46 &quot;http://网站域名.com/register.html&quot; &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)&quot; &quot;-&quot;</span><br><span class="line">#这个人在1分钟内使用IE9再次点击“发送短信验证码”按钮</span><br></pre></td></tr></table></figure></p>
+<p>普通用户是不会同时使用两款浏览器登录同一个网站并点击发送短信按钮的。除非——你想要验证这个网站是否根据session判断同一用户是否在一分钟内调用了多次发送短信API。再往后翻记录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">113.232.156.* - - [23/Jan/2016:11:19:51 +0800] &quot;GET [SMS_API]?phone=1504032XXXX HTTP/1.1&quot; 200 46 &quot;-&quot; &quot;-&quot; &quot;-&quot;</span><br></pre></td></tr></table></figure></p>
+<p>果不其然，这个人用模拟请求调用了发送短信API（因为没有正常的UA）<br>在这的几分钟后，来自全国各地的肉鸡就开始flood服务器了。</p>
+<h2 id="人肉攻击发起者"><a href="#人肉攻击发起者" class="headerlink" title="人肉攻击发起者"></a>人肉攻击发起者</h2><p>换位思考一下，如果我是黑客，在开始CC之前，是否需要测试一下这个API，然后再在肉鸡上配置随机手机号，最后再进行CC？<br>再次翻log，发现flood开始后，来自肉鸡的请求中，手机号码来自全国各地，但是都每个号码重复了很多次，并且每台肉鸡都有自己的手机号。据此可判断，肉鸡用的手机号码一定不是黑客本人或相关者的号码，而应该是随机生成的或者是通过非法渠道获取到的“受害者”的手机号。但是，113.232.156.* （即黑客嫌疑者）一开始在Chrome和IE9中用的号码在后面的记录中都没有找到，并且号码所属地和IP所属地吻合（都为辽宁沈阳），据此，怀疑黑客一开始在Chrome中会用真实的手机号先进行测试，然后再实施CC。<br>将黑客IP和他第一次在浏览器中提交的手机号码（1584059XXXX）告诉了公司，公司立即拨打了这个手机号码。<br>对方一开始不承认。后来对方打回来，问我们是什么网站做什么的，并且听到对面几个人在偷着乐。因此，对方很有可能就是这次攻击的发起者，并且可能是黑客团伙，专职外包。（其实博主认为，国内这种组织根本算不上真正意义上的黑客，只是非常低级的为了图利的非法技术组织，并且自身技术也是很菜…）<br>公司随后开始通过手机号码查询该人身份信息。由于公司本身性质的关系，有后台可以调查某些信息。<br>之后的事情我就没有多问了。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/" data-id="cjdzg9gx00025jvcmwzr2v99n" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/01/27/cc-defence-log/" data-id="cjdzg9gux000cjvcm05jni8yv" class="article-share-link">分享</a>
       
-        <a href="https://blog.chionlab.moe/2016/01/27/use-haproxy-to-optimize-shadowsocks-on-openwrt/#gitment-comments" class="article-comment-link">评论</a>
+        <a href="https://blog.chionlab.moe/2016/01/27/cc-defence-log/#gitment-comments" class="article-comment-link">评论</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
 
     </footer>
   </div>
@@ -1023,7 +1012,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 16.67px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 15px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 16px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 12px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18px;">front-end</a> <a href="/tags/hack/" style="font-size: 14px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/network/" style="font-size: 16px;">network</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 14px;">openwrt</a> <a href="/tags/project/" style="font-size: 10px;">project</a> <a href="/tags/python/" style="font-size: 12px;">python</a> <a href="/tags/router/" style="font-size: 12px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
     </div>
   </div>
 
