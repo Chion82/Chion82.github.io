@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/index.html">
 <meta property="og:site_name" content="ChionLab">
 <meta property="og:description" content="前言 根据 RFC 3489 中的定义，NAT类型被划分为以下四种： Full Cone, Restricted Cone, Port Restricted Cone, Symmetric. (RFC 5780 中对NAT类型定义有了更严格的拓展分类，但不是十分常用，本文暂不探讨。) STUN过程( RFC 3489 和 RFC 5389 )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛">
-<meta property="og:updated_time" content="2018-02-23T04:40:57.000Z">
+<meta property="og:updated_time" content="2018-03-31T08:16:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现">
 <meta name="twitter:description" content="前言 根据 RFC 3489 中的定义，NAT类型被划分为以下四种： Full Cone, Restricted Cone, Port Restricted Cone, Symmetric. (RFC 5780 中对NAT类型定义有了更严格的拓展分类，但不是十分常用，本文暂不探讨。) STUN过程( RFC 3489 和 RFC 5389 )可以实现内网穿透，从而实现点到点通信。STUN技术被广泛">
@@ -297,7 +297,8 @@
 <li>本文中的NAT特指NAPT。ALG等周边技术在部分厂商的linux网络设备上已有相应实现，暂不讨论。</li>
 <li>你可以直接到 <a href="https://github.com/Chion82/netfilter-full-cone-nat" target="_blank" rel="noopener">https://github.com/Chion82/netfilter-full-cone-nat</a> 使用本文的解决方案。</li>
 </ul>
-<h2 id="关于NAT类型在Linux上实现的现状"><a href="#关于NAT类型在Linux上实现的现状" class="headerlink" title="关于NAT类型在Linux上实现的现状"></a>关于NAT类型在Linux上实现的现状</h2><p>TLDR: Linux上至今未实现真正意义上的Full Cone NAT，Linux的 SNAT/MASQUERADE（以<code>iptables</code>的配置为例）均是Symmetric NAT。</p>
+<h2 id="关于NAT类型在Linux上实现的现状"><a href="#关于NAT类型在Linux上实现的现状" class="headerlink" title="关于NAT类型在Linux上实现的现状"></a>关于NAT类型在Linux上实现的现状</h2><p>TLDR: Linux内核树上未实现真正意义上的Full Cone NAT，Linux的 SNAT/MASQUERADE（以<code>iptables</code>的配置为例）均是Symmetric NAT。</p>
+<p>2018.3 更新：<br>一个比较少众的华硕路由器第三方固件 padavan 通过netfilter patch的方式实现了 Cone NAT，但是其实现存在较多问题，如不支持端口随机化、内核升级不友好等，具体在下一篇博客中讨论。</p>
 <h2 id="现有的在Linux上的Full-Cone-NAT-的实现"><a href="#现有的在Linux上的Full-Cone-NAT-的实现" class="headerlink" title="现有的在Linux上的Full Cone NAT(?)的实现"></a>现有的在Linux上的Full Cone NAT(?)的实现</h2><p>之所以“Linux上未真正实现Full Cone NAT”这个问题至今没有被重视，是因为总有那么个“看似能够代替的方案”。事实上，稍微谷歌一下不难找到这样来实现Full Cone NAT的方法（假设<code>eth0</code>是外网出口网卡，内网主机是<code>192.168.1.3</code>）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE #普通的SNAT</span><br><span class="line">iptables -t nat -A PREROUTING -i eth0 -j DNAT --to-destination 192.168.1.3 #将入站流量DNAT转发到内网主机192.168.1.3</span><br></pre></td></tr></table></figure></p>
 <p>类似的实现还有<code>NETMAP</code>。这种设置都有一个共同点：入站流量其实是 <strong>定向DNAT转发</strong> 到某一台内网主机中，从而对该台内网主机而言，它的NAT类型总是Full Cone的。事实上这种设置更像是DMZ host，是不分条件地转发所有入站流量到内网DMZ主机。然而，这种设置只能对该台内网主机有效，对于同一内网下的其他主机，它们的NAT类型仍然是Symmetric。</p>
 <h3 id="UPnP技术"><a href="#UPnP技术" class="headerlink" title="UPnP技术"></a>UPnP技术</h3><p>为了解决这个问题，UPnP起到了很重要的作用。事实上，UPnP技术基本上解决了家庭用户的内网穿透需求。（鉴于现在大多数用户都使用基于Linux的智能路由器的光猫等）在Linux上，实现UPnP的应用程序通常是 <a href="https://github.com/miniupnp/miniupnp" target="_blank" rel="noopener">miniupnp</a>。<br>内网主机的应用程序在需要进行内网穿透前，对路由器进行一次UPnP请求，该请求映射一个外网端口（UDP或TCP）到内网主机的端口。miniupnp随后会执行若干条 <code>iptables</code> 命令，例如最重要的是这条：（为便于理解，该命令已简化，事实上miniupnpd会在 <code>nat</code> 表下另建一个链）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A PREROUTING -i eth0 -p udp --dport 5000 -j DNAT --to-destination 192.168.1.3:5000</span><br></pre></td></tr></table></figure></p>
@@ -362,7 +363,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjf4w2ob3000h6t2h31w9ni72" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjffhxy0o000gom2htqfemzkh" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -374,6 +375,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2018/03/31/full-cone-nat-with-linux-2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Linux 内核态实现 Full Cone NAT（2）
+        
+      </div>
+    </a>
   
   
     <a href="/2017/04/06/kcptun-with-fake-tcp/" id="article-nav-older" class="article-nav-link-wrap">
@@ -440,7 +450,7 @@ gitment.render('gitment-comments');
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 16px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 12px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18px;">front-end</a> <a href="/tags/hack/" style="font-size: 14px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/network/" style="font-size: 16px;">network</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 10px;">openwrt</a> <a href="/tags/python/" style="font-size: 12px;">python</a> <a href="/tags/router/" style="font-size: 10px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 16.67px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 10px;">openwrt</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 10px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -450,7 +460,7 @@ gitment.render('gitment-comments');
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -461,6 +471,10 @@ gitment.render('gitment-comments');
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/03/31/full-cone-nat-with-linux-2/">Linux 内核态实现 Full Cone NAT（2）</a>
+          </li>
         
           <li>
             <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
@@ -476,10 +490,6 @@ gitment.render('gitment-comments');
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>

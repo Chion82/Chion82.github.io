@@ -263,6 +263,140 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-full-cone-nat-with-linux-2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/31/full-cone-nat-with-linux-2/" class="article-date">
+  <time datetime="2018-03-31T07:44:29.000Z" itemprop="datePublished">2018-03-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发笔记/">开发笔记</a>►<a class="article-category-link" href="/categories/开发笔记/网络/">网络</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/31/full-cone-nat-with-linux-2/">Linux 内核态实现 Full Cone NAT（2）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>接上篇 <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a> 。</p>
+</blockquote>
+<h2 id="Padavan固件的Cone-NAT实现"><a href="#Padavan固件的Cone-NAT实现" class="headerlink" title="Padavan固件的Cone NAT实现"></a>Padavan固件的Cone NAT实现</h2><p><a href="https://bitbucket.org/padavan/rt-n56u" target="_blank" rel="noopener">Padavan</a> 是基于华硕路由器固件的第三方家用路由器固件，这个固件通过给内核netfilter打patch的方式实现了Cone NAT。关于该固件实现Cone NAT的原理及问题，在 <a href="https://github.com/Chion82/netfilter-full-cone-nat/issues/1" target="_blank" rel="noopener">netfilter-full-cone-nat #1</a> 中有简短的讨论。</p>
+<p>先来看代码。Padavan修改了netfilter下的 nf_conntrack_core.c 中的 <code>resolve_normal_ct()</code> 函数的实现：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="class"><span class="keyword">struct</span> <span class="title">nf_conn</span> *</span></span><br><span class="line"><span class="class"><span class="title">resolve_normal_ct</span>(/* ... */)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  <span class="comment">/* look for tuple match */</span></span><br><span class="line">  hash = hash_conntrack_raw(&amp;tuple);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(CONFIG_NAT_CONE)</span></span><br><span class="line">  <span class="keyword">if</span> (protonum == IPPROTO_UDP &amp;&amp; nf_conntrack_nat_mode &gt; <span class="number">0</span> &amp;&amp; skb-&gt;dev != <span class="literal">NULL</span> &amp;&amp;</span><br><span class="line">  #<span class="keyword">if</span> IS_ENABLED(CONFIG_PPP)</span><br><span class="line">      (skb-&gt;dev-&gt;ifindex == cone_man_ifindex || skb-&gt;dev-&gt;ifindex == cone_ppp_ifindex)) &#123;</span><br><span class="line">  <span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">      (skb-&gt;dev-&gt;ifindex == cone_man_ifindex)) &#123;</span><br><span class="line">  <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    <span class="comment">/* CASE III To Cone NAT */</span></span><br><span class="line">    h = __nf_cone_conntrack_find_get(net, &amp;tuple, hash);</span><br><span class="line">  &#125; <span class="keyword">else</span></span><br><span class="line">#endif</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="comment">/* CASE I.II.IV To Linux NAT */</span></span><br><span class="line">    h = __nf_conntrack_find_get(net, &amp;tuple, hash);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可见，在配置项 <code>CONFIG_NAT_CONE</code> 打开时，调用了 <code>__nf_cone_conntrack_find_get()</code> 来取代原本的 <code>__nf_conntrack_find_get()</code>。来看看这个padavan新增的 <code>__nf_cone_conntrack_find_get()</code> 函数是如何实现的：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">nf_conntrack_tuple_hash</span> *</span></span><br><span class="line"><span class="class">__<span class="title">nf_cone_conntrack_find_get</span>(<span class="title">struct</span> <span class="title">net</span> *<span class="title">net</span>,</span></span><br><span class="line"><span class="class">           <span class="title">const</span> <span class="title">struct</span> <span class="title">nf_conntrack_tuple</span> *<span class="title">tuple</span>, <span class="title">u32</span> <span class="title">hash</span>)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">begin:</span><br><span class="line">  h = __nf_cone_conntrack_find(net, tuple, hash);</span><br><span class="line">  <span class="keyword">if</span> (h) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">      <span class="keyword">if</span> (unlikely(!nf_ct_cone_tuple_equal(tuple, &amp;h-&gt;tuple))) &#123;</span><br><span class="line">          nf_ct_put(ct);</span><br><span class="line">          <span class="keyword">goto</span> begin;</span><br><span class="line">      &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">return</span> h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其实这个函数的实现和 <code>__nf_conntrack_find_get()</code> 逻辑上完全一致，所以我省略了大部分的展示代码。其实特别的地方在于，这个函数通过调用新增的 <code>__nf_cone_conntrack_find()</code> 来根据tuple查找对应的conntrack，通过调用 <code>nf_ct_cone_tuple_equal()</code> 来判断两个tuple是否相等。这两个padavan添加的函数就暗藏了玄机。事实上，<code>__nf_cone_conntrack_find()</code>的实现与 <code>____nf_conntrack_find()</code> 逻辑上也没有多大不同，而区别就在于：在根据hash遍历索引到的bucket时，<code>____nf_conntrack_find()</code> 使用 <code>nf_ct_key_equal()</code> 来判断两个tuple是否完全相等，而 <code>__nf_cone_conntrack_find()</code> 则使用了 <code>nf_ct_cone_tuple_equal()</code> 来判断两个tuple是否“在锥形”上相等。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">bool</span></span><br><span class="line">nf_ct_cone_tuple_equal(<span class="keyword">const</span> struct nf_conntrack_tuple *t1, <span class="keyword">const</span> struct nf_conntrack_tuple *t2) &#123;</span><br><span class="line">  <span class="keyword">if</span> (nf_conntrack_nat_mode == NAT_MODE_FCONE)</span><br><span class="line">    <span class="keyword">return</span> __nf_ct_tuple_dst_equal(t1, t2);</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (nf_conntrack_nat_mode == NAT_MODE_RCONE)</span><br><span class="line">    <span class="keyword">return</span> (__nf_ct_tuple_dst_equal(t1, t2) &amp;&amp;</span><br><span class="line">      nf_inet_addr_cmp(&amp;t1-&gt;src.u3, &amp;t2-&gt;src.u3)  &amp;&amp;</span><br><span class="line">      t1-&gt;src.l3num == t2-&gt;src.l3num);</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的这段代码就是padavan对Cone NAT实现的最关键之处。对于 Full Cone，<code>nf_ct_cone_tuple_equal()</code> 只判断两个tuple的“目标三元组”（目标IP、目标端口、协议号）是否相同；对于 IP Restricted Cone，除了判断“目标三元组”是否相同，还需要同时判断源IP是否相同。注意，此处的tuple是相对于远程主机端，即 conntrack.tuple_hash 中的 <code>TUPLE_REPLY</code> 而言的，“源”指的是远程主机（如UDP服务器），“目标”指的是本机（Linux NAT网关）的 WAN 出口。</p>
+<p>相对应的，由于 <code>resolve_normal_ct()</code> 对 conntrack 的查找是基于对 tuple 进行 hash 的，padavan 对 <code>hash_conntrack_raw()</code> 函数也做了少量的调整，来确保在同一锥形中的两个tuple的hash相同：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> u32 <span class="title">hash_conntrack_raw</span><span class="params">(<span class="keyword">const</span> struct nf_conntrack_tuple *tuple)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> n;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(CONFIG_NAT_CONE)</span></span><br><span class="line">  u32 a, b;</span><br><span class="line">  <span class="keyword">if</span> (nf_conntrack_nat_mode == NAT_MODE_FCONE) &#123;</span><br><span class="line">    <span class="keyword">return</span> jhash2(tuple-&gt;dst.u3.all, <span class="keyword">sizeof</span>(tuple-&gt;dst.u3.all) / <span class="keyword">sizeof</span>(u32),</span><br><span class="line">            nf_conntrack_hash_rnd ^ (((__force __u16)tuple-&gt;dst.u.all &lt;&lt; <span class="number">16</span>) | tuple-&gt;dst.protonum)); <span class="comment">// dst ip &amp; dst port &amp; dst proto</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (nf_conntrack_nat_mode == NAT_MODE_RCONE) &#123;</span><br><span class="line">    a = jhash2(tuple-&gt;src.u3.all, <span class="keyword">sizeof</span>(tuple-&gt;src.u3.all) / <span class="keyword">sizeof</span>(u32), tuple-&gt;src.l3num); <span class="comment">//src ip &amp; l3 proto</span></span><br><span class="line">    b = jhash2(tuple-&gt;dst.u3.all, <span class="keyword">sizeof</span>(tuple-&gt;dst.u3.all) / <span class="keyword">sizeof</span>(u32), ((__force __u16)tuple-&gt;dst.u.all &lt;&lt; <span class="number">16</span>) | tuple-&gt;dst.protonum); <span class="comment">// dst ip &amp; dst port &amp; dst proto</span></span><br><span class="line">    <span class="keyword">return</span> jhash_2words(a, b, nf_conntrack_hash_rnd);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">#endif</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>简而言之，padavan对Cone NAT的实现是这样的：（为简化过程，我们这里只讲Full Cone）<br>当入站包到达本机（Linux NAT网关）时，<code>resolve_normal_ct()</code> 被调用以用于查找该包所对应的conntrack，原版netfilter的逻辑是根据tuple的“全匹配”来查找对应conntrack，而padavan在启用Cone NAT功能后，只根据tuple的“半匹配”来找到对应的conntrack（“半匹配”即：只匹配单边的地址和端口信息，当Full Cone时，这个单边是tuple的dst）。</p>
+<p>举个例子来说明这样实际运行的效果：</p>
+<ul>
+<li>内网主机 192.168.1.3:3000  –&gt; Linux网关 NAT后地址：223.0.0.1:3000 （标记为“conntrack 1”）  –&gt; 远程主机 123.0.0.1:5000</li>
+<li>另一台远程主机 123.2.2.2:6000 –&gt; 223.0.0.1:3000 Linux网关查找到“conntrack 1”并进行restore NAT –&gt; 内网主机 192.168.1.3:3000</li>
+</ul>
+<h2 id="映射端口随机化及问题"><a href="#映射端口随机化及问题" class="headerlink" title="映射端口随机化及问题"></a>映射端口随机化及问题</h2><p>这里我们讨论SNAT的 <code>--random</code> 或 <code>--random-fully</code> 参数。在未使用该参数时，NAT后的源端口号会尽量保持不变，如果遇到冲突，则从端口范围的最小值（未显式指定时是1024）开始逐一往上寻找可用源端口号；当使用了随机化参数后，NAT后的源端口号是随机的，每次NAT映射产生的端口号都无特别确定的规律可循。</p>
+<h3 id="Padavan-Cone-NAT和端口随机化"><a href="#Padavan-Cone-NAT和端口随机化" class="headerlink" title="Padavan Cone NAT和端口随机化"></a>Padavan Cone NAT和端口随机化</h3><p>从上文的源码分析可以看出，padavan对cone nat的实现是仅考虑了入站方向的，而出站方向则没有做改动。如果我们同时考虑出站方向，当 <code>--random</code> 或 <code>--random-fully</code> 都 <strong>未启用</strong> 时，出入站的流程是这样的：</p>
+<ul>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:3000) 【建立 “conntrack 1” 】 –&gt; 远端主机B(123.0.0.1:5000)</li>
+<li>远端主机C(123.2.2.2:6000) –&gt; NAT(223.0.0.1:3000)【重用 “conntrack 1” 】 –&gt; 内网主机A(192.168.1.3:3000)</li>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:3000) 【建立 “conntrack 2” 】 –&gt; 远端主机C(123.2.2.2:6000)</li>
+</ul>
+<p>注意，当 内网主机A 向另一台 远端主机C 发送出站UDP包时，会建立一个新的 “conntrack 2”，同时进行一次端口分配。由于未启用端口随机化，linux会尽量保持源端口不变，即再次映射成3000端口，这样就保证了这个锥形NAT是双向完整的。</p>
+<p>但是如果我们使用了 <code>--random</code> 或 <code>--random-fully</code>，这个过程就变得有趣了：</p>
+<ul>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:36000) 【建立 “conntrack 1” 】 –&gt; 远端主机B(123.0.0.1:5000)</li>
+<li>远端主机C(123.2.2.2:6000) –&gt; NAT(223.0.0.1:36000)【重用 “conntrack 1” 】 –&gt; 内网主机A(192.168.1.3:3000)</li>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:47000) 【建立 “conntrack 2” 】 –&gt; 远端主机C(123.2.2.2:6000)</li>
+</ul>
+<p>在建立 “conntrack 2” 的时候，端口随机化导致NAT分配了一个与 “conntrack 1” 截然不同的端口号，如果 远端主机C 对此变动不知情（比如C在Symmetric NAT后面），仍然向 223.0.0.1:36000 发送UDP包，那么导致的结果是：只有A可以收到C发送的包，而C则收不到A发送的包。</p>
+<p>这个过程可以简单地通过 <code>netcat</code> 命令模拟，通过显式输入对方的IP:PORT，并使用 <code>-p</code> 参数指定本地的监听端口。</p>
+<h3 id="netfilter-full-cone-nat-对端口随机化的改进"><a href="#netfilter-full-cone-nat-对端口随机化的改进" class="headerlink" title="netfilter-full-cone-nat 对端口随机化的改进"></a>netfilter-full-cone-nat 对端口随机化的改进</h3><p>以下称 <a href="https://github.com/Chion82/netfilter-full-cone-nat" target="_blank" rel="noopener">netfilter-full-cone-nat</a> 为 xt_FULLCONENAT ，即此项目的内核模块名称。</p>
+<p>与padavan的netfilter patch实现不同，xt_FULLCONENAT是一个第三方内核模块，没有修改conntrack核心部分的代码。padavan的原理是将一个入站packet关联至一个先前建立的conntrack；而xt_FULLCONENAT的原理是通过主动DNAT来还原入站映射。</p>
+<p>当未使用 <code>--random</code> 或 <code>--random-fully</code> 时，xt_FULLCONENAT的表现是这样的：</p>
+<ul>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:3000) 【SNAT，建立 “conntrack 1” 】 –&gt; 远端主机B(123.0.0.1:5000)</li>
+<li>远端主机C(123.2.2.2:6000) –&gt; NAT(223.0.0.1:3000)【DNAT，建立 “conntrack 2” 】 –&gt; 内网主机A(192.168.1.3:3000)</li>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:3000) 【复用 “conntrack 2” 】 –&gt; 远端主机C(123.2.2.2:6000)</li>
+</ul>
+<p>当使用了 <code>--random</code> 或 <code>--random-fully</code> 时，会变成这样：</p>
+<ul>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:36000) 【SNAT，建立 “conntrack 1” 】 –&gt; 远端主机B(123.0.0.1:5000)</li>
+<li>远端主机C(123.2.2.2:6000) –&gt; NAT(223.0.0.1:36000)【DNAT，建立 “conntrack 2” 】 –&gt; 内网主机A(192.168.1.3:3000)</li>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:36000) 【复用 “conntrack 2” 】 –&gt; 远端主机C(123.2.2.2:6000)</li>
+</ul>
+<p>这样看上去很正常。但是，如果我们交换一下第二步和第三步，就会变成这样的结果：</p>
+<ul>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:36000) 【SNAT，建立 “conntrack 1” 】 –&gt; 远端主机B(123.0.0.1:5000)</li>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:47000) 【SNAT，建立 “conntrack 2” 】 –&gt; 远端主机C(123.2.2.2:6000)</li>
+<li>远端主机C(123.2.2.2:6000) –&gt; NAT(223.0.0.1:36000)【DNAT，建立 “conntrack 3” 】 –&gt; 内网主机A(192.168.1.3:3000)</li>
+</ul>
+<p>可以见到，如果C在向A发包之前，A先向C发了包，那么NAT会映射成一个新的端口，这就破坏了Cone NAT，同样会造成单边不通的问题。</p>
+<p>为此，xt_FULLCONENAT 在最近的commit中改造了NAT映射机制：</p>
+<ul>
+<li>除了自动DNAT，SNAT的映射端口也在模块内加以限制，以保证出站端口号的一致性。</li>
+<li>因为使用了Cone NAT后，WAN接口上的一个UDP端口号只能关联唯一的内网IP:PORT，默认的linux端口分配机制（即 <code>unique_tuple</code> ）不能保证这个关联的唯一性，因此我们要在模块内完成端口分配。</li>
+</ul>
+<p>现在，xt_FULLCONENAT 对出站包的处理逻辑如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 注：这里的“映射”指本模块内的 natmapping 结构 */</span></span><br><span class="line"><span class="comment">/* 根据内网IP:PORT搜索已经存在的映射 */</span></span><br><span class="line">src_mapping = get_mapping_by_int_src(ip, original_port);</span><br><span class="line"><span class="keyword">if</span> (src_mapping != <span class="literal">NULL</span> &amp;&amp; check_mapping(src_mapping, net, zone)) &#123;</span><br><span class="line">  <span class="comment">/* 如果这个映射已经存在，就复用这个映射：将NAT端口号限制为该条映射所记录的外网端口号 */</span></span><br><span class="line">  newrange.flags = NF_NAT_RANGE_MAP_IPS | NF_NAT_RANGE_PROTO_SPECIFIED;</span><br><span class="line">  newrange.min_proto.udp.port = cpu_to_be16(src_mapping-&gt;port);</span><br><span class="line">  newrange.max_proto = newrange.min_proto;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="comment">/* 如果未找到已存在的映射，则在本模块内进行端口分配，并创建新的映射 */</span></span><br><span class="line">  want_port = find_appropriate_port(net, zone, original_port, ifindex, range);</span><br><span class="line">  newrange.flags = NF_NAT_RANGE_MAP_IPS | NF_NAT_RANGE_PROTO_SPECIFIED;</span><br><span class="line">  newrange.min_proto.udp.port = cpu_to_be16(want_port);</span><br><span class="line">  newrange.max_proto = newrange.min_proto;</span><br><span class="line">  src_mapping = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过本次改造，xt_FULLCONENAT已经完全兼容了端口随机化下的Cone NAT：当内网IP:PORT不变时，无论出入站顺序和远端地址，都将映射为相同的外网端口号.</p>
+<ul>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:36000) 【SNAT，建立 “conntrack 1”，随机分配出站端口 】 –&gt; 远端主机B(123.0.0.1:5000)</li>
+<li>内网主机A(192.168.1.3:3000) –&gt; NAT(223.0.0.1:36000) 【SNAT，建立 “conntrack 2”，并复用 “conntrack 1”的出站端口 】 –&gt; 远端主机C(123.2.2.2:6000)</li>
+<li>远端主机C(123.2.2.2:6000) –&gt; NAT(223.0.0.1:36000)【复用 “conntrack 2” 】 –&gt; 内网主机A(192.168.1.3:3000)</li>
+</ul>
+<h2 id="xt-FULLCONENAT更新日志：映射表老化问题"><a href="#xt-FULLCONENAT更新日志：映射表老化问题" class="headerlink" title="xt_FULLCONENAT更新日志：映射表老化问题"></a>xt_FULLCONENAT更新日志：映射表老化问题</h2><p>下面我们来关注 xt_FULLCONENAT 遗留的问题和更新的解决方案。<br>注：<em>映射项</em> 即 xt_FULLCONENAT 中 <code>struct natmapping</code> 所对应的结构。</p>
+<h3 id="主动式映射项老化检测：CONNTRACK-EVENTS"><a href="#主动式映射项老化检测：CONNTRACK-EVENTS" class="headerlink" title="主动式映射项老化检测：CONNTRACK_EVENTS"></a>主动式映射项老化检测：CONNTRACK_EVENTS</h3><p>在上篇博文中，我提到：xt_FULLCONENAT 目前暂未能主动判断映射项失效，只能在需要用到该映射项的时候进行一次 <code>check_mapping()</code>，如果失效了就用新的映射替换之，以此十分被动的方法来避免映射表无限增长。</p>
+<p>现在，我在 conntrack 核心代码中发现了在其 conntrack 回收函数 <code>gc_worker()</code> 中，在杀死 conntrack 时会触发一次 conntrack event，这让我想到了可以通过注册conntrack event回调来实现主动的映射项老化。</p>
+<p>conntrack 事件回调的注册非常简单，在 <code>struct nf_ct_event_notifier</code> 结构体中定义一个回调函数，再通过调用 <code>nf_conntrack_register_notifier()</code> 即可在当前网络命名空间（network namespace）上注册一个事件回调。<br>接下来我们要做的，就是在回调函数中过滤掉除 <code>IPCT_DESTROY</code> 外的事件，获得对应的 conntrack 和 tuple ，并根据tuple的地址信息找到对应的映射项（但这时并不能立即删除映射项，后文会提到）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">ct_event_cb</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> events, struct nf_ct_event *item)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  ct = item-&gt;ct;</span><br><span class="line">  <span class="comment">/* we handle only conntrack destroy events */</span></span><br><span class="line">  <span class="keyword">if</span> (ct == <span class="literal">NULL</span> || !(events &amp; (<span class="number">1</span> &lt;&lt; IPCT_DESTROY))) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">/* 这里我们不知道这个是出站conntrack（SNAT），还是入站conntrack（DNAT） </span></span><br><span class="line"><span class="comment">   * 因此需要做尝试：如果不是出站conntrack，则认为是入站conntrack */</span></span><br><span class="line">  ip = (ct_tuple-&gt;src).u3.ip;</span><br><span class="line">  port = be16_to_cpu((ct_tuple-&gt;src).u.udp.port);</span><br><span class="line">  mapping = get_mapping_by_int_src(ip, port);</span><br><span class="line">  <span class="keyword">if</span> (mapping == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    ct_tuple = &amp;(ct-&gt;tuplehash[IP_CT_DIR_REPLY].tuple);</span><br><span class="line">    ip = (ct_tuple-&gt;src).u3.ip;</span><br><span class="line">    port = be16_to_cpu((ct_tuple-&gt;src).u.udp.port);</span><br><span class="line">    mapping = get_mapping_by_int_src(ip, port);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* 如果都还是找不到，那么认为该conntrack与本模块无关，不作处理 */</span></span><br><span class="line">  <span class="comment">/* 如果找到了，就做相应的回收处理 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过注册conntrack事件回调，我们可以在精准的时机老化对应的映射项了。</p>
+<p>不过，CONNTRACK_EVENTS 并不是 netfilter 中常用的 feature。在内核树中，只有 netlink 的 conntrack 模块使用了它。<br>可能正由于此，conntrack notifier被设计成 <strong>在同一个network namespace中，同时只能有一个回调被注册</strong> ，能够注册的唯一的事件回调会保存在 <code>net-&gt;ct.nf_conntrack_event_cb</code> 。因此这造成了 <a href="https://github.com/Chion82/netfilter-full-cone-nat/issues/5" target="_blank" rel="noopener">issue #5</a> 的BUG：该模块不能与其他占用 CONNTRACK_EVENTS 的模块（标准内核树中只有netlink）同时共用。</p>
+<p>万幸的是，就算不注册conntrack事件回调，我们仍可以通过老方法，被动地防止映射表无限增长。由于我对映射项建立了双边索引（LAN端和WAN端），过长的映射表虽然会浪费较多的内存，但对索引表项的性能影响很小。</p>
+<h3 id="映射项的引用计数及-GC-时机"><a href="#映射项的引用计数及-GC-时机" class="headerlink" title="映射项的引用计数及 GC 时机"></a>映射项的引用计数及 GC 时机</h3><p>这里有个地方要注意。上面提到的 CONNTRACK_EVENTS 是针对conntrack而言的，当 <code>IPCT_DESTROY</code> 触发时，认为该conntrack已超时失效。由于本模块中映射项是对Cone NAT而言的，一个映射项会对应多个conntracks。</p>
+<p>在 xt_FULLCONENAT 原来的设计中，并没有考虑后来DNAT或SNAT所产生的对应同一个映射项的多个conntracks，对一个映射是否超时的判断，是基于第一个conntrack所对应的tuple <code>mapping-&gt;original_tuple</code> 的，因此，可能会造成这样的场景：</p>
+<ul>
+<li>内网主机A -&gt; SNAT -&gt; 外网主机B 【保存 original_tuple 到 mapping1】</li>
+<li>外网主机C -&gt; DNAT -&gt; 内网主机A 【通过 mapping1 进行DNAT】</li>
+<li>A与B的通信停止，A与C持续通信，持续5分钟</li>
+<li><code>original_tuple</code> 被 conntrack_core 的 gc_worker() 回收</li>
+<li>外网主机D -&gt; DNAT -&gt; 丢弃【对 mapping1 进行检查，<code>original_tuple</code>失效，删除 mapping1】</li>
+</ul>
+<p>为了解决这个问题，我引入了 <em>映射项引用计数</em> 的概念：当有 N 个 conntrack 与一个映射项关联时，该映射项的引用计数为 N 。<br>现在一个映射项的结构如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nat_mapping</span> &#123;</span></span><br><span class="line">  <span class="keyword">uint16_t</span> port;     <span class="comment">/* external UDP port */</span></span><br><span class="line">  <span class="keyword">int</span> ifindex;       <span class="comment">/* external interface index*/</span></span><br><span class="line">  __be32 int_addr;   <span class="comment">/* internal source ip address */</span></span><br><span class="line">  <span class="keyword">uint16_t</span> int_port; <span class="comment">/* internal source port */</span></span><br><span class="line">  <span class="keyword">int</span> refer_count;   <span class="comment">/* how many references linked to this mapping</span></span><br><span class="line"><span class="comment">                      * aka. length of original_tuple_list */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">original_tuple_list</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span> <span class="title">node_by_ext_port</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span> <span class="title">node_by_int_src</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>每当一次SNAT或DNAT时，我们将所对应conntrack的 <code>ct-&gt;tuplehash[IP_CT_DIR_ORIGINAL].tuple</code> 追加至 <code>original_tuple_list</code> 列表，并累加引用计数：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">add_original_tuple_to_mapping</span><span class="params">(struct nat_mapping *mapping, <span class="keyword">const</span> struct nf_conntrack_tuple* original_tuple)</span> </span>&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">nat_mapping_original_tuple</span> *<span class="title">item</span> = <span class="title">kmalloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">nat_mapping_original_tuple</span>), <span class="title">GFP_ATOMIC</span>);</span></span><br><span class="line">  <span class="keyword">if</span> (item == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    pr_debug(<span class="string">"xt_FULLCONENAT: ERROR: kmalloc() for nat_mapping_original_tuple failed.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">memcpy</span>(&amp;item-&gt;tuple, original_tuple, <span class="keyword">sizeof</span>(struct nf_conntrack_tuple));</span><br><span class="line">  list_add(&amp;item-&gt;node, &amp;mapping-&gt;original_tuple_list);</span><br><span class="line">  (mapping-&gt;refer_count)++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当 conntrack 的 <code>IPCT_DESTROY</code> 事件触发，或需要 <code>check_mapping()</code> 时，我们从该映射项的 <code>original_tuple_list</code> 列表中删除该失效的 tuple，并将引用计数递减；当且仅当一个映射项的引用计数为零时，我们才杀掉这个映射项：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">ct_event_cb</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> events, struct nf_ct_event *item)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ... 接上文的 ct_event_cb()，这里已从conntrack获取到对应的mapping</span></span><br><span class="line">  <span class="comment">/* 遍历original_tuple_list，查找并清理失效的tuple */</span></span><br><span class="line">  list_for_each_safe(iter, tmp, &amp;mapping-&gt;original_tuple_list) &#123;</span><br><span class="line">    original_tuple_item = list_entry(iter, struct nat_mapping_original_tuple, node);</span><br><span class="line">    <span class="keyword">if</span> (nf_ct_tuple_equal(&amp;original_tuple_item-&gt;tuple, ct_tuple_origin)) &#123;</span><br><span class="line">      list_del(&amp;original_tuple_item-&gt;node);</span><br><span class="line">      kfree(original_tuple_item);</span><br><span class="line">      (mapping-&gt;refer_count)--;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* 当引用计数减至零时，杀死这个映射项 */</span></span><br><span class="line">  <span class="keyword">if</span> (mapping-&gt;refer_count &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">    kill_mapping(mapping);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>至此，xt_FULLCONENAT 的更新进入了新的阶段。</p>
+<p>这里感谢 xd5520026 提出了各种冲突case及修改建议。<br>And many thanks to 4t0m1k for hacking into the kernel source which helped me figure out the <em>CONNTRACK_EVENTS</em> bug.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.chionlab.moe/2018/03/31/full-cone-nat-with-linux-2/" data-id="cjffhxy0i000dom2hr7rd1267" class="article-share-link">分享</a>
+      
+        <a href="https://blog.chionlab.moe/2018/03/31/full-cone-nat-with-linux-2/#gitment-comments" class="article-comment-link">评论</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/network/">network</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+
+
+  
     <article id="post-full-cone-nat-with-linux" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/02/09/full-cone-nat-with-linux/" class="article-date">
@@ -297,7 +431,8 @@
 <li>本文中的NAT特指NAPT。ALG等周边技术在部分厂商的linux网络设备上已有相应实现，暂不讨论。</li>
 <li>你可以直接到 <a href="https://github.com/Chion82/netfilter-full-cone-nat" target="_blank" rel="noopener">https://github.com/Chion82/netfilter-full-cone-nat</a> 使用本文的解决方案。</li>
 </ul>
-<h2 id="关于NAT类型在Linux上实现的现状"><a href="#关于NAT类型在Linux上实现的现状" class="headerlink" title="关于NAT类型在Linux上实现的现状"></a>关于NAT类型在Linux上实现的现状</h2><p>TLDR: Linux上至今未实现真正意义上的Full Cone NAT，Linux的 SNAT/MASQUERADE（以<code>iptables</code>的配置为例）均是Symmetric NAT。</p>
+<h2 id="关于NAT类型在Linux上实现的现状"><a href="#关于NAT类型在Linux上实现的现状" class="headerlink" title="关于NAT类型在Linux上实现的现状"></a>关于NAT类型在Linux上实现的现状</h2><p>TLDR: Linux内核树上未实现真正意义上的Full Cone NAT，Linux的 SNAT/MASQUERADE（以<code>iptables</code>的配置为例）均是Symmetric NAT。</p>
+<p>2018.3 更新：<br>一个比较少众的华硕路由器第三方固件 padavan 通过netfilter patch的方式实现了 Cone NAT，但是其实现存在较多问题，如不支持端口随机化、内核升级不友好等，具体在下一篇博客中讨论。</p>
 <h2 id="现有的在Linux上的Full-Cone-NAT-的实现"><a href="#现有的在Linux上的Full-Cone-NAT-的实现" class="headerlink" title="现有的在Linux上的Full Cone NAT(?)的实现"></a>现有的在Linux上的Full Cone NAT(?)的实现</h2><p>之所以“Linux上未真正实现Full Cone NAT”这个问题至今没有被重视，是因为总有那么个“看似能够代替的方案”。事实上，稍微谷歌一下不难找到这样来实现Full Cone NAT的方法（假设<code>eth0</code>是外网出口网卡，内网主机是<code>192.168.1.3</code>）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE #普通的SNAT</span><br><span class="line">iptables -t nat -A PREROUTING -i eth0 -j DNAT --to-destination 192.168.1.3 #将入站流量DNAT转发到内网主机192.168.1.3</span><br></pre></td></tr></table></figure></p>
 <p>类似的实现还有<code>NETMAP</code>。这种设置都有一个共同点：入站流量其实是 <strong>定向DNAT转发</strong> 到某一台内网主机中，从而对该台内网主机而言，它的NAT类型总是Full Cone的。事实上这种设置更像是DMZ host，是不分条件地转发所有入站流量到内网DMZ主机。然而，这种设置只能对该台内网主机有效，对于同一内网下的其他主机，它们的NAT类型仍然是Symmetric。</p>
 <h3 id="UPnP技术"><a href="#UPnP技术" class="headerlink" title="UPnP技术"></a>UPnP技术</h3><p>为了解决这个问题，UPnP起到了很重要的作用。事实上，UPnP技术基本上解决了家庭用户的内网穿透需求。（鉴于现在大多数用户都使用基于Linux的智能路由器的光猫等）在Linux上，实现UPnP的应用程序通常是 <a href="https://github.com/miniupnp/miniupnp" target="_blank" rel="noopener">miniupnp</a>。<br>内网主机的应用程序在需要进行内网穿透前，对路由器进行一次UPnP请求，该请求映射一个外网端口（UDP或TCP）到内网主机的端口。miniupnp随后会执行若干条 <code>iptables</code> 命令，例如最重要的是这条：（为便于理解，该命令已简化，事实上miniupnpd会在 <code>nat</code> 表下另建一个链）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A PREROUTING -i eth0 -p udp --dport 5000 -j DNAT --to-destination 192.168.1.3:5000</span><br></pre></td></tr></table></figure></p>
@@ -362,7 +497,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjf4w2ob3000h6t2h31w9ni72" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjffhxy0o000gom2htqfemzkh" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -536,7 +671,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/" data-id="cjf4w2obb000m6t2hsd67lw6o" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/" data-id="cjffhxy14000pom2h2w2ppbig" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -645,7 +780,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cjf4w2oce001r6t2hsz2pjcxb" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cjffhxy2p001vom2hgnt8n9dn" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -707,7 +842,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cjf4w2oaq00076t2hzut2mde6" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cjffhxy030006om2h06dh2ybx" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -786,7 +921,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cjf4w2oc2001g6t2hw0f6owc9" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cjffhxy2d001fom2h1rkvc002" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -905,7 +1040,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cjf4w2obf000q6t2h1lxdqwv8" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cjffhxy1a000wom2hdk270inw" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -1105,7 +1240,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cjf4w2obk000x6t2hf0kcgvs1" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cjffhxy17000rom2h7u71bg73" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -1209,7 +1344,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cjf4w2obu00166t2hruo0sxio" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cjffhxy1f000zom2hhtcdjruq" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -1286,110 +1421,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cjf4w2obn00106t2ha0n8md7s" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cjffhxy1x0012om2hw3yu876o" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/#gitment-comments" class="article-comment-link">评论</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/router/">router</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-  
-    <article id="post-cron-job-locale-issues" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/29/cron-job-locale-issues/" class="article-date">
-  <time datetime="2016-04-29T13:15:58.000Z" itemprop="datePublished">2016-04-29</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>►<a class="article-category-link" href="/categories/学习笔记/linux/">linux</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/29/cron-job-locale-issues/">cron任务的locale问题</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>原文：<a href="http://www.mk-mode.com/octopress/2013/11/26/linux-cron-locale-behavior/" target="_blank" rel="noopener">Linux - cron での locale の挙動！ - mk-mode BLOG</a></p>
-<blockquote>
-<p>こんばんは。<br>Linux で、自分が作成したスクリプトがコンソール上では正常に動作するのに、 cron で定時起動させようとすると文字コードの関係でうまく日本語出力ができないことがあります。<br>以下、それについての備忘録です。</p>
-</blockquote>
-<p>晚上好。<br>在Linux下，自己编写的（shell）脚本，在终端下手动运行是一切正常的。但是，由于字符编码的关系，当cron在试图以定时任务来执行该脚本时，日语文字却不能被正常输出。<br>以下是解决这一问题的备忘录。</p>
-<blockquote>
-<p>0. 前提条件<br>CentOS 6.4 (32bit) での作業を想定。<br>cron は crontab -e ではなく、 /etc/cron.d/ ディレクトリ配下にファイルを設置する方法。<br>文字化けが起こるスクリプトは “UTF-8” でエンコードされていて、日本語出力を伴うことを想定。<br>（当然、日本語出力を伴わないのならロケールの心配もない）</p>
-</blockquote>
-<h2 id="0-条件"><a href="#0-条件" class="headerlink" title="0. 条件"></a>0. 条件</h2><ul>
-<li>假定操作系统是CentOS 6.4 (32bit) （译者注：6.X, 64位同样适用）</li>
-<li>不使用cron的<code>crontab -e</code>，而是在<code>/etc/cron.d/</code>目录下建立配置文件来设置cron任务（译者注：同样适用于通过<code>crontab -e</code>设置的任务）</li>
-<li>脚本使用UTF-8编码，并假定脚本的执行将伴随有日语文字输出，且（由cron执行时）出现了乱码。<br>（当然，如果日语输出不受locale影响，则无需担心。）</li>
-</ul>
-<blockquote>
-<p>1. cron 外（コンソール）でのロケール<br>普通にコンソールで locale コマンドでロケールを確認してみる。</p>
-</blockquote>
-<h2 id="1-在cron外部（用户终端）的locale"><a href="#1-在cron外部（用户终端）的locale" class="headerlink" title="1. 在cron外部（用户终端）的locale"></a>1. 在cron外部（用户终端）的locale</h2><p>在一般的用户终端（console）中，尝试通过<code>locale</code>命令来确认当前环境的locale。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># locale</span></span><br><span class="line">LANG=ja_JP.UTF<span class="number">-8</span></span><br><span class="line">LC_CTYPE=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_NUMERIC=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_TIME=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_COLLATE=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_MONETARY=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_MESSAGES=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_PAPER=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_NAME=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_ADDRESS=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_TELEPHONE=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_MEASUREMENT=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_IDENTIFICATION=<span class="string">"ja_JP.UTF-8"</span></span><br><span class="line">LC_ALL=</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>2. cron 内でのロケール<br>次に cron 内で locale コマンドを実行させてみる。<br>例えば、以下のようなファイル /etc/cron.d/locale_test を作成してみる。</p>
-</blockquote>
-<h2 id="2-cron内的locale"><a href="#2-cron内的locale" class="headerlink" title="2. cron内的locale"></a>2. cron内的locale</h2><p>接下来，我们尝试在cron内执行<code>locale</code>命令。（译者注：其实就是在cron job中运行<code>locale</code>命令）<br>如下例，尝试创建一个文件<code>/home/hoge/work/locale.log</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * root locale &gt; /home/hoge/work/locale.log</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>毎分 “/home/hoge/work/” ディレクトリ内に “locale.log” というファイルが作成されるので、内容を確認してみる。</p>
-</blockquote>
-<p>每分钟，<code>/home/hoge/work/</code>下的<code>locale.log</code>文件都会被写入新数据，我们来尝试确认该文件内容。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">LANG=</span><br><span class="line">LC_CTYPE=<span class="string">"POSIX"</span></span><br><span class="line">LC_NUMERIC=<span class="string">"POSIX"</span></span><br><span class="line">LC_TIME=<span class="string">"POSIX"</span></span><br><span class="line">LC_COLLATE=<span class="string">"POSIX"</span></span><br><span class="line">LC_MONETARY=<span class="string">"POSIX"</span></span><br><span class="line">LC_MESSAGES=<span class="string">"POSIX"</span></span><br><span class="line">LC_PAPER=<span class="string">"POSIX"</span></span><br><span class="line">LC_NAME=<span class="string">"POSIX"</span></span><br><span class="line">LC_ADDRESS=<span class="string">"POSIX"</span></span><br><span class="line">LC_TELEPHONE=<span class="string">"POSIX"</span></span><br><span class="line">LC_MEASUREMENT=<span class="string">"POSIX"</span></span><br><span class="line">LC_IDENTIFICATION=<span class="string">"POSIX"</span></span><br><span class="line">LC_ALL=</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>“ja_JP.UTF-8” でなく “POSIX” となっている。<br>これでは、UTF-8 でエンコードされているスクリプトは日本語表示で不具合を起こすでしょう。</p>
-</blockquote>
-<p><code>ja_JP.UTF-8</code>并不在<code>POSIX</code>集合内。<br>因此，使用UTF-8编码的脚本在遇到日语输出时会出错。</p>
-<blockquote>
-<p>3. 対処方法<br>cron 内で UTF-8 でデンコードされたスクリプトを実行させる場合は、以下のように LC_CTYPE, LANG を設定してやる。</p>
-</blockquote>
-<h2 id="3-解决方法"><a href="#3-解决方法" class="headerlink" title="3. 解决方法"></a>3. 解决方法</h2><p>要在cron中运行通过UTF-8编码的脚本，需要设定<code>LC_CTYPE</code>和<code>LANG</code>。如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">LC_CTYPE=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LANG=<span class="string">"ja_JP.utf8"</span></span><br><span class="line"></span><br><span class="line">* * * * * root locale &gt; /home/hoge/work/locale.log</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>再度 “/home/hoge/work/” ディレクトリ内の “locale.log” の内容を確認してみる。</p>
-</blockquote>
-<p>再次确认<code>/home/hoge/work/</code>目录下的<code>locale.log</code>文件的内容。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">LANG=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_CTYPE=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_NUMERIC=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_TIME=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_COLLATE=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_MONETARY=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_MESSAGES=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_PAPER=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_NAME=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_ADDRESS=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_TELEPHONE=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_MEASUREMENT=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_IDENTIFICATION=<span class="string">"ja_JP.utf8"</span></span><br><span class="line">LC_ALL=</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>“ja_JP.utf8” になりました。（UTF-8 と utf8 の違いはあるが問題ない）<br>これで、日本語出力で文字化けすることがなくなります。</p>
-</blockquote>
-<p>现在是<code>ja_JP.utf8</code>了。（UTF-8和utf8的区别并不是个问题）<br>现在，（cron job任务的）的日语输出不会再乱码了。</p>
-<blockquote>
-<p>4. 参考<br>上記では任意のスクリプトについて話したが、UTF-8 エンコードの Ruby スクリプト（日本語出力を伴うもの）を cron 起動させるには以下のように -Ku オプションで文字コードを指定することでも対処可能である。</p>
-</blockquote>
-<h2 id="4-参考"><a href="#4-参考" class="headerlink" title="4. 参考"></a>4. 参考</h2><p>上面的记录是针对任意的脚本。若需通过cron运行含有日语输出的Ruby脚本，可以通过<code>-Ku</code>选项指定字符编码。如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * root /usr/local/bin/ruby -Ku test_script.rb</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>5. 後始末<br>当然、テストで作成した cron スクリプトは不要なので削除しておく。</p>
-<p>以上。</p>
-</blockquote>
-<h2 id="5-后续清理"><a href="#5-后续清理" class="headerlink" title="5. 后续清理"></a>5. 后续清理</h2><p>当然，在刚才的测试中添加的cron任务脚本（locale命令）是不再需要的，请删除它。</p>
-<h2 id="译者注"><a href="#译者注" class="headerlink" title="译者注"></a>译者注</h2><p>本文locale问题的解决方案对于简体中文也是同样适用的，只需将本文中的<code>ja_JP</code>替换成<code>zh_CN</code>即可。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/" data-id="cjf4w2oav000c6t2h1om5b691" class="article-share-link">分享</a>
-      
-        <a href="https://blog.chionlab.moe/2016/04/29/cron-job-locale-issues/#gitment-comments" class="article-comment-link">评论</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maintenance/">maintenance</a></li></ul>
 
     </footer>
   </div>
@@ -1434,7 +1471,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OSX/" style="font-size: 12px;">OSX</a> <a href="/tags/React/" style="font-size: 16px;">React</a> <a href="/tags/android/" style="font-size: 14px;">android</a> <a href="/tags/backend/" style="font-size: 12px;">backend</a> <a href="/tags/crawler/" style="font-size: 12px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18px;">front-end</a> <a href="/tags/hack/" style="font-size: 14px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18px;">maintenance</a> <a href="/tags/network/" style="font-size: 16px;">network</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 10px;">openwrt</a> <a href="/tags/python/" style="font-size: 12px;">python</a> <a href="/tags/router/" style="font-size: 10px;">router</a> <a href="/tags/wechat/" style="font-size: 12px;">wechat</a>
+      <a href="/tags/OSX/" style="font-size: 11.67px;">OSX</a> <a href="/tags/React/" style="font-size: 15px;">React</a> <a href="/tags/android/" style="font-size: 13.33px;">android</a> <a href="/tags/backend/" style="font-size: 11.67px;">backend</a> <a href="/tags/crawler/" style="font-size: 11.67px;">crawler</a> <a href="/tags/front-end/" style="font-size: 18.33px;">front-end</a> <a href="/tags/hack/" style="font-size: 13.33px;">hack</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/maintenance/" style="font-size: 18.33px;">maintenance</a> <a href="/tags/network/" style="font-size: 16.67px;">network</a> <a href="/tags/nginx/" style="font-size: 11.67px;">nginx</a> <a href="/tags/openwrt/" style="font-size: 10px;">openwrt</a> <a href="/tags/python/" style="font-size: 11.67px;">python</a> <a href="/tags/router/" style="font-size: 10px;">router</a> <a href="/tags/wechat/" style="font-size: 11.67px;">wechat</a>
     </div>
   </div>
 
@@ -1444,7 +1481,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li></ul>
     </div>
   </div>
 
@@ -1455,6 +1492,10 @@
     <h3 class="widget-title">最近发表</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/03/31/full-cone-nat-with-linux-2/">Linux 内核态实现 Full Cone NAT（2）</a>
+          </li>
         
           <li>
             <a href="/2018/02/09/full-cone-nat-with-linux/">从DNAT到netfilter内核子系统，浅谈Linux的Full Cone NAT实现</a>
@@ -1470,10 +1511,6 @@
         
           <li>
             <a href="/2016/12/12/chionlab-updates-dec-2016/">ChionLab 2016年底更新记录</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/07/tcp-keepalive-on-chrome/">TCP keepalive的探究 (2) : 浏览器的Keepalive机制</a>
           </li>
         
       </ul>
