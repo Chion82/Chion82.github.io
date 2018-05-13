@@ -360,7 +360,7 @@
 <p>conntrack 事件回调的注册非常简单，在 <code>struct nf_ct_event_notifier</code> 结构体中定义一个回调函数，再通过调用 <code>nf_conntrack_register_notifier()</code> 即可在当前网络命名空间（network namespace）上注册一个事件回调。<br>接下来我们要做的，就是在回调函数中过滤掉除 <code>IPCT_DESTROY</code> 外的事件，获得对应的 conntrack 和 tuple ，并根据tuple的地址信息找到对应的映射项（但这时并不能立即删除映射项，后文会提到）：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">ct_event_cb</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> events, struct nf_ct_event *item)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  ct = item-&gt;ct;</span><br><span class="line">  <span class="comment">/* we handle only conntrack destroy events */</span></span><br><span class="line">  <span class="keyword">if</span> (ct == <span class="literal">NULL</span> || !(events &amp; (<span class="number">1</span> &lt;&lt; IPCT_DESTROY))) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">/* 这里我们不知道这个是出站conntrack（SNAT），还是入站conntrack（DNAT） </span></span><br><span class="line"><span class="comment">   * 因此需要做尝试：如果不是出站conntrack，则认为是入站conntrack */</span></span><br><span class="line">  ip = (ct_tuple-&gt;src).u3.ip;</span><br><span class="line">  port = be16_to_cpu((ct_tuple-&gt;src).u.udp.port);</span><br><span class="line">  mapping = get_mapping_by_int_src(ip, port);</span><br><span class="line">  <span class="keyword">if</span> (mapping == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    ct_tuple = &amp;(ct-&gt;tuplehash[IP_CT_DIR_REPLY].tuple);</span><br><span class="line">    ip = (ct_tuple-&gt;src).u3.ip;</span><br><span class="line">    port = be16_to_cpu((ct_tuple-&gt;src).u.udp.port);</span><br><span class="line">    mapping = get_mapping_by_int_src(ip, port);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* 如果都还是找不到，那么认为该conntrack与本模块无关，不作处理 */</span></span><br><span class="line">  <span class="comment">/* 如果找到了，就做相应的回收处理 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>通过注册conntrack事件回调，我们可以在精准的时机老化对应的映射项了。</p>
-<p>不过，CONNTRACK_EVENTS 并不是 netfilter 中常用的 feature。在内核树中，只有 netlink 的 conntrack 模块使用了它。<br>可能正由于此，conntrack notifier被设计成 <strong>在同一个network namespace中，同时只能有一个回调被注册</strong> ，能够注册的唯一的事件回调会保存在 <code>net-&gt;ct.nf_conntrack_event_cb</code> 。因此这造成了 <a href="https://github.com/Chion82/netfilter-full-cone-nat/issues/5" target="_blank" rel="noopener">issue #5</a> 的BUG：该模块不能与其他占用 CONNTRACK_EVENTS 的模块（标准内核树中只有netlink）同时共用。</p>
+<p>不过，CONNTRACK_EVENTS 并不是 netfilter 中常用的 feature。在内核树中，只有 nf_conntrack_netlink 模块使用了它。<br>可能正由于此，conntrack notifier被设计成 <strong>在同一个network namespace中，同时只能有一个回调被注册</strong> ，能够注册的唯一的事件回调会保存在 <code>net-&gt;ct.nf_conntrack_event_cb</code> 。因此这造成了 <a href="https://github.com/Chion82/netfilter-full-cone-nat/issues/5" target="_blank" rel="noopener">issue #5</a> 的BUG：该模块不能与其他占用 CONNTRACK_EVENTS 的模块同时共用。linux内核树中占用 CONNTRACK_EVENTS 的模块只有 nf_conntrack_netlink ，用户态的 <code>conntrack</code> 命令（在  conntrack-tools 包中 ）依赖这个内核模块，该命令通常用于在用户态查询和更新 conntrack table 。</p>
 <p>万幸的是，就算不注册conntrack事件回调，我们仍可以通过老方法，被动地防止映射表无限增长。由于我对映射项建立了双边索引（LAN端和WAN端），过长的映射表虽然会浪费较多的内存，但对索引表项的性能影响很小。</p>
 <h3 id="映射项的引用计数及-GC-时机"><a href="#映射项的引用计数及-GC-时机" class="headerlink" title="映射项的引用计数及 GC 时机"></a>映射项的引用计数及 GC 时机</h3><p>这里有个地方要注意。上面提到的 CONNTRACK_EVENTS 是针对conntrack而言的，当 <code>IPCT_DESTROY</code> 触发时，认为该conntrack已超时失效。由于本模块中映射项是对Cone NAT而言的，一个映射项会对应多个conntracks。</p>
 <p>在 xt_FULLCONENAT 原来的设计中，并没有考虑后来DNAT或SNAT所产生的对应同一个映射项的多个conntracks，对一个映射是否超时的判断，是基于第一个conntrack所对应的tuple <code>mapping-&gt;original_tuple</code> 的，因此，可能会造成这样的场景：</p>
@@ -380,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2018/03/31/full-cone-nat-with-linux-2/" data-id="cjfsfp6s9000eos2hb8voqmd5" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2018/03/31/full-cone-nat-with-linux-2/" data-id="cjh4y6u46000hz42hiqb2kmz5" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2018/03/31/full-cone-nat-with-linux-2/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -497,7 +497,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjfsfp6sm000los2hztcddwar" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/" data-id="cjh4y6u49000iz42h45j9malj" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2018/02/09/full-cone-nat-with-linux/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -671,7 +671,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/" data-id="cjfsfp6sw000qos2hv94u7z9n" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/" data-id="cjh4y6u5c000sz42hfyaqmzm3" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2017/04/06/kcptun-with-fake-tcp/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -780,7 +780,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cjfsfp6un001zos2h494ipszq" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/" data-id="cjh4y6u6c001zz42hm2wsb5q9" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/12/21/universal-react-app-reuse-effects-on-server-side/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -842,7 +842,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cjfsfp6rq0007os2hwm0b40fi" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/" data-id="cjh4y6u3t0008z42his66d9gv" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/12/12/chionlab-updates-dec-2016/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -921,7 +921,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cjfsfp6ua001mos2hk6kytn99" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/" data-id="cjh4y6u5t001hz42hcoaky83g" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/11/07/tcp-keepalive-on-chrome/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -1040,7 +1040,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cjfsfp6t1000tos2he76clebz" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/" data-id="cjh4y6u5j0010z42hj0qmfmwj" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/09/24/linux-tcp-keepalive/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -1240,7 +1240,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cjfsfp6tz0019os2hc5plhr8v" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/" data-id="cjh4y6u59000qz42hklyswd52" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/08/28/mixins-considered-harmful-2/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -1344,7 +1344,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cjfsfp6t4000xos2hq0g83cdm" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/" data-id="cjh4y6u5e000vz42h0o7tbbrf" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/07/23/mixins-considered-harmful/#gitment-comments" class="article-comment-link">评论</a>
       
@@ -1421,7 +1421,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cjfsfp6ta0010os2h4xma05nv" class="article-share-link">分享</a>
+      <a data-url="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/" data-id="cjh4y6u5k0012z42hit0zuge6" class="article-share-link">分享</a>
       
         <a href="https://blog.chionlab.moe/2016/07/13/openwrt-multiwan-configuration/#gitment-comments" class="article-comment-link">评论</a>
       
